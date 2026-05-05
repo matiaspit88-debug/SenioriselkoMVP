@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8" />
+<title>SenioriSelko — UI Design</title>
+<meta name="viewport" content="width=1600, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+@page { size: A4 landscape; margin: 1cm; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0eee9; --bg-card: rgba(255,255,255,0.6);
+  --ink: #1A1714; --ink-2: rgba(60,50,40,0.7); --ink-3: rgba(60,50,40,0.45);
+  --hairline: rgba(0,0,0,0.07);
+}
+html, body { background: var(--bg); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.page { width: 100%; min-height: 100vh; padding: 36px 48px; display: flex; flex-direction: column; background: var(--bg); page-break-after: always; break-after: page; }
+.page:last-child { page-break-after: auto; break-after: auto; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; border-bottom: 1px solid var(--hairline); padding-bottom: 14px; }
+.page-eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); font-weight: 500; }
+.page-title { font-family: 'Instrument Serif', Georgia, serif; font-size: 34px; line-height: 1; letter-spacing: -.01em; color: var(--ink); margin: 5px 0 4px; }
+.page-sub { font-size: 13px; color: var(--ink-2); max-width: 580px; line-height: 1.5; }
+.page-num { font-size: 12px; color: var(--ink-3); letter-spacing: .08em; white-space: nowrap; padding-top: 4px; }
+.body { flex: 1; display: flex; align-items: center; justify-content: center; }
+.phones-row { display: flex; gap: 36px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+.caption { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-top: 14px; text-align: center; font-weight: 500; }
+.cover { align-items: center; justify-content: center; text-align: center; }
+.cover-display { font-family: 'Instrument Serif', Georgia, serif; font-size: 96px; line-height: .95; letter-spacing: -.02em; color: var(--ink); margin-bottom: 18px; }
+.cover-display em { color: var(--ink-2); font-style: normal; }
+.cover-sub { font-size: 18px; color: var(--ink-2); max-width: 520px; margin: 0 auto; line-height: 1.55; }
+.cover-meta { margin-top: 48px; display: flex; gap: 20px; justify-content: center; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+@media print { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const PHONE_W = 390;
+const PHONE_H = 844;
+const ORB = {
+  ai:   { c1:'#8AB8FF', c2:'#3F7FE0', c3:'#1A4FA8', s:'#3F7FE044' },
+  chat: { c1:'#D4B8FF', c2:'#A381DC', c3:'#6B4FB8', s:'#A381DC44' },
+  help: { c1:'#FFC4A8', c2:'#F18A6E', c3:'#C85A38', s:'#F18A6E44' },
+  emer: { c1:'#FFD88A', c2:'#F0973A', c3:'#C86A18', s:'#F0973A44' },
+};
+
+function Orb({ kind, size=80, halo=false, style={} }) {
+  const c = ORB[kind];
+  return <div style={{ width:size, height:size, borderRadius:'50%', flexShrink:0,
+    background:`radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2} 52%, ${c.c3})`,
+    boxShadow: halo ? `0 0 ${size*.35}px ${size*.12}px ${c.s}, 0 ${size*.08}px ${size*.25}px rgba(0,0,0,0.15)` : `0 ${size*.05}px ${size*.15}px rgba(0,0,0,0.12)`,
+    ...style }} />;
+}
+
+function Phone({ children, bg='#f0eee9' }) {
+  return (
+    <div style={{ width:PHONE_W, height:PHONE_H, borderRadius:52, background:bg, overflow:'hidden', position:'relative', flexShrink:0, boxShadow:'0 32px 80px rgba(40,30,20,0.18), 0 0 0 1px rgba(0,0,0,0.07)' }}>
+      <div style={{ position:'absolute', top:12, left:'50%', transform:'translateX(-50%)', width:120, height:34, borderRadius:20, background:'#000', zIndex:10 }} />
+      {children}
+    </div>
+  );
+}
+
+function StatusBar({ light=false }) {
+  const col = light ? 'rgba(255,255,255,0.9)' : '#1A1714';
+  return (
+    <div style={{ height:54, display:'flex', alignItems:'flex-end', justifyContent:'space-between', padding:'0 28px 8px', flexShrink:0 }}>
+      <span style={{ fontSize:16, fontWeight:600, color:col }}>9:41</span>
+      <div style={{ display:'flex', gap:5, alignItems:'center' }}>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill={col}><rect x="0" y="4" width="3" height="8" rx="1" opacity=".4"/><rect x="4" y="2.5" width="3" height="9.5" rx="1" opacity=".6"/><rect x="8" y="1" width="3" height="11" rx="1" opacity=".8"/><rect x="12" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill={col}><path d="M8 2.5C10.5 2.5 12.7 3.5 14.2 5.2L15.5 3.8C13.6 1.7 11 0.5 8 0.5C5 0.5 2.4 1.7 0.5 3.8L1.8 5.2C3.3 3.5 5.5 2.5 8 2.5Z"/><path d="M8 5.5C9.8 5.5 11.4 6.3 12.5 7.5L13.8 6.1C12.4 4.6 10.3 3.7 8 3.7C5.7 3.7 3.6 4.6 2.2 6.1L3.5 7.5C4.6 6.3 6.2 5.5 8 5.5Z"/><circle cx="8" cy="10.5" r="1.5"/></svg>
+        <div style={{ display:'flex', alignItems:'center' }}>
+          <div style={{ width:22, height:11, borderRadius:3, border:`1.5px solid ${col}`, padding:'1.5px', display:'flex', alignItems:'center' }}>
+            <div style={{ width:'75%', height:'100%', background:col, borderRadius:1.5 }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BottomDock({ active='ai' }) {
+  const items = [{ kind:'ai', label:'Apuri' },{ kind:'chat', label:'Juttuseura' },{ kind:'help', label:'Ohjeet' },{ kind:'emer', label:'Hätä' }];
+  return (
+    <div style={{ position:'absolute', bottom:0, left:0, right:0, height:90, background:'rgba(240,238,233,0.88)', backdropFilter:'blur(20px)', borderTop:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'flex-start', justifyContent:'space-around', paddingTop:12 }}>
+      {items.map(it => {
+        const c = ORB[it.kind]; const on = active === it.kind;
+        return (
+          <div key={it.kind} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4 }}>
+            <div style={{ width:52, height:52, borderRadius:18, background: on ? `radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2})` : 'rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow: on ? `0 4px 12px ${c.s}` : 'none' }}>
+              <Orb kind={it.kind} size={on?32:26} />
+            </div>
+            <span style={{ fontSize:10, color: on ? c.c2 : 'rgba(60,50,40,0.5)', fontWeight: on ? 600 : 400 }}>{it.label}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function HomeScreen() {
+  const tiles = [
+    { kind:'ai', label:'Apuri', sub:'Kysy mitä vaan' },
+    { kind:'chat', label:'Juttuseura', sub:'Onni odottaa' },
+    { kind:'help', label:'Ohjeet', sub:'Vinkit ja oppaat' },
+    { kind:'emer', label:'Hätä', sub:'Apua nopeasti' },
+  ];
+  return (
+    <div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'8px 28px 20px' }}>
+        <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginBottom:2 }}>Tiistai, 5. toukokuuta</div>
+        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714', lineHeight:1.15 }}>Hyvää iltapäivää,<br /><em>Matti</em></div>
+      </div>
+      <div style={{ flex:1, padding:'0 20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+        {tiles.map(t => (
+          <div key={t.kind} style={{ borderRadius:28, padding:22, background:'rgba(255,255,255,0.6)', border:'1px solid rgba(0,0,0,0.06)', boxShadow:'0 2px 12px rgba(40,30,20,0.06)', display:'flex', flexDirection:'column', gap:12 }}>
+            <Orb kind={t.kind} size={54} halo />
+            <div>
+              <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>{t.label}</div>
+              <div style={{ fontSize:13, color:'rgba(60,50,40,0.6)', marginTop:2 }}>{t.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="ai" />
+    </div>
+  );
+}
+
+function LockScreen() {
+  return (
+    <div style={{ width:'100%', height:'100%', background:'linear-gradient(160deg, #2A2420 0%, #1A1714 60%, #2E2418 100%)', display:'flex', flexDirection:'column' }}>
+      <StatusBar light />
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'space-between', padding:'20px 32px 60px' }}>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:80, color:'rgba(255,255,255,0.92)', lineHeight:1, letterSpacing:'-.02em' }}>9:41</div>
+          <div style={{ fontSize:16, color:'rgba(255,255,255,0.5)', marginTop:8 }}>Tiistai, 5. toukokuuta</div>
+        </div>
+        <div style={{ width:'100%' }}>
+          <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)', letterSpacing:'.1em', textTransform:'uppercase', marginBottom:12, textAlign:'center' }}>Muisto tänään</div>
+          <div style={{ borderRadius:24, padding:20, background:'rgba(255,255,255,0.08)', backdropFilter:'blur(20px)', border:'1px solid rgba(255,255,255,0.12)', display:'flex', alignItems:'center', gap:16 }}>
+            <div style={{ width:64, height:64, borderRadius:18, flexShrink:0, background:'linear-gradient(135deg, #F0973A, #F18A6E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28 }}>👨‍👩‍👧</div>
+            <div>
+              <div style={{ fontSize:17, fontWeight:600, color:'rgba(255,255,255,0.9)' }}>Liisa soitti eilen</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.5)', marginTop:3 }}>Haluatko soittaa takaisin?</div>
+            </div>
+          </div>
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ width:48, height:4, borderRadius:2, background:'rgba(255,255,255,0.25)', margin:'0 auto 12px' }} />
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.4)' }}>Pyyhkäise avataksesi</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AIScreen() {
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 16px', display:'flex', alignItems:'center', gap:12 }}>
+        <Orb kind="ai" size={36} />
+        <div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>Apuri</div>
+          <div style={{ fontSize:12, color:'rgba(60,50,40,0.5)' }}>Tekoälyavustaja</div>
+        </div>
+      </div>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:32, padding:'0 32px' }}>
+        <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'center' }}>
+          <div style={{ position:'absolute', width:200, height:200, borderRadius:'50%', background:'radial-gradient(circle, rgba(63,127,224,0.12) 0%, transparent 70%)' }} />
+          <div style={{ position:'absolute', width:150, height:150, borderRadius:'50%', background:'radial-gradient(circle, rgba(63,127,224,0.18) 0%, transparent 70%)' }} />
+          <Orb kind="ai" size={110} halo style={{ position:'relative', zIndex:1 }} />
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714', marginBottom:8 }}>Kuuntelen...</div>
+          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', lineHeight:1.5, maxWidth:280 }}>Puhu rauhallisesti. Vastaan heti kun olet valmis.</div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:5, height:40 }}>
+          {[.4,.7,1,.8,.5,.9,.6,1,.7,.4,.8,.5].map((h,i) => (
+            <div key={i} style={{ width:4, height:40*h, borderRadius:2, background:`rgba(63,127,224,${.35+h*.55})` }} />
+          ))}
+        </div>
+      </div>
+      <div style={{ padding:'20px 32px 40px', display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
+        <div style={{ width:80, height:80, borderRadius:'50%', background:'linear-gradient(135deg, #6FA8FF, #3F7FE0)', boxShadow:'0 8px 24px rgba(63,127,224,0.4)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:32 }}>🎙</div>
+        <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)' }}>Napauta lopettaaksesi</div>
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="ai" />
+    </div>
+  );
+}
+
+function ChatScreen() {
+  const msgs = [
+    { from:'bot', text:'Hei Matti! Mukava jutella taas. Miten päiväsi on mennyt?' },
+    { from:'user', text:'Ihan hyvin, kävin aamulla puutarhassa.' },
+    { from:'bot', text:'Kuulostaa ihanalta! Mitä siellä puuhailit?' },
+  ];
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 24px 16px', borderBottom:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', gap:14 }}>
+        <div style={{ position:'relative' }}>
+          <Orb kind="chat" size={48} halo />
+          <div style={{ position:'absolute', bottom:0, right:0, width:14, height:14, borderRadius:'50%', background:'#4CAF50', border:'2px solid #f0eee9' }} />
+        </div>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>Onni</div>
+          <div style={{ fontSize:13, color:'#A381DC' }}>● Paikalla</div>
+        </div>
+      </div>
+      <div style={{ flex:1, padding:'20px 20px 12px', display:'flex', flexDirection:'column', gap:14 }}>
+        {msgs.map((m,i) => {
+          const bot = m.from==='bot';
+          return (
+            <div key={i} style={{ display:'flex', justifyContent: bot?'flex-start':'flex-end', alignItems:'flex-end', gap:8 }}>
+              {bot && <Orb kind="chat" size={32} />}
+              <div style={{ maxWidth:'75%', padding:'14px 18px', borderRadius: bot?'20px 20px 20px 6px':'20px 20px 6px 20px', background: bot?'rgba(255,255,255,0.7)':'linear-gradient(135deg, #C4A8F0, #A381DC)', color: bot?'#1A1714':'#fff', fontSize:17, lineHeight:1.45, boxShadow:'0 2px 8px rgba(40,30,20,0.08)', border: bot?'1px solid rgba(0,0,0,0.05)':'none' }}>{m.text}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ padding:'12px 20px 20px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, background:'rgba(255,255,255,0.7)', borderRadius:28, padding:'10px 10px 10px 20px', border:'1px solid rgba(0,0,0,0.07)' }}>
+          <span style={{ flex:1, fontSize:17, color:'rgba(60,50,40,0.4)' }}>Kirjoita tai puhu...</span>
+          <div style={{ width:52, height:52, borderRadius:'50%', background:'linear-gradient(135deg, #D4B8FF, #A381DC)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:22, boxShadow:'0 4px 12px rgba(163,129,220,0.4)' }}>🎙</div>
+        </div>
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="chat" />
+    </div>
+  );
+}
+
+function HelpScreen() {
+  const guides = [
+    { icon:'📱', title:'Miten soitan videolle?', time:'3 min', cat:'Puhelu' },
+    { icon:'📷', title:'Kuinka lähetän kuvan?', time:'4 min', cat:'Kuvat' },
+    { icon:'🔒', title:'Salasanan vaihtaminen', time:'5 min', cat:'Turvallisuus' },
+  ];
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 16px' }}>
+        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714' }}>Ohjeet ja vinkit</div>
+      </div>
+      <div style={{ margin:'0 20px 16px', padding:20, borderRadius:24, background:'linear-gradient(135deg, #FFC4A8, #F18A6E)', boxShadow:'0 8px 24px rgba(241,138,110,0.3)' }}>
+        <div style={{ fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(255,255,255,0.75)', marginBottom:6 }}>Päivän vinkki</div>
+        <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.3 }}>Paina ja pidä kuvaa — saat lisävalinnat</div>
+        <div style={{ fontSize:14, color:'rgba(255,255,255,0.8)', marginTop:5 }}>Toimii kuvagalleriassa ja viesteissä</div>
+      </div>
+      <div style={{ padding:'0 20px', display:'flex', gap:8, marginBottom:16 }}>
+        {['Kaikki','Puhelut','Kuvat','Turva'].map((c,i) => (
+          <div key={c} style={{ padding:'8px 14px', borderRadius:20, fontSize:13, fontWeight: i===0?600:400, background: i===0?'#F18A6E':'rgba(255,255,255,0.6)', color: i===0?'#fff':'rgba(60,50,40,0.7)', border:'1px solid rgba(0,0,0,0.06)' }}>{c}</div>
+        ))}
+      </div>
+      <div style={{ flex:1, padding:'0 20px', display:'flex', flexDirection:'column', gap:10 }}>
+        {guides.map((g,i) => (
+          <div key={i} style={{ padding:'16px 18px', borderRadius:20, display:'flex', alignItems:'center', gap:16, background:'rgba(255,255,255,0.6)', border:'1px solid rgba(0,0,0,0.05)' }}>
+            <div style={{ width:52, height:52, borderRadius:16, background:'linear-gradient(135deg, #FFC4A8, #F18A6E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, flexShrink:0 }}>{g.icon}</div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:17, fontWeight:600, color:'#1A1714' }}>{g.title}</div>
+              <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginTop:2 }}>{g.cat} · {g.time}</div>
+            </div>
+            <div style={{ fontSize:22, color:'rgba(60,50,40,0.3)' }}>›</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="help" />
+    </div>
+  );
+}
+
+function GuideScreen() {
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 12px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <div style={{ fontSize:24, color:'rgba(60,50,40,0.4)' }}>‹</div>
+        <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', fontWeight:500 }}>Vaihe 3 / 5</div>
+        <div style={{ width:24 }} />
+      </div>
+      <div style={{ margin:'0 28px 20px', display:'flex', gap:6 }}>
+        {[1,2,3,4,5].map(i => <div key={i} style={{ flex:1, height:4, borderRadius:2, background: i<=3?'#F18A6E':'rgba(0,0,0,0.1)' }} />)}
+      </div>
+      <div style={{ margin:'0 24px 24px', borderRadius:28, height:210, background:'linear-gradient(135deg, #FFF0E8, #FFD4B8)', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:10 }}>
+        <div style={{ fontSize:72 }}>📱</div>
+        <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)' }}>Napauta tätä kohtaa</div>
+      </div>
+      <div style={{ padding:'0 28px', flex:1 }}>
+        <div style={{ fontSize:12, color:'#F18A6E', fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', marginBottom:8 }}>Vaihe 3</div>
+        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:26, color:'#1A1714', lineHeight:1.3, marginBottom:12 }}>Napauta kameran kuvaketta</div>
+        <div style={{ fontSize:17, color:'rgba(60,50,40,0.65)', lineHeight:1.55 }}>Löydät kameran kuvakkeen oikeasta alakulmasta. Se näyttää pieneltä kameralta.</div>
+      </div>
+      <div style={{ padding:'20px 24px 40px' }}>
+        <div style={{ height:64, borderRadius:22, background:'linear-gradient(135deg, #FFC4A8, #F18A6E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, fontWeight:700, color:'#fff', boxShadow:'0 8px 20px rgba(241,138,110,0.35)' }}>Seuraava →</div>
+      </div>
+    </div>
+  );
+}
+
+function SOSScreen() {
+  return (
+    <div style={{ width:'100%', height:'100%', background:'linear-gradient(170deg, #FFF5E8 0%, #FFE8C8 50%, #FFDAA8 100%)', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 0', display:'flex', justifyContent:'flex-end' }}>
+        <div style={{ padding:'10px 20px', borderRadius:16, background:'rgba(0,0,0,0.08)', fontSize:16, fontWeight:600, color:'#1A1714' }}>Peruuta</div>
+      </div>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 32px', gap:24 }}>
+        <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'center', width:200, height:200 }}>
+          <div style={{ position:'absolute', width:200, height:200, borderRadius:'50%', background:'rgba(240,151,58,0.1)' }} />
+          <div style={{ position:'absolute', width:155, height:155, borderRadius:'50%', background:'rgba(240,151,58,0.16)' }} />
+          <div style={{ position:'absolute', width:110, height:110, borderRadius:'50%', background:'rgba(240,151,58,0.22)' }} />
+          <Orb kind="emer" size={82} halo style={{ zIndex:1 }} />
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714', marginBottom:12 }}>Soitetaan hätänumeroon</div>
+          <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:72, height:72, borderRadius:'50%', background:'rgba(240,151,58,0.15)', border:'3px solid #F0973A', fontFamily:'Instrument Serif, Georgia, serif', fontSize:44, color:'#C86A18', fontWeight:700 }}>3</div>
+          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', marginTop:10 }}>Soitto alkaa automaattisesti</div>
+        </div>
+      </div>
+      <div style={{ padding:'0 20px 40px' }}>
+        <div style={{ fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(60,50,40,0.5)', marginBottom:10, paddingLeft:4 }}>Tai soita läheiselle</div>
+        {[{ name:'Liisa (tytär)', phone:'040 123 4567' },{ name:'Pekka (poika)', phone:'050 765 4321' }].map((c,i) => (
+          <div key={i} style={{ display:'flex', alignItems:'center', gap:14, padding:'14px 18px', borderRadius:20, marginBottom:10, background:'rgba(255,255,255,0.55)', border:'1px solid rgba(0,0,0,0.06)' }}>
+            <div style={{ width:44, height:44, borderRadius:14, background:'linear-gradient(135deg, #FFD88A, #F0973A)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>👤</div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:17, fontWeight:600, color:'#1A1714' }}>{c.name}</div>
+              <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)' }}>{c.phone}</div>
+            </div>
+            <div style={{ width:44, height:44, borderRadius:14, background:'#4CAF50', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20 }}>📞</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Drawer() {
+  const nav = [{ kind:'ai', label:'Apuri' },{ kind:'chat', label:'Juttuseura' },{ kind:'help', label:'Ohjeet' },{ kind:'emer', label:'Hätä' }];
+  return (
+    <>
+      <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.28)', zIndex:20 }} />
+      <div style={{ position:'absolute', top:0, left:0, bottom:0, width:'78%', background:'#f5f3ee', zIndex:30, display:'flex', flexDirection:'column', boxShadow:'4px 0 40px rgba(0,0,0,0.14)' }}>
+        <div style={{ padding:'60px 24px 22px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
+          <div style={{ width:64, height:64, borderRadius:22, background:'linear-gradient(135deg, #8AB8FF, #3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, marginBottom:12 }}>👤</div>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:24, color:'#1A1714' }}>Matti Virtanen</div>
+          <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', marginTop:2 }}>matti.v@email.fi</div>
+        </div>
+        <div style={{ padding:'16px 16px', flex:1 }}>
+          {nav.map(it => (
+            <div key={it.kind} style={{ display:'flex', alignItems:'center', gap:14, padding:'13px 12px', borderRadius:16, marginBottom:4 }}>
+              <Orb kind={it.kind} size={36} />
+              <span style={{ fontSize:18, fontWeight:500, color:'#1A1714' }}>{it.label}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ padding:'16px 20px 36px', borderTop:'1px solid rgba(0,0,0,0.07)' }}>
+          <div style={{ fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(60,50,40,0.45)', marginBottom:12 }}>Tekstin koko</div>
+          <div style={{ display:'flex', gap:8 }}>
+            {['A','A','A'].map((a,i) => (
+              <div key={i} style={{ flex:1, height:44, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', background: i===1?'#3F7FE0':'rgba(0,0,0,0.06)', color: i===1?'#fff':'rgba(60,50,40,0.6)', fontSize:12+i*4, fontWeight: i===1?700:400 }}>{a}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function OrbPalette() {
+  const items = [
+    { kind:'ai', label:'Apuri', sub:'Tekoäly puheella', hex:'#3F7FE0' },
+    { kind:'chat', label:'Juttuseura', sub:'Lämmin keskustelu', hex:'#A381DC' },
+    { kind:'help', label:'Ohjeet', sub:'Vinkit ja opastus', hex:'#F18A6E' },
+    { kind:'emer', label:'Hätä', sub:'Nopea apu', hex:'#F0973A' },
+  ];
+  return (
+    <div style={{ width:PHONE_W, height:520, borderRadius:32, overflow:'hidden', background:'#f0eee9', padding:28, boxShadow:'0 20px 50px rgba(40,30,20,0.12)' }}>
+      <div style={{ fontSize:11, letterSpacing:'.14em', textTransform:'uppercase', color:'rgba(60,50,40,0.5)', marginBottom:20 }}>Signature orbs</div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
+        {items.map(it => (
+          <div key={it.kind} style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            <Orb kind={it.kind} size={80} halo />
+            <div>
+              <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:20 }}>{it.label}</div>
+              <div style={{ fontSize:12, color:'rgba(60,50,40,0.55)', marginTop:2 }}>{it.sub}</div>
+              <div style={{ fontSize:11, color:'rgba(60,50,40,0.4)', fontFamily:'monospace', marginTop:2 }}>{it.hex}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TypePalette() {
+  return (
+    <div style={{ width:PHONE_W, height:520, borderRadius:32, overflow:'hidden', background:'#f0eee9', padding:28, boxShadow:'0 20px 50px rgba(40,30,20,0.12)' }}>
+      <div style={{ fontSize:11, letterSpacing:'.14em', textTransform:'uppercase', color:'rgba(60,50,40,0.5)', marginBottom:16 }}>Typografia</div>
+      <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:42, lineHeight:1, letterSpacing:'-.015em', marginBottom:16 }}>Hyvää <em style={{ color:'rgba(60,50,40,0.6)' }}>iltapäivää</em></div>
+      <div style={{ fontSize:20, fontWeight:600, color:'#1A1714', marginBottom:10 }}>Geist 600 · 20 / Otsikko</div>
+      <div style={{ fontSize:16, color:'rgba(60,50,40,0.7)', lineHeight:1.5, marginBottom:14 }}>Geist 400 · 16 / Leipäteksti — minimi 16px, mieluiten 18–20px senioreille.</div>
+      <div style={{ fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(60,50,40,0.45)', marginBottom:14 }}>Geist 500 · 11 · meta</div>
+      <div style={{ padding:16, borderRadius:16, background:'rgba(255,255,255,0.6)', border:'1px solid rgba(0,0,0,0.07)', fontSize:14 }}>Painikkeet vähintään <b>56 px</b> korkeita, ikonit 22–24 px, hit-target ≥ 44 px.</div>
+    </div>
+  );
+}
+
+function Page({ eyebrow, title, sub, num, total, children }) {
+  return (
+    <div className="page">
+      <div className="page-header">
+        <div>
+          <div className="page-eyebrow">{eyebrow}</div>
+          <div className="page-title">{title}</div>
+          {sub && <div className="page-sub">{sub}</div>}
+        </div>
+        <div className="page-num">{num} / {total}</div>
+      </div>
+      <div className="body">{children}</div>
+    </div>
+  );
+}
+
+function PhoneCaption({ label, children }) {
+  return (
+    <div style={{ display:'flex', flexDirection:'column', alignItems:'center' }}>
+      <div style={{ transform:'scale(0.76)', transformOrigin:'top center', marginBottom:-200 }}>{children}</div>
+      <div className="caption">{label}</div>
+    </div>
+  );
+}
+
+const TOTAL = 8;
+
+function App() {
+  return (
+    <>
+      <div className="page cover" style={{ minHeight:'100vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center' }}>
+        <div style={{ display:'flex', justifyContent:'center', gap:12, marginBottom:36 }}>
+          <Orb kind="ai" size={110} halo />
+          <Orb kind="chat" size={110} halo style={{ marginTop:28 }} />
+          <Orb kind="help" size={110} halo />
+          <Orb kind="emer" size={110} halo style={{ marginTop:28 }} />
+        </div>
+        <div className="cover-display">Seniori<em>Selko</em></div>
+        <div className="cover-sub">Lämmin, moderni ja minimalistinen UI-konsepti senioreille.<br />Ohjeet, hätänappi, tekoälyapuri ja juttuseura — yhdessä paikassa.</div>
+        <div className="cover-meta"><span>UI Design</span><span>·</span><span>Konsepti</span><span>·</span><span>2026</span></div>
+      </div>
+
+      <Page eyebrow="01 — Sisäänkäynti" title="Etusivu ja lukitus" sub="Etusivu on lämmin tervehdys ja neljä isoa orb-tilea pääsuunille. Lukitusnäyttö on hiljainen ja muistuttaa läheisistä." num="01" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Etusivu — 2×2 orb-grid"><Phone><HomeScreen /></Phone></PhoneCaption>
+          <PhoneCaption label="Lukitus — aamutervehdys"><Phone><LockScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      <Page eyebrow="02 — Tekoälyapuri" title="Apuri kuuntelee ja vastaa" sub="Iso siniaalto-orb pulssaa puhuessa. Käyttäjä puhuu suomea aivan tavallisesti — ei valikoita, ei painikkeita." num="02" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Apuri — puhetila"><Phone><AIScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      <Page eyebrow="03 — Juttuseura" title="Pieni juttuhetki, lämmin botti" sub="Lila orb personoi keskustelukumppanin Onnin. Isot kuplat, iso fontti, mikki aina käden ulottuvilla." num="03" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Juttuseura — chat-näkymä"><Phone><ChatScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      <Page eyebrow="04 — Ohjeet ja vinkit" title="Selkeitä, kuvitettuja ohjeita" sub="Päivän vinkki, kategoriat ja kirjasto. Yksittäinen ohje kulkee vaihe vaiheelta — kuva, lyhyt teksti, iso seuraava-nappi." num="04" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Ohjeet — kirjasto"><Phone><HelpScreen /></Phone></PhoneCaption>
+          <PhoneCaption label="Ohjeen vaihe 3 / 5"><Phone><GuideScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      <Page eyebrow="05 — Hätätila" title="Lämmin amber, ei räikeä punainen" sub="Soitto käynnistyy automaattisesti viidessä sekunnissa. Pulssirenkaat, iso countdown ja peruuta-nappi kärjessä." num="05" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Hätä — soitto käynnistyy"><Phone><SOSScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      <Page eyebrow="06 — Navigaatio" title="Sivuvalikko ja alarivin orb-dock" sub="Drawer paljastaa profiilin, kaikki näkymät ja saavutettavuusasetukset. Alarivin lasi-dock vaihtaa päänäkymää yhdellä painalluksella." num="06" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Sivuvalikko avoinna">
+            <div style={{ width:PHONE_W, height:PHONE_H, position:'relative', overflow:'hidden', borderRadius:52, boxShadow:'0 32px 80px rgba(40,30,20,0.18)' }}>
+              <HomeScreen />
+              <Drawer />
+            </div>
+          </PhoneCaption>
+        </div>
+      </Page>
+
+      <Page eyebrow="07 — Designjärjestelmä" title="Värit, orbit ja typografia" sub="Jokaisella toiminnolla oma signature-orb. Sumeat radial-gradientit, lämmin off-white tausta. Instrument Serif otsikoissa." num="07" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Orb-paletti"><OrbPalette /></PhoneCaption>
+          <PhoneCaption label="Typografia"><TypePalette /></PhoneCaption>
+        </div>
+      </Page>
+
+      <Page eyebrow="Loppu" title="SenioriSelko — UI-konsepti" sub="UI-design ja interaktiomallit. Toteutus, tekoälymalli ja äänitunnistus määritellään erikseen." num="08" total={TOTAL}>
+        <div className="phones-row" style={{ gap:32 }}>
+          <Orb kind="ai" size={150} halo />
+          <Orb kind="chat" size={150} halo />
+          <Orb kind="help" size={150} halo />
+          <Orb kind="emer" size={150} halo />
+        </div>
+      </Page>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
