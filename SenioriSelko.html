@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8" />
+<title>SenioriSelko — UI Design (Print)</title>
+<meta name="viewport" content="width=1600, initial-scale=1" />
+<link rel="stylesheet" href="styles.css" />
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 1cm;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #f0eee9;
+    font-family: 'Geist', system-ui, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .page {
+    width: 100%;
+    min-height: calc(100vh - 0px);
+    padding: 36px 48px;
+    box-sizing: border-box;
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    display: flex;
+    flex-direction: column;
+    background: #f0eee9;
+  }
+  .page:last-child { page-break-after: auto; break-after: auto; }
+
+  .page-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding-bottom: 14px;
+  }
+  .page-eyebrow {
+    font-family: 'Geist', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(60,50,40,0.7);
+    font-weight: 500;
+  }
+  .page-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: #1A1714;
+    margin: 6px 0 4px;
+  }
+  .page-sub {
+    font-family: 'Geist', sans-serif;
+    font-size: 13px;
+    color: rgba(60,50,40,0.7);
+    max-width: 600px;
+  }
+  .page-num {
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    color: rgba(60,50,40,0.55);
+    letter-spacing: 0.08em;
+  }
+
+  .body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+  }
+
+  .phones-row {
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .caption {
+    font-family: 'Geist', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(60,50,40,0.6);
+    margin-top: 14px;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* COVER */
+  .cover {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .cover-orbs {
+    display: flex;
+    gap: -10px;
+    justify-content: center;
+    margin-bottom: 36px;
+    position: relative;
+  }
+  .cover-display {
+    font-family: 'Instrument Serif', serif;
+    font-size: 96px;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: #1A1714;
+    margin-bottom: 18px;
+  }
+  .cover-display em { color: #5A544D; }
+  .cover-sub {
+    font-family: 'Geist', sans-serif;
+    font-size: 18px;
+    color: rgba(60,50,40,0.7);
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+  .cover-meta {
+    margin-top: 48px;
+    display: flex;
+    gap: 36px;
+    justify-content: center;
+    font-family: 'Geist', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(60,50,40,0.55);
+  }
+
+  /* Disable any animations in print */
+  @media print {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+
+  /* Override design-canvas overflow on cards if any leak */
+  .ss-screen { overflow: hidden; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" src="components.jsx"></script>
+<script type="text/babel" src="screens-home.jsx"></script>
+<script type="text/babel" src="screens-ai-chat.jsx"></script>
+<script type="text/babel" src="screens-help-sos.jsx"></script>
+<script type="text/babel" src="screens-extra.jsx"></script>
+
+<script type="text/babel">
+function Page({ eyebrow, title, sub, num, total, children, cover = false }) {
+  return (
+    <div className={`page ${cover ? 'cover' : ''}`}>
+      {!cover && (
+        <div className="page-header">
+          <div>
+            <div className="page-eyebrow">{eyebrow}</div>
+            <div className="page-title">{title}</div>
+            {sub && <div className="page-sub">{sub}</div>}
+          </div>
+          <div className="page-num">{num} / {total}</div>
+        </div>
+      )}
+      <div className="body">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function PhoneCaption({ label, children }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ transform: 'scale(0.78)', transformOrigin: 'top center', marginBottom: -160 }}>
+        {children}
+      </div>
+      <div className="caption">{label}</div>
+    </div>
+  );
+}
+
+function DrawerStatic() {
+  return (
+    <div style={{ width: PHONE_W, height: PHONE_H, position: 'relative', overflow: 'hidden' }}>
+      <HomeScreen />
+      <Drawer open={true} onClose={() => {}} onNavigate={() => {}} />
+    </div>
+  );
+}
+
+const TOTAL = 8;
+
+function App() {
+  return (
+    <>
+      {/* 1. COVER */}
+      <div className="page cover">
+        <div className="cover-orbs">
+          <Orb kind="ai" size={130} halo={true} style={{ marginRight: -22 }} />
+          <Orb kind="chat" size={130} halo={true} style={{ marginRight: -22, marginTop: 30 }} />
+          <Orb kind="help" size={130} halo={true} style={{ marginRight: -22 }} />
+          <Orb kind="emer" size={130} halo={true} style={{ marginTop: 30 }} />
+        </div>
+        <div className="cover-display">
+          Seniori<em>Selko</em>
+        </div>
+        <div className="cover-sub">
+          Lämmin, moderni ja minimalistinen UI-konsepti senioreille.
+          Ohjeet, hätänappi, tekoäly­apuri ja juttuseura — yhdessä paikassa.
+        </div>
+        <div className="cover-meta">
+          <span>UI Design</span>
+          <span>·</span>
+          <span>Konsepti</span>
+          <span>·</span>
+          <span>2026</span>
+        </div>
+      </div>
+
+      {/* 2. Etusivu + Lukitus */}
+      <Page eyebrow="01 — Sisäänkäynti" title="Etusivu ja lukitus"
+            sub="Etusivu on lämmin tervehdys ja neljä isoa orb-tilea pääsuunille. Lukitusnäyttö on hiljainen ja muistuttaa läheisistä."
+            num="01" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Etusivu — 2×2 orb-grid"><Phone><HomeScreen /></Phone></PhoneCaption>
+          <PhoneCaption label="Lukitus — aamutervehdys"><Phone><LockScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      {/* 3. Apuri (AI) */}
+      <Page eyebrow="02 — Tekoäly­apuri" title="Apuri kuuntelee ja vastaa"
+            sub="Iso siniaalto-orb pulssaa puhuessa. Käyttäjä puhuu suomea aivan tavallisesti — ei valikoita, ei painikkeita."
+            num="02" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Apuri — puhetila"><Phone><AIScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      {/* 4. Juttuseura */}
+      <Page eyebrow="03 — Juttuseura" title="Pieni juttuhetki, lämmin botti"
+            sub="Lila orb personoi keskustelukumppanin Onnin. Isot kuplat, iso fontti, mikki aina käden ulottuvilla."
+            num="03" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Juttuseura — chat-näkymä"><Phone><ChatScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      {/* 5. Ohjeet + Ohjeen vaihe */}
+      <Page eyebrow="04 — Ohjeet ja vinkit" title="Selkeitä, kuvitettuja ohjeita"
+            sub="Päivän vinkki, kategoriat ja kirjasto. Yksittäinen ohje kulkee vaihe vaiheelta — kuva, lyhyt teksti, iso seuraava-nappi."
+            num="04" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Ohjeet — kirjasto"><Phone><HelpScreen /></Phone></PhoneCaption>
+          <PhoneCaption label="Ohjeen vaihe 3 / 5"><Phone><GuideScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      {/* 6. Hätä */}
+      <Page eyebrow="05 — Hätätila" title="Lämmin amber, ei räikeä punainen"
+            sub="Soitto käynnistyy automaattisesti viidessä sekunnissa. Pulssirenkaat, iso countdown ja peruuta-nappi kärjessä. Vaihtoehtoiset yhteyshenkilöt alla."
+            num="05" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Hätä — soitto käynnistyy"><Phone><SOSScreen /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      {/* 7. Drawer */}
+      <Page eyebrow="06 — Navigaatio" title="Sivuvalikko ja alarivin orb-dock"
+            sub="Drawer paljastaa profiilin, kaikki näkymät ja saavutettavuus­asetukset (tekstin koko). Alarivin pyöreä lasi-dock vaihtaa päänäkymää yhdellä painalluksella."
+            num="06" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Sivuvalikko avoinna"><Phone><DrawerStatic /></Phone></PhoneCaption>
+        </div>
+      </Page>
+
+      {/* 8. Design system */}
+      <Page eyebrow="07 — Designjärjestelmä" title="Värit, orbit ja typografia"
+            sub="Jokaisella toiminnolla oma signature-orb. Sumeat radial-gradientit, lämmin off-white tausta. Instrument Serif otsikoissa, Geist leipätekstissä."
+            num="07" total={TOTAL}>
+        <div className="phones-row">
+          <PhoneCaption label="Orb-paletti">
+            <div style={{ width: PHONE_W, height: 520, borderRadius: 32, overflow: 'hidden', boxShadow: '0 20px 50px rgba(40,30,20,0.12)' }}>
+              <OrbPalette />
+            </div>
+          </PhoneCaption>
+          <PhoneCaption label="Typografia">
+            <div style={{ width: PHONE_W, height: 520, borderRadius: 32, overflow: 'hidden', boxShadow: '0 20px 50px rgba(40,30,20,0.12)' }}>
+              <TypePalette />
+            </div>
+          </PhoneCaption>
+        </div>
+      </Page>
+
+      {/* 9. Closing */}
+      <Page eyebrow="Loppu" title="SenioriSelko — UI-konsepti"
+            sub="UI-design ja interaktiomallit. Toteutus, tekoälymalli ja äänitunnistus määritellään erikseen."
+            num="08" total={TOTAL}>
+        <div className="phones-row" style={{ gap: 24 }}>
+          <Orb kind="ai" size={150} halo={true} />
+          <Orb kind="chat" size={150} halo={true} />
+          <Orb kind="help" size={150} halo={true} />
+          <Orb kind="emer" size={150} halo={true} />
+        </div>
+      </Page>
+    </>
+  );
+}
+
+function OrbPalette() {
+  const items = [
+    { kind: 'ai', label: 'Apuri', sub: 'Tekoäly puheella', hex: '#3F7FE0' },
+    { kind: 'chat', label: 'Juttuseura', sub: 'Lämmin keskustelu', hex: '#A381DC' },
+    { kind: 'help', label: 'Ohjeet', sub: 'Vinkit ja opastus', hex: '#F18A6E' },
+    { kind: 'emer', label: 'Hätä', sub: 'Nopea apu', hex: '#F0973A' },
+  ];
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'var(--bg)', padding: 32, display: 'flex', flexDirection: 'column', gap: 18, fontFamily: 'Geist, sans-serif' }}>
+      <div className="ss-eyebrow">Signature orbs</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18 }}>
+        {items.map(it => (
+          <div key={it.kind} style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+            <Orb kind={it.kind} size={90} halo={true} />
+            <div>
+              <div style={{ fontFamily: 'Instrument Serif, serif', fontSize: 22, lineHeight: 1 }}>{it.label}</div>
+              <div className="ss-tiny" style={{ marginTop: 4 }}>{it.sub}</div>
+              <div className="ss-tiny" style={{ marginTop: 2, fontFamily: 'monospace' }}>{it.hex}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TypePalette() {
+  return (
+    <div style={{ width: '100%', height: '100%', background: 'var(--bg)', padding: 32, display: 'flex', flexDirection: 'column', gap: 16, fontFamily: 'Geist, sans-serif' }}>
+      <div className="ss-eyebrow">Typografia</div>
+      <div style={{ fontFamily: 'Instrument Serif, serif', fontSize: 48, lineHeight: 1, letterSpacing: '-0.015em' }}>
+        Hyvää <em style={{ color: 'var(--ink-2)' }}>iltapäivää</em>
+      </div>
+      <div style={{ fontSize: 22, fontWeight: 600, color: 'var(--ink)' }}>Geist 600 · 24 / Otsikko</div>
+      <div style={{ fontSize: 17, color: 'var(--ink-2)', lineHeight: 1.45, maxWidth: 320 }}>
+        Geist 400 · 18 / Leipäteksti — minimi 16px, mieluiten 18-20px senioreille.
+      </div>
+      <div className="ss-tiny">Geist 500 · 13 · spaced caps · meta</div>
+      <div style={{ marginTop: 8, padding: 16, borderRadius: 18, background: 'var(--bg-card)', border: '1px solid var(--hairline)', fontSize: 16 }}>
+        Painikkeet vähintään <b>56 px</b> korkeita, ikonit 22-24 px, hit-target ≥ 44 px.
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+// Auto-print after fonts + rendering settle
+(async () => {
+  try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+  await new Promise(r => setTimeout(r, 1200));
+  window.print();
+})();
+</script>
+</body>
+</html>
