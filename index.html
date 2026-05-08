@@ -51,44 +51,36 @@ html, body {
   .safe-top { display: block !important; height: env(safe-area-inset-top, 0px); }
   .safe-bot { height: calc(90px + env(safe-area-inset-bottom, 0px)) !important; }
   .dock-inner { padding-bottom: env(safe-area-inset-bottom, 0px) !important; }
+  .dock-spacer { height: calc(90px + env(safe-area-inset-bottom, 0px)); }
+  .drawer-header { padding-top: max(60px, calc(env(safe-area-inset-top, 0px) + 20px)) !important; }
 }
 .safe-top { display: none; }
+.dock-spacer { height: 90px; }
 .screen-enter { animation: fadeIn 0.22s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .drawer-enter { animation: slideIn 0.24s cubic-bezier(0.32,0,0.2,1) both; }
 @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 </style>
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect, useCallback } = React;
-
 const PHONE_W = 390;
 const PHONE_H = 844;
-
 const ORB = {
   ai:   { c1:'#8AB8FF', c2:'#3F7FE0', c3:'#1A4FA8', s:'rgba(63,127,224,0.28)' },
   chat: { c1:'#D4B8FF', c2:'#A381DC', c3:'#6B4FB8', s:'rgba(163,129,220,0.28)' },
   help: { c1:'#FFC4A8', c2:'#F18A6E', c3:'#C85A38', s:'rgba(241,138,110,0.28)' },
   emer: { c1:'#FFD88A', c2:'#F0973A', c3:'#C86A18', s:'rgba(240,151,58,0.28)' },
 };
-
 function Orb({ kind, size=80, halo=false, style={} }) {
   const c = ORB[kind];
-  return <div style={{
-    width:size, height:size, borderRadius:'50%', flexShrink:0,
-    background:`radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2} 52%, ${c.c3})`,
-    boxShadow: halo
-      ? `0 0 ${size*.35}px ${size*.12}px ${c.s}, 0 ${size*.08}px ${size*.22}px rgba(0,0,0,0.13)`
-      : `0 ${size*.05}px ${size*.14}px rgba(0,0,0,0.11)`,
-    ...style,
-  }} />;
+  return <div style={{ width:size, height:size, borderRadius:'50%', flexShrink:0, background:`radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2} 52%, ${c.c3})`, boxShadow: halo ? `0 0 ${size*.35}px ${size*.12}px ${c.s}, 0 ${size*.08}px ${size*.22}px rgba(0,0,0,0.13)` : `0 ${size*.05}px ${size*.14}px rgba(0,0,0,0.11)`, ...style }} />;
 }
-
 function StatusBar({ light=false }) {
   const col = light ? 'rgba(255,255,255,0.9)' : '#1A1714';
   return (
@@ -109,7 +101,6 @@ function StatusBar({ light=false }) {
     </>
   );
 }
-
 function BottomDock({ active, navigate }) {
   const items = [
     { kind:'ai', label:'Apuri', screen:'ai' },
@@ -135,11 +126,9 @@ function BottomDock({ active, navigate }) {
     </div>
   );
 }
-
 function Island() {
   return <div className="mock-island" style={{ position:'absolute', top:12, left:'50%', transform:'translateX(-50%)', width:120, height:34, borderRadius:20, background:'#000', zIndex:100, pointerEvents:'none' }} />;
 }
-
 function Drawer({ onClose, navigate, fontSize, setFontSize }) {
   const nav = [
     { kind:'ai', label:'Apuri', screen:'ai' },
@@ -152,7 +141,7 @@ function Drawer({ onClose, navigate, fontSize, setFontSize }) {
     <>
       <div onClick={onClose} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.28)', zIndex:20 }} />
       <div className="drawer-enter" style={{ position:'absolute', top:0, left:0, bottom:0, width:'78%', background:'#f5f3ee', zIndex:30, display:'flex', flexDirection:'column', boxShadow:'4px 0 40px rgba(0,0,0,0.14)' }}>
-        <div style={{ padding:'60px 24px 22px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
+        <div className="drawer-header" style={{ padding:'60px 24px 22px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
           <div style={{ width:64, height:64, borderRadius:22, background:'linear-gradient(135deg,#8AB8FF,#3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, marginBottom:12 }}>👤</div>
           <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:24, color:'#1A1714' }}>Matti Virtanen</div>
           <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', marginTop:2 }}>matti.v@email.fi</div>
@@ -177,7 +166,6 @@ function Drawer({ onClose, navigate, fontSize, setFontSize }) {
     </>
   );
 }
-
 function HomeScreen({ navigate, openDrawer }) {
   const tiles = [
     { kind:'ai', label:'Apuri', sub:'Kysy mitä vaan', screen:'ai' },
@@ -191,15 +179,13 @@ function HomeScreen({ navigate, openDrawer }) {
       <div style={{ padding:'8px 28px 18px', display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
         <div>
           <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginBottom:3 }}>Tiistai, 5. toukokuuta</div>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:30, color:'#1A1714', lineHeight:1.15 }}>
-            Hyvää iltapäivää,<br /><em>Matti</em>
-          </div>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:30, color:'#1A1714', lineHeight:1.15 }}>Hyvää iltapäivää,<br /><em>Matti</em></div>
         </div>
         <button onClick={openDrawer} style={{ marginTop:4, width:44, height:44, borderRadius:14, background:'linear-gradient(135deg,#8AB8FF,#3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(63,127,224,0.3)', flexShrink:0 }}>👤</button>
       </div>
       <div style={{ flex:1, padding:'0 20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
         {tiles.map(t => (
-          <button key={t.kind} onClick={() => navigate(t.screen)} style={{ borderRadius:28, padding:'22px 20px', background:'rgba(255,255,255,0.65)', border:'1px solid rgba(0,0,0,0.06)', boxShadow:'0 2px 12px rgba(40,30,20,0.07)', display:'flex', flexDirection:'column', gap:12, cursor:'pointer', textAlign:'left', transition:'transform .12s, box-shadow .12s' }}
+          <button key={t.kind} onClick={() => navigate(t.screen)} style={{ borderRadius:28, padding:'22px 20px', background:'rgba(255,255,255,0.65)', border:'1px solid rgba(0,0,0,0.06)', boxShadow:'0 2px 12px rgba(40,30,20,0.07)', display:'flex', flexDirection:'column', gap:12, cursor:'pointer', textAlign:'left', transition:'transform .12s' }}
             onMouseDown={e => e.currentTarget.style.transform='scale(0.97)'}
             onMouseUp={e => e.currentTarget.style.transform=''}
             onMouseLeave={e => e.currentTarget.style.transform=''}
@@ -213,12 +199,11 @@ function HomeScreen({ navigate, openDrawer }) {
           </button>
         ))}
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="home" navigate={navigate} />
     </div>
   );
 }
-
 function LockScreen({ navigate }) {
   return (
     <div style={{ width:'100%', height:'100%', background:'linear-gradient(160deg,#2A2420 0%,#1A1714 60%,#2E2418 100%)', display:'flex', flexDirection:'column' }}>
@@ -246,7 +231,6 @@ function LockScreen({ navigate }) {
     </div>
   );
 }
-
 function AIScreen({ navigate }) {
   const [listening, setListening] = useState(true);
   const waves = [.4,.7,1,.8,.5,.9,.6,1,.7,.4,.8,.5];
@@ -268,17 +252,11 @@ function AIScreen({ navigate }) {
           <Orb kind="ai" size={108} halo style={{ position:'relative', zIndex:1 }} />
         </div>
         <div style={{ textAlign:'center' }}>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714', marginBottom:8 }}>
-            {listening ? 'Kuuntelen...' : 'Hetki...'}
-          </div>
-          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', lineHeight:1.5, maxWidth:280 }}>
-            Puhu rauhallisesti. Vastaan heti kun olet valmis.
-          </div>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714', marginBottom:8 }}>{listening ? 'Kuuntelen...' : 'Hetki...'}</div>
+          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', lineHeight:1.5, maxWidth:280 }}>Puhu rauhallisesti. Vastaan heti kun olet valmis.</div>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:5, height:44 }}>
-          {waves.map((h,i) => (
-            <div key={i} style={{ width:4, height:44*h, borderRadius:2, background:`rgba(63,127,224,${.3+h*.55})`, transition:'height .3s' }} />
-          ))}
+          {waves.map((h,i) => <div key={i} style={{ width:4, height:44*h, borderRadius:2, background:`rgba(63,127,224,${.3+h*.55})`, transition:'height .3s' }} />)}
         </div>
       </div>
       <div style={{ padding:'20px 32px 24px', display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
@@ -289,12 +267,11 @@ function AIScreen({ navigate }) {
           onTouchEnd={e => e.currentTarget.style.transform=''}>🎙</button>
         <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)' }}>Napauta lopettaaksesi</div>
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="ai" navigate={navigate} />
     </div>
   );
 }
-
 function ChatScreen({ navigate }) {
   const [msgs, setMsgs] = useState([
     { from:'bot', text:'Hei Matti! Mukava jutella taas. Miten päiväsi on mennyt? 😊' },
@@ -302,7 +279,6 @@ function ChatScreen({ navigate }) {
     { from:'bot', text:'Kuulostaa ihanalta! Mitä siellä puuhailit?' },
   ]);
   const [input, setInput] = useState('');
-
   const send = () => {
     const t = input.trim();
     if (!t) return;
@@ -310,7 +286,6 @@ function ChatScreen({ navigate }) {
     setInput('');
     setTimeout(() => setMsgs(m => [...m, { from:'bot', text:'Kuulostaapa hyvältä! Kerro lisää 😊' }]), 800);
   };
-
   return (
     <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
       <StatusBar />
@@ -331,9 +306,7 @@ function ChatScreen({ navigate }) {
           return (
             <div key={i} style={{ display:'flex', justifyContent:bot?'flex-start':'flex-end', alignItems:'flex-end', gap:8 }}>
               {bot && <Orb kind="chat" size={30} style={{ flexShrink:0 }} />}
-              <div style={{ maxWidth:'76%', padding:'13px 17px', borderRadius:bot?'20px 20px 20px 6px':'20px 20px 6px 20px', background:bot?'rgba(255,255,255,0.75)':'linear-gradient(135deg,#C4A8F0,#A381DC)', color:bot?'#1A1714':'#fff', fontSize:17, lineHeight:1.45, boxShadow:'0 2px 8px rgba(40,30,20,0.07)', border:bot?'1px solid rgba(0,0,0,0.05)':'none' }}>
-                {m.text}
-              </div>
+              <div style={{ maxWidth:'76%', padding:'13px 17px', borderRadius:bot?'20px 20px 20px 6px':'20px 20px 6px 20px', background:bot?'rgba(255,255,255,0.75)':'linear-gradient(135deg,#C4A8F0,#A381DC)', color:bot?'#1A1714':'#fff', fontSize:17, lineHeight:1.45, boxShadow:'0 2px 8px rgba(40,30,20,0.07)', border:bot?'1px solid rgba(0,0,0,0.05)':'none' }}>{m.text}</div>
             </div>
           );
         })}
@@ -344,12 +317,11 @@ function ChatScreen({ navigate }) {
           <button onClick={send} style={{ width:50, height:50, borderRadius:'50%', background:'linear-gradient(135deg,#D4B8FF,#A381DC)', border:'none', cursor:'pointer', fontSize:22, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(163,129,220,0.4)' }}>🎙</button>
         </div>
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="chat" navigate={navigate} />
     </div>
   );
 }
-
 function HelpScreen({ navigate }) {
   const guides = [
     { icon:'📱', title:'Miten soitan videolle?', time:'3 min', cat:'Puhelu' },
@@ -385,12 +357,11 @@ function HelpScreen({ navigate }) {
           </button>
         ))}
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="help" navigate={navigate} />
     </div>
   );
 }
-
 const GUIDE_STEPS = [
   { img:'📱', title:'Avaa kameraohjelma', body:'Etsi puhelimesi etusivulta kameran kuvake. Se näyttää pieneltä kameralta.' },
   { img:'👆', title:'Napauta kameran kuvaketta', body:'Paina kamerakuvaketta kerran. Ohjelma avautuu muutamassa sekunnissa.' },
@@ -398,7 +369,6 @@ const GUIDE_STEPS = [
   { img:'😊', title:'Katso kameraan', body:'Katso suoraan puhelimen etukameraan ja hymyile. Olet valmis!' },
   { img:'📸', title:'Ota kuva', body:'Paina isoa pyöreää nappia ruudun alareunassa. Kuva on otettu!' },
 ];
-
 function GuideScreen({ navigate }) {
   const [step, setStep] = useState(0);
   const s = GUIDE_STEPS[step];
@@ -413,7 +383,7 @@ function GuideScreen({ navigate }) {
       <div style={{ margin:'0 28px 20px', display:'flex', gap:6 }}>
         {GUIDE_STEPS.map((_,i) => <div key={i} style={{ flex:1, height:4, borderRadius:2, background:i<=step?'#F18A6E':'rgba(0,0,0,0.1)', transition:'background .25s' }} />)}
       </div>
-      <div key={step} className="screen-enter" style={{ margin:'0 24px 22px', borderRadius:28, height:210, background:'linear-gradient(135deg,#FFF0E8,#FFD4B8)', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:10 }}>
+      <div key={step} className="screen-enter" style={{ margin:'0 24px 22px', borderRadius:28, height:210, background:'linear-gradient(135deg,#FFF0E8,#FFD4B8)', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ fontSize:76 }}>{s.img}</div>
       </div>
       <div key={step+'t'} className="screen-enter" style={{ padding:'0 28px', flex:1 }}>
@@ -431,28 +401,22 @@ function GuideScreen({ navigate }) {
             Seuraava →
           </button>
         ) : (
-          <button onClick={() => { setStep(0); navigate('help'); }} style={{ width:'100%', height:64, borderRadius:22, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', border:'none', cursor:'pointer', fontSize:20, fontWeight:700, color:'#fff', boxShadow:'0 8px 20px rgba(241,138,110,0.35)' }}>
-            Valmis ✓
-          </button>
+          <button onClick={() => { setStep(0); navigate('help'); }} style={{ width:'100%', height:64, borderRadius:22, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', border:'none', cursor:'pointer', fontSize:20, fontWeight:700, color:'#fff', boxShadow:'0 8px 20px rgba(241,138,110,0.35)' }}>Valmis ✓</button>
         )}
       </div>
     </div>
   );
 }
-
 function SOSScreen({ navigate }) {
   const [count, setCount] = useState(5);
   const [called, setCalled] = useState(false);
-
   useEffect(() => {
     if (called) return;
     if (count <= 0) { setCalled(true); return; }
     const t = setTimeout(() => setCount(c => c-1), 1000);
     return () => clearTimeout(t);
   }, [count, called]);
-
   const cancel = () => { setCount(5); setCalled(false); navigate('home'); };
-
   return (
     <div style={{ width:'100%', height:'100%', background:'linear-gradient(170deg,#FFF5E8 0%,#FFE8C8 50%,#FFDAA8 100%)', display:'flex', flexDirection:'column' }}>
       <StatusBar />
@@ -467,16 +431,10 @@ function SOSScreen({ navigate }) {
           <Orb kind="emer" size={82} halo style={{ zIndex:1 }} />
         </div>
         <div style={{ textAlign:'center' }}>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:26, color:'#1A1714', marginBottom:12 }}>
-            {called ? 'Soitetaan...' : 'Soitetaan hätänumeroon'}
-          </div>
-          {!called && (
-            <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:72, height:72, borderRadius:'50%', background:'rgba(240,151,58,0.15)', border:'3px solid #F0973A', fontFamily:'Instrument Serif, Georgia, serif', fontSize:44, color:'#C86A18', fontWeight:700, transition:'all .3s' }}>{count}</div>
-          )}
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:26, color:'#1A1714', marginBottom:12 }}>{called ? 'Soitetaan...' : 'Soitetaan hätänumeroon'}</div>
+          {!called && <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:72, height:72, borderRadius:'50%', background:'rgba(240,151,58,0.15)', border:'3px solid #F0973A', fontFamily:'Instrument Serif, Georgia, serif', fontSize:44, color:'#C86A18', fontWeight:700, transition:'all .3s' }}>{count}</div>}
           {called && <div style={{ fontSize:60 }}>📞</div>}
-          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', marginTop:10 }}>
-            {called ? 'Yhteys muodostettu' : 'Soitto alkaa automaattisesti'}
-          </div>
+          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', marginTop:10 }}>{called ? 'Yhteys muodostettu' : 'Soitto alkaa automaattisesti'}</div>
         </div>
       </div>
       <div style={{ padding:'0 20px 36px' }}>
@@ -495,21 +453,14 @@ function SOSScreen({ navigate }) {
     </div>
   );
 }
-
 function App() {
   const [screen, setScreen] = useState('lock');
   const [prevScreen, setPrev] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [fontSize, setFontSize] = useState(18);
-
-  const navigate = useCallback((s) => {
-    setPrev(screen);
-    setScreen(s);
-  }, [screen]);
-
+  const navigate = useCallback((s) => { setPrev(screen); setScreen(s); }, [screen]);
   const openDrawer = useCallback(() => setDrawerOpen(true), []);
   const closeDrawer = useCallback(() => setDrawerOpen(false), []);
-
   const screenMap = {
     lock:  <LockScreen navigate={navigate} />,
     home:  <HomeScreen navigate={navigate} openDrawer={openDrawer} />,
@@ -519,7 +470,6 @@ function App() {
     guide: <GuideScreen navigate={navigate} />,
     sos:   <SOSScreen navigate={navigate} />,
   };
-
   return (
     <div className="phone-wrap" style={{ fontSize }}>
       <Island />
@@ -534,7 +484,6 @@ function App() {
     </div>
   );
 }
-
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 <script>
