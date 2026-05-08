@@ -161,9 +161,10 @@ input      { touch-action: manipulation; }
   z-index: 40;
 }
 .ss-dock-item {
-  width: 56px; height: 56px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  height: auto; min-width: 52px;
+  border-radius: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; padding: 6px 8px 5px;
   background: transparent; border: none; cursor: pointer;
 }
 
@@ -272,6 +273,29 @@ input      { touch-action: manipulation; }
 
 /* ── Typing dots reuse ss-bar ── */
 .typing-dot { width:8px; height:8px; border-radius:50%; background:var(--ink-3); display:inline-block; animation: ss-bar 1s ease-in-out infinite; }
+
+/* ── Floating orb animations (staggered paths) ── */
+@keyframes ss-float-a { 0%,100%{transform:translateY(0px) rotate(0deg)} 33%{transform:translateY(-9px) rotate(1.2deg)} 66%{transform:translateY(-4px) rotate(-0.4deg)} }
+@keyframes ss-float-b { 0%,100%{transform:translateY(-3px) rotate(-0.6deg)} 45%{transform:translateY(-11px) rotate(0.8deg)} 80%{transform:translateY(-5px) rotate(-0.2deg)} }
+@keyframes ss-float-c { 0%,100%{transform:translateY(-5px) rotate(0.4deg)} 40%{transform:translateY(0px) rotate(-1deg)} 80%{transform:translateY(-8px) rotate(0.2deg)} }
+@keyframes ss-float-d { 0%,100%{transform:translateY(0px) rotate(1deg)} 55%{transform:translateY(-7px) rotate(-0.6deg)} 85%{transform:translateY(-2px) rotate(0.3deg)} }
+.ss-float-a { animation: ss-float-a 5.2s ease-in-out infinite; }
+.ss-float-b { animation: ss-float-b 6.8s ease-in-out infinite; }
+.ss-float-c { animation: ss-float-c 5.8s ease-in-out infinite; }
+.ss-float-d { animation: ss-float-d 7.4s ease-in-out infinite; }
+
+/* ── Organic blob morph ── */
+@keyframes ss-morph {
+  0%,100%{ border-radius:50%; }
+  25%    { border-radius:48% 52% 55% 45% / 45% 55% 48% 52%; }
+  50%    { border-radius:52% 48% 45% 55% / 55% 45% 52% 48%; }
+  75%    { border-radius:45% 55% 52% 48% / 52% 48% 45% 55%; }
+}
+.ss-morph { animation: ss-morph 9s ease-in-out infinite; }
+
+/* ── Drawer slide in from left ── */
+@keyframes ss-slide-left { from{transform:translateX(-108%)} to{transform:translateX(0)} }
+.ss-slide-left { animation: ss-slide-left 0.3s cubic-bezier(0.32,0.72,0,1) both; }
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
@@ -296,7 +320,7 @@ const ORB_GRADS = {
 /* ─────────────────────────────────────────────────────────────
    ORB COMPONENT
 ───────────────────────────────────────────────────────────── */
-function Orb({ kind = 'soft', size = 96, halo = true, pulse = false, style = {} }) {
+function Orb({ kind = 'soft', size = 96, halo = true, pulse = false, orbClass = '', style = {} }) {
   const grad = ORB_GRADS[kind] || ORB_GRADS.soft;
   return (
     <div style={{ position: 'relative', width: size, height: size, flexShrink: 0, ...style }}>
@@ -308,7 +332,7 @@ function Orb({ kind = 'soft', size = 96, halo = true, pulse = false, style = {} 
         }} />
       )}
       <div
-        className={`ss-orb${pulse ? ' ss-pulse' : ''}`}
+        className={`ss-orb${pulse ? ' ss-pulse' : ''}${orbClass ? ' ' + orbClass : ''}`}
         style={{ width: size, height: size, background: grad, position: 'relative', zIndex: 1 }}
       />
     </div>
@@ -402,7 +426,7 @@ function Dock({ active = 'home', onChange }) {
   const items = [
     { key: 'home', icon: Icon.home, kind: 'soft', label: 'Etusivu' },
     { key: 'ai',   icon: Icon.mic,  kind: 'ai',   label: 'Apuri' },
-    { key: 'chat', icon: Icon.chat, kind: 'chat', label: 'Juttuseura' },
+    { key: 'chat', icon: Icon.chat, kind: 'chat', label: 'Juttu' },
     { key: 'book', icon: Icon.book, kind: 'help', label: 'Ohjeet' },
   ];
   return (
@@ -424,13 +448,18 @@ function Dock({ active = 'home', onChange }) {
               </div>
             ) : (
               <div style={{
-                color: 'var(--ink-2)',
+                color: 'var(--ink-3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                width: 48, height: 48,
+                width: 44, height: 44,
               }}>
-                {it.icon(24)}
+                {it.icon(22)}
               </div>
             )}
+            <span style={{
+              fontSize: 10, letterSpacing: '0.01em',
+              color: on ? 'var(--ink)' : 'var(--ink-3)',
+              fontWeight: on ? 600 : 400,
+            }}>{it.label}</span>
           </button>
         );
       })}
@@ -447,9 +476,7 @@ function LockScreen({ onNavigate }) {
       <StatusBar />
       <Island />
       <div style={{ position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)' }}>
-        <div className="ss-pulse-slow">
-          <Orb kind="help" size={260} halo={true} />
-        </div>
+        <Orb kind="help" size={260} halo={true} orbClass="ss-morph ss-pulse-slow" />
       </div>
       <div style={{ position: 'absolute', left: 0, right: 0, bottom: 70, textAlign: 'center', padding: '0 32px' }}>
         <div className="ss-eyebrow">Sunnuntai · 26.4. · 8.42</div>
@@ -514,10 +541,12 @@ function HomeScreen({ onNavigate, onMenu }) {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 4 }}>
-          {tiles.map(t => (
+          {tiles.map((t, i) => (
             <button key={t.key} className="ss-tile" onClick={() => onNavigate(t.key)}>
               <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <Orb kind={t.kind} size={68} halo={true} />
+                <div className={['ss-float-a','ss-float-b','ss-float-c','ss-float-d'][i]}>
+                  <Orb kind={t.kind} size={68} halo={true} />
+                </div>
                 <div style={{ marginTop: 'auto' }}>
                   <div style={{
                     fontFamily: 'var(--serif)', fontSize: 28, lineHeight: 1,
@@ -600,7 +629,7 @@ function AIScreen({ onNavigate, onMenu }) {
           position: 'relative', marginTop: 38, height: 280,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <Orb kind="ai" size={220} halo={true} pulse={true} />
+          <Orb kind="ai" size={220} halo={true} pulse={true} orbClass="ss-morph" />
         </div>
 
         <div style={{
@@ -613,7 +642,7 @@ function AIScreen({ onNavigate, onMenu }) {
         </div>
 
         <div style={{
-          position: 'absolute', bottom: 110, left: 0, right: 0,
+          position: 'absolute', bottom: 130, left: 0, right: 0,
           display: 'flex', justifyContent: 'center', gap: 18,
         }}>
           <button style={ctrlBtn}>{Icon.text(22)}</button>
@@ -722,7 +751,7 @@ function ChatScreen({ onNavigate, onMenu }) {
       </div>
 
       <div style={{
-        position: 'absolute', bottom: 110, left: 22, right: 22,
+        position: 'absolute', bottom: 128, left: 22, right: 22,
         background: 'rgba(255,255,255,0.85)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
@@ -1082,7 +1111,7 @@ function Drawer({ open, onClose, onNavigate, fontSize, setFontSize }) {
 
   return (
     <div className="ss-drawer" onClick={onClose}>
-      <div className="ss-drawer-panel ss-fade" onClick={e => e.stopPropagation()}>
+      <div className="ss-drawer-panel ss-slide-left" onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Orb kind="soft" size={56} halo={false} />
           <div>
