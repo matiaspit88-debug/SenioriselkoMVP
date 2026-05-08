@@ -2,6 +2,15 @@ import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import HeroScene from './components/3d/HeroScene'
 
+function MicIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width={28} height={28} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="3" width="6" height="12" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+    </svg>
+  )
+}
+
 export default function App() {
   return (
     <div className="relative w-full h-screen overflow-hidden bg-bg">
@@ -21,9 +30,9 @@ export default function App() {
           <p className="mt-2 text-ink-2 text-base tracking-wide">Lämmin appi senioreille</p>
         </div>
 
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-ai/20 flex items-center justify-center">
-            <span className="text-xl">🎙</span>
+        <div className="flex flex-col items-center gap-3 pointer-events-auto">
+          <div className="w-14 h-14 rounded-full bg-ai/20 flex items-center justify-center text-ai">
+            <MicIcon />
           </div>
           <p className="text-ink-3 text-sm">Napauta aloittaaksesi</p>
         </div>
