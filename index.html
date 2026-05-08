@@ -7,60 +7,265 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="SenioriSelko" />
-<meta name="theme-color" content="#f0eee9" />
+<meta name="theme-color" content="#F4F1EC" />
 <link rel="manifest" href="manifest.json" />
 <link rel="apple-touch-icon" id="touch-icon" href="icon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 :root {
-  --bg: #f0eee9; --bg-card: rgba(255,255,255,0.6);
-  --ink: #1A1714; --ink-2: rgba(60,50,40,0.7); --ink-3: rgba(60,50,40,0.45);
-  --hairline: rgba(0,0,0,0.07);
-  --ai: #3F7FE0; --chat: #A381DC; --help: #F18A6E; --emer: #F0973A;
+  --bg: #F4F1EC;
+  --bg-card: #FBF9F5;
+  --bg-elev: #FFFFFF;
+  --ink: #1A1714;
+  --ink-2: #5A544D;
+  --ink-3: #8E867D;
+  --ink-4: #C9C2B7;
+  --hairline: rgba(26,23,20,0.08);
+  --g-help: radial-gradient(circle at 35% 30%, #FFE4D2 0%, #FFB39A 35%, #F18A6E 65%, #C75A4D 100%);
+  --g-ai:   radial-gradient(circle at 30% 25%, #DDF0FF 0%, #8FC6FF 35%, #3F7FE0 70%, #18316E 100%);
+  --g-chat: radial-gradient(circle at 35% 30%, #F4E6FF 0%, #D5B6F2 35%, #A381DC 70%, #5A3A9E 100%);
+  --g-emer: radial-gradient(circle at 35% 30%, #FFF1D2 0%, #FFD487 35%, #F0973A 70%, #B25208 100%);
+  --g-soft: radial-gradient(circle at 30% 30%, #FFFFFF 0%, #F4ECE2 50%, #E5D6C4 100%);
+  --serif: 'Instrument Serif', 'Georgia', serif;
+  --sans:  'Geist', -apple-system, system-ui, sans-serif;
 }
+
 html, body {
   width: 100%; height: 100%;
-  background: #e8e4dd;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: #e8e3db;
+  font-family: var(--sans);
   overflow: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 #root {
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
 }
+
+/* ── Phone frame (desktop) ── */
 .phone-wrap {
   position: relative;
   width: 390px; height: 844px;
   border-radius: 52px;
-  background: var(--bg);
-  box-shadow: 0 40px 100px rgba(40,30,20,0.22), 0 0 0 1px rgba(0,0,0,0.08);
-  overflow: hidden;
+  padding: 10px;
+  background: #0F0D0B;
+  box-shadow: 0 50px 80px rgba(40,30,20,0.22), 0 0 0 1px rgba(0,0,0,0.4),
+              inset 0 0 0 2px rgba(255,255,255,0.05);
   flex-shrink: 0;
 }
+.phone-inner {
+  width: 100%; height: 100%;
+  border-radius: 46px;
+  overflow: hidden;
+  position: relative;
+  background: var(--bg);
+}
+
+/* ── Mobile full-screen ── */
 @media (max-width: 430px) {
   html, body { background: var(--bg); }
-  .phone-wrap {
-    width: 100vw; height: 100dvh;
-    border-radius: 0; box-shadow: none;
-  }
-  /* Hide the mockup status bar and island — real phone has its own */
+  .phone-wrap { width: 100vw; height: 100dvh; border-radius: 0; box-shadow: none; padding: 0; background: var(--bg); }
+  .phone-inner { border-radius: 0; }
+  .mock-island   { display: none !important; }
   .mock-statusbar { display: none !important; }
-  .mock-island    { display: none !important; }
-  /* Respect notch / safe area at top and bottom */
   .safe-top { display: block !important; height: env(safe-area-inset-top, 0px); }
-  .safe-bot { height: calc(90px + env(safe-area-inset-bottom, 0px)) !important; }
-  .dock-inner { padding-bottom: env(safe-area-inset-bottom, 0px) !important; }
+  .home-indicator { display: none !important; }
 }
 .safe-top { display: none; }
-/* Screen fade transition */
-.screen-enter { animation: fadeIn 0.22s ease both; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-/* Drawer slide-in */
-.drawer-enter { animation: slideIn 0.24s cubic-bezier(0.32,0,0.2,1) both; }
-@keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+
+/* ── Screen base ── */
+.ss-screen {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Orb ── */
+.ss-orb {
+  border-radius: 50%;
+  position: relative;
+  isolation: isolate;
+  filter: saturate(1.05);
+}
+.ss-orb::after {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+  mix-blend-mode: overlay;
+  opacity: 0.35;
+  pointer-events: none;
+}
+.ss-orb::before {
+  content: '';
+  position: absolute; inset: 8% 8% auto auto;
+  width: 22%; height: 22%; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.7), rgba(255,255,255,0));
+  filter: blur(6px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Aura (blurred halo behind orb) ── */
+.ss-aura {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Status bar ── */
+.ss-status {
+  height: 54px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 28px 4px;
+  font-size: 17px; font-weight: 600; letter-spacing: -0.01em;
+}
+
+/* ── Home indicator ── */
+.home-indicator {
+  position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; border-radius: 100px;
+  background: rgba(0,0,0,0.22);
+  z-index: 60;
+}
+
+/* ── Floating dock pill ── */
+.ss-dock {
+  position: absolute;
+  left: 50%; bottom: 28px;
+  transform: translateX(-50%);
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 10px 30px rgba(70,55,40,0.10), 0 1px 0 rgba(255,255,255,0.7) inset;
+  z-index: 40;
+}
+.ss-dock-item {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; cursor: pointer;
+}
+
+/* ── Typography ── */
+.ss-display {
+  font-family: var(--serif);
+  font-size: 56px; line-height: 1.05;
+  letter-spacing: -0.015em; color: var(--ink);
+}
+.ss-display em { font-style: italic; color: var(--ink-2); }
+.ss-eyebrow {
+  font-size: 13px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-3); font-weight: 500;
+}
+.ss-body  { font-size: 18px; line-height: 1.45; color: var(--ink-2); }
+.ss-tiny  { font-size: 13px; color: var(--ink-3); letter-spacing: 0.01em; }
+
+/* ── Cards & tiles ── */
+.ss-card {
+  background: var(--bg-card);
+  border-radius: 32px;
+  border: 1px solid var(--hairline);
+  padding: 24px;
+}
+.ss-tile {
+  border-radius: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--hairline);
+  padding: 18px;
+  display: flex; flex-direction: column;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1.18;
+  text-align: left;
+  transition: transform .12s;
+  font-family: inherit;
+}
+.ss-tile:active { transform: scale(0.97); }
+
+/* ── Drawer ── */
+.ss-drawer {
+  position: absolute; inset: 0;
+  background: rgba(20,16,12,0.18);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+}
+.ss-drawer-panel {
+  width: 84%; height: 100%;
+  background: var(--bg);
+  border-radius: 0 44px 44px 0;
+  padding: 60px 24px 24px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+
+/* ── Chat bubbles ── */
+.ss-bubble {
+  max-width: 78%;
+  padding: 16px 20px;
+  border-radius: 26px;
+  font-size: 18px; line-height: 1.4;
+}
+.ss-bubble.user {
+  background: var(--ink); color: #fff;
+  margin-left: auto;
+  border-bottom-right-radius: 8px;
+}
+.ss-bubble.bot {
+  background: var(--bg-elev); color: var(--ink);
+  border: 1px solid var(--hairline);
+  border-bottom-left-radius: 8px;
+}
+
+/* ── SOS pulse rings ── */
+@keyframes ss-ring {
+  0%   { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+.ss-ring   { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(240,151,58,0.5); animation: ss-ring 2.4s ease-out infinite; }
+.ss-ring.r2 { animation-delay: 0.8s; }
+.ss-ring.r3 { animation-delay: 1.6s; }
+
+/* ── Pulse animations ── */
+@keyframes ss-pulse      { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.08);opacity:1} }
+@keyframes ss-pulse-slow { 0%,100%{transform:scale(1);opacity:.55} 50%{transform:scale(1.18);opacity:.75} }
+.ss-pulse      { animation: ss-pulse      3.6s ease-in-out infinite; }
+.ss-pulse-slow { animation: ss-pulse-slow 5s   ease-in-out infinite; }
+
+/* ── Waveform bars ── */
+.ss-wave { display: inline-flex; gap: 4px; align-items: center; }
+.ss-wave .b { width: 4px; border-radius: 2px; background: currentColor; animation: ss-bar 1.2s ease-in-out infinite; }
+@keyframes ss-bar { 0%,100%{height:8px} 50%{height:28px} }
+.ss-wave .b:nth-child(1){animation-delay:0s}
+.ss-wave .b:nth-child(2){animation-delay:.15s}
+.ss-wave .b:nth-child(3){animation-delay:.30s}
+.ss-wave .b:nth-child(4){animation-delay:.45s}
+.ss-wave .b:nth-child(5){animation-delay:.60s}
+.ss-wave .b:nth-child(6){animation-delay:.75s}
+
+/* ── Fade-in ── */
+@keyframes ss-fade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.ss-fade         { animation: ss-fade .5s  ease-out both; }
+.screen-enter    { animation: ss-fade .22s ease    both; }
+
+/* ── Typing dots reuse ss-bar ── */
+.typing-dot { width:8px; height:8px; border-radius:50%; background:var(--ink-3); display:inline-block; animation: ss-bar 1s ease-in-out infinite; }
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
@@ -69,485 +274,908 @@ html, body {
 <body>
 <div id="root"></div>
 <script type="text/babel">
-const { useState, useEffect, useCallback } = React;
+const { useState, useEffect, useCallback, useRef } = React;
 
-const PHONE_W = 390;
-const PHONE_H = 844;
-
-const ORB = {
-  ai:   { c1:'#8AB8FF', c2:'#3F7FE0', c3:'#1A4FA8', s:'rgba(63,127,224,0.28)' },
-  chat: { c1:'#D4B8FF', c2:'#A381DC', c3:'#6B4FB8', s:'rgba(163,129,220,0.28)' },
-  help: { c1:'#FFC4A8', c2:'#F18A6E', c3:'#C85A38', s:'rgba(241,138,110,0.28)' },
-  emer: { c1:'#FFD88A', c2:'#F0973A', c3:'#C86A18', s:'rgba(240,151,58,0.28)' },
+/* ─────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────────────────────────── */
+const ORB_GRADS = {
+  help: 'radial-gradient(circle at 35% 30%, #FFE4D2 0%, #FFB39A 35%, #F18A6E 65%, #C75A4D 100%)',
+  ai:   'radial-gradient(circle at 30% 25%, #DDF0FF 0%, #8FC6FF 35%, #3F7FE0 70%, #18316E 100%)',
+  chat: 'radial-gradient(circle at 35% 30%, #F4E6FF 0%, #D5B6F2 35%, #A381DC 70%, #5A3A9E 100%)',
+  emer: 'radial-gradient(circle at 35% 30%, #FFF1D2 0%, #FFD487 35%, #F0973A 70%, #B25208 100%)',
+  soft: 'radial-gradient(circle at 30% 30%, #FFFFFF 0%, #F4ECE2 50%, #E5D6C4 100%)',
 };
 
-/* ─── Orb ─── */
-function Orb({ kind, size=80, halo=false, style={} }) {
-  const c = ORB[kind];
-  return <div style={{
-    width:size, height:size, borderRadius:'50%', flexShrink:0,
-    background:`radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2} 52%, ${c.c3})`,
-    boxShadow: halo
-      ? `0 0 ${size*.35}px ${size*.12}px ${c.s}, 0 ${size*.08}px ${size*.22}px rgba(0,0,0,0.13)`
-      : `0 ${size*.05}px ${size*.14}px rgba(0,0,0,0.11)`,
-    ...style,
-  }} />;
+/* ─────────────────────────────────────────────────────────────
+   ORB COMPONENT
+───────────────────────────────────────────────────────────── */
+function Orb({ kind = 'soft', size = 96, halo = true, pulse = false, style = {} }) {
+  const grad = ORB_GRADS[kind] || ORB_GRADS.soft;
+  return (
+    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0, ...style }}>
+      {halo && (
+        <div className="ss-aura" style={{
+          width: size * 1.4, height: size * 1.4,
+          left: -size * 0.2, top: -size * 0.2,
+          background: grad,
+        }} />
+      )}
+      <div
+        className={`ss-orb${pulse ? ' ss-pulse' : ''}`}
+        style={{ width: size, height: size, background: grad, position: 'relative', zIndex: 1 }}
+      />
+    </div>
+  );
 }
 
-/* ─── StatusBar ─── */
-function StatusBar({ light=false }) {
-  const col = light ? 'rgba(255,255,255,0.9)' : '#1A1714';
+/* ─────────────────────────────────────────────────────────────
+   SVG ICON SET  (stroke-based, no emojis)
+───────────────────────────────────────────────────────────── */
+const Icon = {
+  home:    s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>,
+  mic:     s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>,
+  chat:    s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3H9l-4 3V7z"/></svg>,
+  book:    s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12v17H6a2 2 0 0 0-2 2V5z"/><path d="M8 7h8M8 11h6"/></svg>,
+  sos:     s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l8 4v5c0 4.5-3.4 8.4-8 9-4.6-.6-8-4.5-8-9V7l8-4z"/></svg>,
+  menu:    s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>,
+  back:    s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M15 5l-7 7 7 7"/></svg>,
+  close:   s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>,
+  phone:   s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>,
+  text:    s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M5 5h14M5 12h14M5 19h9"/></svg>,
+  sun:     s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg>,
+  heart:   s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>,
+  plus:    s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>,
+  search:  s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>,
+  chevron: s => <svg viewBox="0 0 24 24" width={s} height={s} fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"><path d="M9 5l7 7-7 7"/></svg>,
+};
+
+/* ─────────────────────────────────────────────────────────────
+   SHARED LAYOUT COMPONENTS
+───────────────────────────────────────────────────────────── */
+function Island() {
+  return (
+    <div className="mock-island" style={{
+      position: 'absolute', top: 12, left: '50%', transform: 'translateX(-50%)',
+      width: 110, height: 32, borderRadius: 20, background: '#000',
+      zIndex: 90, pointerEvents: 'none',
+    }} />
+  );
+}
+
+function StatusBar({ dark = false }) {
+  const col = dark ? 'rgba(255,255,255,0.92)' : '#1A1714';
   return (
     <>
       <div className="safe-top" />
-      <div className="mock-statusbar" style={{ height:54, display:'flex', alignItems:'flex-end', justifyContent:'space-between', padding:'0 28px 8px', flexShrink:0, pointerEvents:'none' }}>
-        <span style={{ fontSize:16, fontWeight:600, color:col }}>9:41</span>
-        <div style={{ display:'flex', gap:5, alignItems:'center' }}>
-          <svg width="17" height="12" viewBox="0 0 17 12" fill={col}><rect x="0" y="4" width="3" height="8" rx="1" opacity=".4"/><rect x="4" y="2.5" width="3" height="9.5" rx="1" opacity=".6"/><rect x="8" y="1" width="3" height="11" rx="1" opacity=".8"/><rect x="12" y="0" width="3" height="12" rx="1"/></svg>
-          <svg width="16" height="12" viewBox="0 0 16 12" fill={col}><path d="M8 2.5C10.5 2.5 12.7 3.5 14.2 5.2L15.5 3.8C13.6 1.7 11 0.5 8 0.5C5 0.5 2.4 1.7 0.5 3.8L1.8 5.2C3.3 3.5 5.5 2.5 8 2.5Z"/><path d="M8 5.5C9.8 5.5 11.4 6.3 12.5 7.5L13.8 6.1C12.4 4.6 10.3 3.7 8 3.7C5.7 3.7 3.6 4.6 2.2 6.1L3.5 7.5C4.6 6.3 6.2 5.5 8 5.5Z"/><circle cx="8" cy="10.5" r="1.5"/></svg>
-          <div style={{ display:'flex', alignItems:'center' }}>
-            <div style={{ width:22, height:11, borderRadius:3, border:`1.5px solid ${col}`, padding:'1.5px', display:'flex', alignItems:'center' }}>
-              <div style={{ width:'75%', height:'100%', background:col, borderRadius:1.5 }} />
-            </div>
-          </div>
-        </div>
+      <div className="mock-statusbar ss-status" style={{ color: col }}>
+        <span>9:41</span>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <svg width="18" height="11" viewBox="0 0 18 11" fill="none">
+            <rect x="0"  y="7"   width="3" height="4"   rx="0.6" fill={col} />
+            <rect x="5"  y="5"   width="3" height="6"   rx="0.6" fill={col} />
+            <rect x="10" y="2.5" width="3" height="8.5" rx="0.6" fill={col} />
+            <rect x="15" y="0"   width="3" height="11"  rx="0.6" fill={col} opacity="0.4" />
+          </svg>
+          <span style={{ fontSize: 14, opacity: 0.85 }}>78%</span>
+          <svg width="26" height="12" viewBox="0 0 26 12" fill="none">
+            <rect x="0.5" y="0.5" width="22" height="11" rx="3" stroke={col} opacity="0.4" />
+            <rect x="2" y="2" width="15.6" height="8" rx="1.5" fill={col} />
+            <rect x="24" y="4" width="1.5" height="4" rx="0.5" fill={col} opacity="0.5" />
+          </svg>
+        </span>
       </div>
     </>
   );
 }
 
-/* ─── BottomDock ─── */
-function BottomDock({ active, navigate }) {
+function TopBar({ onMenu, right, dark = false }) {
+  const col = dark ? '#FBF9F5' : '#1A1714';
+  return (
+    <div style={{
+      position: 'absolute', top: 54, left: 0, right: 0,
+      padding: '6px 22px', display: 'flex', alignItems: 'center',
+      justifyContent: 'space-between', zIndex: 10, color: col,
+    }}>
+      <button onClick={onMenu} style={{
+        width: 48, height: 48, borderRadius: 24, border: 'none',
+        background: dark ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.7)',
+        backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        cursor: 'pointer', color: col,
+        boxShadow: dark ? 'inset 0 0 0 1px rgba(255,255,255,0.08)' : 'inset 0 0 0 1px rgba(0,0,0,0.04)',
+      }}>
+        {Icon.menu(22)}
+      </button>
+      {right}
+    </div>
+  );
+}
+
+function Dock({ active = 'home', onChange }) {
   const items = [
-    { kind:'ai', label:'Apuri', screen:'ai' },
-    { kind:'chat', label:'Juttuseura', screen:'chat' },
-    { kind:'help', label:'Ohjeet', screen:'help' },
-    { kind:'emer', label:'Hätä', screen:'sos' },
+    { key: 'home', icon: Icon.home, kind: 'soft', label: 'Etusivu' },
+    { key: 'ai',   icon: Icon.mic,  kind: 'ai',   label: 'Apuri' },
+    { key: 'chat', icon: Icon.chat, kind: 'chat', label: 'Juttuseura' },
+    { key: 'book', icon: Icon.book, kind: 'help', label: 'Ohjeet' },
   ];
   return (
-    <div className="safe-bot" style={{ position:'absolute', bottom:0, left:0, right:0, height:90, zIndex:50 }}>
-    <div className="dock-inner" style={{ height:'100%', background:'rgba(240,238,233,0.9)', backdropFilter:'blur(20px)', borderTop:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'flex-start', justifyContent:'space-around', paddingTop:12 }}>
+    <div className="ss-dock">
       {items.map(it => {
-        const c = ORB[it.kind]; const on = active === it.kind;
+        const on = active === it.key;
         return (
-          <button key={it.kind} onClick={() => navigate(it.screen)} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, background:'none', border:'none', cursor:'pointer', padding:'4px 8px' }}>
-            <div style={{ width:52, height:52, borderRadius:18, background: on?`radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2})`:'rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow: on?`0 4px 14px ${c.s}`:'none', transition:'all .18s' }}>
-              <Orb kind={it.kind} size={on?30:26} />
-            </div>
-            <span style={{ fontSize:10, color: on?c.c2:'rgba(60,50,40,0.5)', fontWeight: on?600:400 }}>{it.label}</span>
+          <button key={it.key} className="ss-dock-item" onClick={() => onChange(it.key)}>
+            {on ? (
+              <div style={{ position: 'relative', width: 48, height: 48 }}>
+                <Orb kind={it.kind} size={48} halo={false} />
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: '#fff',
+                }}>
+                  {it.icon(22)}
+                </div>
+              </div>
+            ) : (
+              <div style={{
+                color: 'var(--ink-2)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: 48, height: 48,
+              }}>
+                {it.icon(24)}
+              </div>
+            )}
           </button>
         );
       })}
     </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LOCK SCREEN
+───────────────────────────────────────────────────────────── */
+function LockScreen({ onNavigate }) {
+  return (
+    <div className="ss-screen" style={{ background: 'linear-gradient(180deg,#F4ECE2 0%,#E8DACA 100%)' }}>
+      <StatusBar />
+      <Island />
+      <div style={{ position: 'absolute', top: 110, left: '50%', transform: 'translateX(-50%)' }}>
+        <div className="ss-pulse-slow">
+          <Orb kind="help" size={260} halo={true} />
+        </div>
+      </div>
+      <div style={{ position: 'absolute', left: 0, right: 0, bottom: 70, textAlign: 'center', padding: '0 32px' }}>
+        <div className="ss-eyebrow">Sunnuntai · 26.4. · 8.42</div>
+        <div className="ss-display" style={{ marginTop: 14, fontSize: 56 }}>
+          Hyvää<br /><em>huomenta.</em>
+        </div>
+        <div className="ss-body" style={{ marginTop: 16 }}>Paina pitkään avataksesi.</div>
+        <button
+          onClick={() => onNavigate('home')}
+          style={{
+            marginTop: 30, display: 'inline-flex', alignItems: 'center', gap: 10,
+            padding: '14px 22px', borderRadius: 999,
+            background: 'rgba(255,255,255,0.6)', backdropFilter: 'blur(10px)',
+            border: 'none', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.6)',
+            fontSize: 15, color: 'var(--ink-2)', fontWeight: 500,
+            fontFamily: 'inherit', cursor: 'pointer',
+          }}
+        >
+          {Icon.heart(18)}&nbsp;Liisa kysyi sinua eilen
+        </button>
+      </div>
+      <div className="home-indicator" />
     </div>
   );
 }
 
-/* ─── Dynamic island ─── */
-function Island() {
-  return <div className="mock-island" style={{ position:'absolute', top:12, left:'50%', transform:'translateX(-50%)', width:120, height:34, borderRadius:20, background:'#000', zIndex:100, pointerEvents:'none' }} />;
-}
-
-/* ─── Drawer ─── */
-function Drawer({ onClose, navigate, fontSize, setFontSize }) {
-  const nav = [
-    { kind:'ai', label:'Apuri', screen:'ai' },
-    { kind:'chat', label:'Juttuseura', screen:'chat' },
-    { kind:'help', label:'Ohjeet', screen:'help' },
-    { kind:'emer', label:'Hätä', screen:'sos' },
+/* ─────────────────────────────────────────────────────────────
+   HOME SCREEN
+───────────────────────────────────────────────────────────── */
+function HomeScreen({ onNavigate, onMenu }) {
+  const tiles = [
+    { key: 'ai',   kind: 'ai',   title: 'Apuri',       sub: 'Kysy puhumalla' },
+    { key: 'chat', kind: 'chat', title: 'Juttuseura',  sub: 'Pieni juttuhetki' },
+    { key: 'book', kind: 'help', title: 'Ohjeet',      sub: 'Vinkit ja opastus' },
+    { key: 'sos',  kind: 'emer', title: 'Hätä',        sub: 'Soita läheiselle' },
   ];
-  const sizes = [14, 18, 22];
   return (
-    <>
-      <div onClick={onClose} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.28)', zIndex:20 }} />
-      <div className="drawer-enter" style={{ position:'absolute', top:0, left:0, bottom:0, width:'78%', background:'#f5f3ee', zIndex:30, display:'flex', flexDirection:'column', boxShadow:'4px 0 40px rgba(0,0,0,0.14)' }}>
-        <div style={{ padding:'60px 24px 22px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
-          <div style={{ width:64, height:64, borderRadius:22, background:'linear-gradient(135deg,#8AB8FF,#3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, marginBottom:12 }}>👤</div>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:24, color:'#1A1714' }}>Matti Virtanen</div>
-          <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', marginTop:2 }}>matti.v@email.fi</div>
+    <div className="ss-screen">
+      <StatusBar />
+      <Island />
+      <TopBar onMenu={onMenu} right={
+        <div style={{
+          padding: '10px 16px', borderRadius: 999,
+          background: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
+          fontSize: 14, color: 'var(--ink-2)',
+          display: 'flex', alignItems: 'center', gap: 8,
+          boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
+        }}>
+          {Icon.sun(16)}&nbsp;<span style={{ fontWeight: 500 }}>Helsinki · 4°</span>
         </div>
-        <div style={{ padding:'16px', flex:1 }}>
-          {nav.map(it => (
-            <button key={it.kind} onClick={() => { onClose(); navigate(it.screen); }} style={{ width:'100%', display:'flex', alignItems:'center', gap:14, padding:'13px 12px', borderRadius:16, marginBottom:4, background:'none', border:'none', cursor:'pointer', textAlign:'left' }}>
-              <Orb kind={it.kind} size={36} />
-              <span style={{ fontSize:18, fontWeight:500, color:'#1A1714' }}>{it.label}</span>
+      } />
+      <div style={{
+        position: 'absolute', inset: 0, paddingTop: 116,
+        paddingLeft: 24, paddingRight: 24,
+        display: 'flex', flexDirection: 'column',
+      }}>
+        <div style={{ marginBottom: 22 }}>
+          <div className="ss-eyebrow" style={{ marginBottom: 10 }}>Sunnuntai · 26.4.</div>
+          <div className="ss-display">Hyvää<br /><em>iltapäivää, Aino</em></div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 4 }}>
+          {tiles.map(t => (
+            <button key={t.key} className="ss-tile" onClick={() => onNavigate(t.key)}>
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <Orb kind={t.kind} size={68} halo={true} />
+                <div style={{ marginTop: 'auto' }}>
+                  <div style={{
+                    fontFamily: 'var(--serif)', fontSize: 28, lineHeight: 1,
+                    color: 'var(--ink)', letterSpacing: '-0.01em',
+                  }}>{t.title}</div>
+                  <div className="ss-tiny" style={{ marginTop: 4 }}>{t.sub}</div>
+                </div>
+              </div>
             </button>
           ))}
         </div>
-        <div style={{ padding:'16px 20px 44px', borderTop:'1px solid rgba(0,0,0,0.07)' }}>
-          <div style={{ fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(60,50,40,0.45)', marginBottom:12 }}>Tekstin koko</div>
-          <div style={{ display:'flex', gap:8 }}>
-            {sizes.map((sz, i) => (
-              <button key={i} onClick={() => setFontSize(sz)} style={{ flex:1, height:44, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', background: fontSize===sz?'#3F7FE0':'rgba(0,0,0,0.06)', color: fontSize===sz?'#fff':'rgba(60,50,40,0.6)', fontSize:sz, fontWeight: fontSize===sz?700:400, border:'none', cursor:'pointer', transition:'background .15s' }}>A</button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
 
-/* ─── HomeScreen ─── */
-function HomeScreen({ navigate, openDrawer }) {
-  const tiles = [
-    { kind:'ai', label:'Apuri', sub:'Kysy mitä vaan', screen:'ai' },
-    { kind:'chat', label:'Juttuseura', sub:'Onni odottaa', screen:'chat' },
-    { kind:'help', label:'Ohjeet', sub:'Vinkit ja oppaat', screen:'help' },
-    { kind:'emer', label:'Hätä', sub:'Apua nopeasti', screen:'sos' },
-  ];
-  return (
-    <div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column', background:'#f0eee9' }}>
-      <StatusBar />
-      <div style={{ padding:'8px 28px 18px', display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
-        <div>
-          <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginBottom:3 }}>Tiistai, 5. toukokuuta</div>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:30, color:'#1A1714', lineHeight:1.15 }}>
-            Hyvää iltapäivää,<br /><em>Matti</em>
+        <div className="ss-card" style={{
+          marginTop: 14, display: 'flex', gap: 14, alignItems: 'center',
+          padding: 16, background: 'rgba(255,255,255,0.6)',
+        }}>
+          <div style={{
+            width: 46, height: 46, borderRadius: 14,
+            background: 'var(--g-soft)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            {Icon.heart(22)}
           </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--ink)' }}>Liisa muisti soittaa</div>
+            <div className="ss-tiny" style={{ marginTop: 2 }}>Eilen klo 18.40 · 12 min</div>
+          </div>
+          <div style={{ color: 'var(--ink-3)' }}>{Icon.phone(20)}</div>
         </div>
-        <button onClick={openDrawer} style={{ marginTop:4, width:44, height:44, borderRadius:14, background:'linear-gradient(135deg,#8AB8FF,#3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(63,127,224,0.3)', flexShrink:0 }}>👤</button>
+
+        <div style={{ flex: 1 }} />
       </div>
-      <div style={{ flex:1, padding:'0 20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
-        {tiles.map(t => (
-          <button key={t.kind} onClick={() => navigate(t.screen)} style={{ borderRadius:28, padding:'22px 20px', background:'rgba(255,255,255,0.65)', border:'1px solid rgba(0,0,0,0.06)', boxShadow:'0 2px 12px rgba(40,30,20,0.07)', display:'flex', flexDirection:'column', gap:12, cursor:'pointer', textAlign:'left', transition:'transform .12s, box-shadow .12s' }}
-            onMouseDown={e => e.currentTarget.style.transform='scale(0.97)'}
-            onMouseUp={e => e.currentTarget.style.transform=''}
-            onMouseLeave={e => e.currentTarget.style.transform=''}
-            onTouchStart={e => e.currentTarget.style.transform='scale(0.97)'}
-            onTouchEnd={e => e.currentTarget.style.transform=''}>
-            <Orb kind={t.kind} size={54} halo />
-            <div>
-              <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>{t.label}</div>
-              <div style={{ fontSize:13, color:'rgba(60,50,40,0.6)', marginTop:2 }}>{t.sub}</div>
-            </div>
-          </button>
-        ))}
-      </div>
-      <div style={{ height:90 }} />
-      <BottomDock active="home" navigate={navigate} />
+      <Dock active="home" onChange={onNavigate} />
+      <div className="home-indicator" />
     </div>
   );
 }
 
-/* ─── LockScreen ─── */
-function LockScreen({ navigate }) {
+/* ─────────────────────────────────────────────────────────────
+   AI APURI SCREEN
+───────────────────────────────────────────────────────────── */
+const ctrlBtn = {
+  width: 60, height: 60, borderRadius: '50%',
+  border: '1px solid var(--hairline)',
+  background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  color: 'var(--ink)', cursor: 'pointer', fontFamily: 'inherit',
+};
+
+function AIScreen({ onNavigate, onMenu }) {
+  const [active, setActive] = useState(true);
   return (
-    <div style={{ width:'100%', height:'100%', background:'linear-gradient(160deg,#2A2420 0%,#1A1714 60%,#2E2418 100%)', display:'flex', flexDirection:'column' }}>
-      <StatusBar light />
-      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'space-between', padding:'20px 32px 60px' }}>
-        <div style={{ textAlign:'center' }}>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:80, color:'rgba(255,255,255,0.92)', lineHeight:1, letterSpacing:'-.02em' }}>9:41</div>
-          <div style={{ fontSize:16, color:'rgba(255,255,255,0.5)', marginTop:8 }}>Tiistai, 5. toukokuuta</div>
+    <div className="ss-screen">
+      <StatusBar />
+      <Island />
+      <TopBar onMenu={onMenu} right={
+        <button onClick={() => onNavigate('home')} style={{
+          padding: '10px 18px', borderRadius: 999,
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          border: 'none', fontSize: 15, color: 'var(--ink-2)',
+          fontWeight: 500, fontFamily: 'inherit', cursor: 'pointer',
+          boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
+        }}>
+          Lopeta
+        </button>
+      } />
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        textAlign: 'center', padding: '116px 28px 0',
+      }}>
+        <div className="ss-eyebrow">Apuri kuuntelee</div>
+        <div className="ss-display" style={{ marginTop: 12, fontSize: 38, maxWidth: 320 }}>
+          Kysy <em>mitä tahansa.</em>
         </div>
-        <div style={{ width:'100%' }}>
-          <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)', letterSpacing:'.1em', textTransform:'uppercase', marginBottom:12, textAlign:'center' }}>Muisto tänään</div>
-          <div style={{ borderRadius:24, padding:20, background:'rgba(255,255,255,0.08)', backdropFilter:'blur(20px)', border:'1px solid rgba(255,255,255,0.12)', display:'flex', alignItems:'center', gap:16 }}>
-            <div style={{ width:64, height:64, borderRadius:18, flexShrink:0, background:'linear-gradient(135deg,#F0973A,#F18A6E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28 }}>👨‍👩‍👧</div>
-            <div>
-              <div style={{ fontSize:17, fontWeight:600, color:'rgba(255,255,255,0.9)' }}>Liisa soitti eilen</div>
-              <div style={{ fontSize:14, color:'rgba(255,255,255,0.5)', marginTop:3 }}>Haluatko soittaa takaisin?</div>
-            </div>
+        <div className="ss-body" style={{ marginTop: 10, maxWidth: 280, fontSize: 16 }}>
+          Voit puhua suomea aivan tavallisesti.
+        </div>
+
+        <div style={{
+          position: 'relative', marginTop: 38, height: 280,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <Orb kind="ai" size={220} halo={true} pulse={true} />
+        </div>
+
+        <div style={{
+          marginTop: 'auto', marginBottom: 140, maxWidth: 320,
+          fontFamily: 'var(--serif)', fontSize: 26, lineHeight: 1.2,
+          letterSpacing: '-0.01em', minHeight: 64, color: 'var(--ink)',
+        }}>
+          <span>"Mihin aikaan </span>
+          <span style={{ color: 'var(--ink-3)' }}>tytär tulee tänään käymään?"</span>
+        </div>
+
+        <div style={{
+          position: 'absolute', bottom: 110, left: 0, right: 0,
+          display: 'flex', justifyContent: 'center', gap: 18,
+        }}>
+          <button style={ctrlBtn}>{Icon.text(22)}</button>
+          <button
+            onClick={() => setActive(a => !a)}
+            style={{
+              ...ctrlBtn,
+              background: active ? '#1A1714' : 'rgba(255,255,255,0.7)',
+              color: active ? '#fff' : 'var(--ink)',
+              width: 76, height: 76,
+            }}
+          >
+            <span className="ss-wave" style={{ color: active ? '#fff' : 'var(--ink-2)' }}>
+              <span className="b" /><span className="b" /><span className="b" />
+              <span className="b" /><span className="b" /><span className="b" />
+            </span>
+          </button>
+          <button style={ctrlBtn}>{Icon.close(22)}</button>
+        </div>
+      </div>
+      <Dock active="ai" onChange={onNavigate} />
+      <div className="home-indicator" />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   CHAT SCREEN
+───────────────────────────────────────────────────────────── */
+function ChatScreen({ onNavigate, onMenu }) {
+  const [msgs, setMsgs] = useState([
+    { from: 'bot',  text: 'Hei Aino, mukava kuulla sinusta. Miltä sinusta tuntuu tänä iltapäivänä?' },
+    { from: 'user', text: 'Sade taukosi vihdoin. Kävin pihalla.' },
+    { from: 'bot',  text: 'Hienoa että ehdit ulos. Tuoksuiko ilma raikkaalta sateen jälkeen?' },
+    { from: 'user', text: 'Mullalta tuoksui. Liisa tulee illalla.' },
+    { from: 'bot',  text: 'Voi mukavaa, Liisahan on tyttäresi. Mitä aiotte tehdä yhdessä?' },
+  ]);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [msgs, typing]);
+
+  const send = () => {
+    const t = input.trim();
+    if (!t) return;
+    setMsgs(m => [...m, { from: 'user', text: t }]);
+    setInput('');
+    setTyping(true);
+    setTimeout(() => {
+      setTyping(false);
+      setMsgs(m => [...m, { from: 'bot', text: 'Kuulostaapa hyvältä! Kerro lisää.' }]);
+    }, 1200);
+  };
+
+  return (
+    <div className="ss-screen">
+      <StatusBar />
+      <Island />
+      <TopBar onMenu={onMenu} right={
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 10,
+          padding: '8px 14px 8px 8px', borderRadius: 999,
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
+        }}>
+          <Orb kind="chat" size={32} halo={false} />
+          <span style={{ fontSize: 14, color: 'var(--ink-2)', fontWeight: 500 }}>Onni</span>
+        </div>
+      } />
+
+      <div
+        ref={scrollRef}
+        style={{
+          position: 'absolute', inset: 0,
+          paddingTop: 116, paddingBottom: 200,
+          paddingLeft: 22, paddingRight: 22,
+          overflowY: 'auto',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{
+            textAlign: 'center', color: 'var(--ink-3)',
+            fontSize: 12, marginBottom: 12,
+            letterSpacing: '0.06em', textTransform: 'uppercase',
+          }}>
+            Tänään · 14.12
           </div>
+          {msgs.map((m, i) => (
+            <div key={i} className="ss-fade" style={{ display: 'flex', justifyContent: m.from === 'bot' ? 'flex-start' : 'flex-end' }}>
+              <div className={`ss-bubble ${m.from === 'bot' ? 'bot' : 'user'}`}>{m.text}</div>
+            </div>
+          ))}
+          {typing && (
+            <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+              <div className="ss-bubble bot" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, paddingTop: 18, paddingBottom: 18 }}>
+                <span className="typing-dot" style={{ animationDelay: '0s' }} />
+                <span className="typing-dot" style={{ animationDelay: '0.2s' }} />
+                <span className="typing-dot" style={{ animationDelay: '0.4s' }} />
+              </div>
+            </div>
+          )}
         </div>
-        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', cursor:'pointer', textAlign:'center' }}>
-          <div style={{ width:48, height:4, borderRadius:2, background:'rgba(255,255,255,0.3)', margin:'0 auto 12px' }} />
-          <div style={{ fontSize:14, color:'rgba(255,255,255,0.45)' }}>Pyyhkäise avataksesi</div>
+      </div>
+
+      <div style={{
+        position: 'absolute', bottom: 110, left: 22, right: 22,
+        background: 'rgba(255,255,255,0.85)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        borderRadius: 32, padding: 8,
+        display: 'flex', alignItems: 'center', gap: 8,
+        boxShadow: '0 8px 28px rgba(70,55,40,0.10), inset 0 0 0 1px rgba(0,0,0,0.04)',
+        zIndex: 30,
+      }}>
+        <button style={{
+          width: 48, height: 48, background: 'transparent', border: 'none',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--ink-2)', cursor: 'pointer',
+        }}>
+          {Icon.plus(22)}
+        </button>
+        <input
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && send()}
+          placeholder="Kirjoita tai paina mikkiä…"
+          style={{
+            flex: 1, background: 'none', border: 'none', outline: 'none',
+            fontSize: 17, color: 'var(--ink)', fontFamily: 'inherit',
+          }}
+        />
+        <button onClick={send} style={{
+          width: 56, height: 56, borderRadius: '50%', border: 'none',
+          background: 'var(--g-chat)', color: '#fff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', flexShrink: 0,
+        }}>
+          {Icon.mic(24)}
+        </button>
+      </div>
+
+      <Dock active="chat" onChange={onNavigate} />
+      <div className="home-indicator" />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   HELP SCREEN
+───────────────────────────────────────────────────────────── */
+function HelpScreen({ onNavigate, onMenu }) {
+  const guides = [
+    { title: 'Miten lähetän kuvan WhatsAppissa?',  meta: '6 vaihetta · 2 min', kind: 'help' },
+    { title: 'Pankkitunnusten käyttö verkossa',     meta: '8 vaihetta · 4 min', kind: 'ai' },
+    { title: 'Videopuhelu lapsenlapsen kanssa',     meta: '5 vaihetta · 2 min', kind: 'chat' },
+    { title: 'Reseptin uusiminen Kanta-palvelussa', meta: '7 vaihetta · 3 min', kind: 'help' },
+  ];
+  return (
+    <div className="ss-screen">
+      <StatusBar />
+      <Island />
+      <TopBar onMenu={onMenu} right={
+        <button style={{
+          width: 48, height: 48, borderRadius: 24, border: 'none', cursor: 'pointer',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
+          color: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          {Icon.search(22)}
+        </button>
+      } />
+
+      <div style={{
+        position: 'absolute', inset: 0,
+        paddingTop: 116, paddingLeft: 24, paddingRight: 24, paddingBottom: 110,
+        overflowY: 'auto',
+      }}>
+        <div className="ss-eyebrow">Ohjeet</div>
+        <div className="ss-display" style={{ marginTop: 10, fontSize: 44 }}>
+          Mihin tarvitset <em>apua?</em>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10, marginTop: 22, overflowX: 'auto', paddingBottom: 4 }}>
+          {['Suosituimmat', 'Puhelin', 'Pankki', 'Terveys', 'Yhteys', 'Turvallisuus'].map((c, i) => (
+            <div key={c} style={{
+              padding: '12px 18px', borderRadius: 999, flexShrink: 0,
+              background: i === 0 ? 'var(--ink)' : 'var(--bg-card)',
+              color: i === 0 ? '#fff' : 'var(--ink-2)',
+              fontSize: 15, fontWeight: 500, whiteSpace: 'nowrap',
+              border: i === 0 ? 'none' : '1px solid var(--hairline)',
+              cursor: 'pointer',
+            }}>
+              {c}
+            </div>
+          ))}
+        </div>
+
+        <div style={{
+          marginTop: 22, borderRadius: 28, padding: 22, position: 'relative',
+          overflow: 'hidden', background: 'linear-gradient(135deg,#FBF9F5,#F1E6DB)',
+          border: '1px solid var(--hairline)', minHeight: 188,
+        }}>
+          <div style={{ position: 'absolute', right: -30, top: -30 }}>
+            <Orb kind="help" size={170} halo={false} />
+          </div>
+          <div className="ss-eyebrow" style={{ position: 'relative' }}>Päivän vinkki</div>
+          <div style={{
+            position: 'relative', fontFamily: 'var(--serif)',
+            fontSize: 32, lineHeight: 1.1, letterSpacing: '-0.01em',
+            marginTop: 10, maxWidth: 220,
+          }}>
+            Tunnista huijaus­viesti
+          </div>
+          <div className="ss-tiny" style={{ marginTop: 8, position: 'relative' }}>3 minuuttia · luettu 4 kertaa</div>
+        </div>
+
+        <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {guides.map((g, i) => (
+            <button key={i} onClick={() => onNavigate('guide')} style={{
+              display: 'flex', alignItems: 'center', gap: 14, padding: 14,
+              borderRadius: 22, background: 'var(--bg-card)',
+              border: '1px solid var(--hairline)',
+              textAlign: 'left', cursor: 'pointer', fontFamily: 'inherit',
+            }}>
+              <Orb kind={g.kind} size={48} halo={false} />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)', lineHeight: 1.25 }}>{g.title}</div>
+                <div className="ss-tiny" style={{ marginTop: 4 }}>{g.meta}</div>
+              </div>
+              <div style={{ color: 'var(--ink-3)' }}>{Icon.chevron(18)}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Dock active="book" onChange={onNavigate} />
+      <div className="home-indicator" />
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   GUIDE SCREEN
+───────────────────────────────────────────────────────────── */
+const GUIDE_STEPS = [
+  { title: 'Avaa kameraohjelma',        body: 'Etsi puhelimesi etusivulta kameran kuvake. Se näyttää pieneltä kameralta.',           color: '#5BB94D' },
+  { title: 'Napauta kameran kuvaketta', body: 'Paina kamerakuvaketta kerran. Ohjelma avautuu muutamassa sekunnissa.',               color: '#3F7FE0' },
+  { title: 'Valitse selfie-tila',       body: 'Etsi pyöreä nuoli-kuvake. Sen avulla kamera kääntyy katsomaan sinuun päin.',        color: '#A381DC' },
+  { title: 'Katso kameraan',            body: 'Katso suoraan puhelimen etukameraan ja hymyile. Olet valmis!',                       color: '#F18A6E' },
+  { title: 'Ota kuva',                  body: 'Paina isoa pyöreää nappia ruudun alareunassa. Kuva on otettu!',                      color: '#F0973A' },
+];
+
+function GuideScreen({ onNavigate, onMenu }) {
+  const [step, setStep] = useState(0);
+  const s = GUIDE_STEPS[step];
+  const prev = () => step === 0 ? onNavigate('book') : setStep(n => n - 1);
+  const next = () => step < GUIDE_STEPS.length - 1 ? setStep(n => n + 1) : onNavigate('book');
+
+  return (
+    <div className="ss-screen">
+      <StatusBar />
+      <Island />
+      <TopBar onMenu={onMenu} right={
+        <button style={{
+          padding: '10px 18px', borderRadius: 999, border: 'none', cursor: 'pointer',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          fontSize: 15, color: 'var(--ink-2)', fontWeight: 500,
+          fontFamily: 'inherit', boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
+        }}>
+          Kuuntele
+        </button>
+      } />
+
+      <div style={{
+        position: 'absolute', inset: 0,
+        paddingTop: 116, paddingLeft: 24, paddingRight: 24, paddingBottom: 130,
+        overflowY: 'auto',
+      }}>
+        <div className="ss-eyebrow" style={{ marginBottom: 12 }}>Vaihe {step + 1} / {GUIDE_STEPS.length}</div>
+        <div key={step} className="ss-display ss-fade" style={{ fontSize: 36 }}>
+          {s.title}
+        </div>
+
+        <div style={{
+          marginTop: 24, borderRadius: 28, overflow: 'hidden',
+          background: 'linear-gradient(180deg,#EDE5DA,#DDD0BF)',
+          border: '1px solid var(--hairline)',
+          position: 'relative', height: 220,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div style={{
+            width: 78, height: 78, borderRadius: '50%',
+            background: `radial-gradient(circle at 30% 30%, #C8F0B4, ${s.color} 70%, #2E7E32)`,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff',
+          }}>
+            {Icon.phone(32)}
+          </div>
+          <div style={{
+            position: 'absolute', right: 60, bottom: 28,
+            width: 48, height: 48, borderRadius: '50%',
+            border: '3px solid var(--ink)', boxShadow: '0 0 0 6px rgba(26,23,20,0.08)',
+          }} />
+        </div>
+
+        <div key={step + 'b'} className="ss-body ss-fade" style={{ marginTop: 22, fontSize: 19, lineHeight: 1.4 }}>
+          {s.body}
+        </div>
+
+        <div style={{ marginTop: 28, display: 'flex', gap: 8, justifyContent: 'center' }}>
+          {GUIDE_STEPS.map((_, i) => (
+            <div key={i} style={{
+              width: i === step ? 28 : 10, height: 10, borderRadius: 5,
+              background: i <= step ? 'var(--ink)' : 'var(--ink-4)',
+              transition: 'all .3s',
+            }} />
+          ))}
+        </div>
+      </div>
+
+      <div style={{
+        position: 'absolute', bottom: 30, left: 22, right: 22,
+        display: 'flex', gap: 10, zIndex: 30,
+      }}>
+        <button onClick={prev} style={{
+          height: 64, padding: '0 26px', borderRadius: 32,
+          border: '1px solid var(--hairline)',
+          background: 'rgba(255,255,255,0.8)', backdropFilter: 'blur(10px)',
+          fontSize: 17, fontFamily: 'inherit', color: 'var(--ink-2)',
+          fontWeight: 500, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          {Icon.back(18)} Edellinen
+        </button>
+        <button onClick={next} style={{
+          flex: 1, height: 64, borderRadius: 32, border: 'none',
+          background: 'var(--ink)', color: '#fff',
+          fontSize: 18, fontFamily: 'inherit', fontWeight: 600,
+          cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+        }}>
+          {step < GUIDE_STEPS.length - 1 ? 'Seuraava' : 'Valmis ✓'}
+          {step < GUIDE_STEPS.length - 1 && (
+            <span style={{ transform: 'rotate(180deg)', display: 'inline-flex' }}>{Icon.back(18)}</span>
+          )}
         </button>
       </div>
     </div>
   );
 }
 
-/* ─── AIScreen ─── */
-function AIScreen({ navigate }) {
-  const [listening, setListening] = useState(true);
-  const waves = [.4,.7,1,.8,.5,.9,.6,1,.7,.4,.8,.5];
-  return (
-    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
-      <StatusBar />
-      <div style={{ padding:'4px 28px 14px', display:'flex', alignItems:'center', gap:12 }}>
-        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer', paddingRight:4 }}>‹</button>
-        <Orb kind="ai" size={36} />
-        <div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>Apuri</div>
-          <div style={{ fontSize:12, color:'rgba(60,50,40,0.5)' }}>Tekoälyavustaja</div>
-        </div>
-      </div>
-      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:28, padding:'0 32px' }}>
-        <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'center', width:200, height:200 }}>
-          <div style={{ position:'absolute', width:200, height:200, borderRadius:'50%', background:'radial-gradient(circle, rgba(63,127,224,0.1) 0%, transparent 70%)' }} />
-          <div style={{ position:'absolute', width:148, height:148, borderRadius:'50%', background:'radial-gradient(circle, rgba(63,127,224,0.17) 0%, transparent 70%)' }} />
-          <Orb kind="ai" size={108} halo style={{ position:'relative', zIndex:1 }} />
-        </div>
-        <div style={{ textAlign:'center' }}>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714', marginBottom:8 }}>
-            {listening ? 'Kuuntelen...' : 'Hetki...'}
-          </div>
-          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', lineHeight:1.5, maxWidth:280 }}>
-            Puhu rauhallisesti. Vastaan heti kun olet valmis.
-          </div>
-        </div>
-        <div style={{ display:'flex', alignItems:'center', gap:5, height:44 }}>
-          {waves.map((h,i) => (
-            <div key={i} style={{ width:4, height:44*h, borderRadius:2, background:`rgba(63,127,224,${.3+h*.55})`, transition:'height .3s' }} />
-          ))}
-        </div>
-      </div>
-      <div style={{ padding:'20px 32px 24px', display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
-        <button onClick={() => setListening(l => !l)} style={{ width:80, height:80, borderRadius:'50%', background:'linear-gradient(135deg,#6FA8FF,#3F7FE0)', boxShadow:'0 8px 24px rgba(63,127,224,0.4)', border:'none', cursor:'pointer', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center', transition:'transform .12s' }}
-          onMouseDown={e => e.currentTarget.style.transform='scale(0.93)'}
-          onMouseUp={e => e.currentTarget.style.transform=''}
-          onTouchStart={e => e.currentTarget.style.transform='scale(0.93)'}
-          onTouchEnd={e => e.currentTarget.style.transform=''}>🎙</button>
-        <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)' }}>Napauta lopettaaksesi</div>
-      </div>
-      <div style={{ height:90 }} />
-      <BottomDock active="ai" navigate={navigate} />
-    </div>
-  );
-}
-
-/* ─── ChatScreen ─── */
-function ChatScreen({ navigate }) {
-  const [msgs, setMsgs] = useState([
-    { from:'bot', text:'Hei Matti! Mukava jutella taas. Miten päiväsi on mennyt? 😊' },
-    { from:'user', text:'Ihan hyvin, kävin aamulla puutarhassa.' },
-    { from:'bot', text:'Kuulostaa ihanalta! Mitä siellä puuhailit?' },
-  ]);
-  const [input, setInput] = useState('');
-
-  const send = () => {
-    const t = input.trim();
-    if (!t) return;
-    setMsgs(m => [...m, { from:'user', text:t }]);
-    setInput('');
-    setTimeout(() => setMsgs(m => [...m, { from:'bot', text:'Kuulostaapa hyvältä! Kerro lisää 😊' }]), 800);
-  };
-
-  return (
-    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
-      <StatusBar />
-      <div style={{ padding:'4px 24px 14px', borderBottom:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', gap:14 }}>
-        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer' }}>‹</button>
-        <div style={{ position:'relative' }}>
-          <Orb kind="chat" size={46} halo />
-          <div style={{ position:'absolute', bottom:0, right:0, width:13, height:13, borderRadius:'50%', background:'#4CAF50', border:'2px solid #f0eee9' }} />
-        </div>
-        <div>
-          <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>Onni</div>
-          <div style={{ fontSize:13, color:'#A381DC' }}>● Paikalla</div>
-        </div>
-      </div>
-      <div style={{ flex:1, padding:'16px 20px 10px', display:'flex', flexDirection:'column', gap:12, overflowY:'auto' }}>
-        {msgs.map((m,i) => {
-          const bot = m.from==='bot';
-          return (
-            <div key={i} style={{ display:'flex', justifyContent:bot?'flex-start':'flex-end', alignItems:'flex-end', gap:8 }}>
-              {bot && <Orb kind="chat" size={30} style={{ flexShrink:0 }} />}
-              <div style={{ maxWidth:'76%', padding:'13px 17px', borderRadius:bot?'20px 20px 20px 6px':'20px 20px 6px 20px', background:bot?'rgba(255,255,255,0.75)':'linear-gradient(135deg,#C4A8F0,#A381DC)', color:bot?'#1A1714':'#fff', fontSize:17, lineHeight:1.45, boxShadow:'0 2px 8px rgba(40,30,20,0.07)', border:bot?'1px solid rgba(0,0,0,0.05)':'none' }}>
-                {m.text}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-      <div style={{ padding:'10px 18px 18px' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:10, background:'rgba(255,255,255,0.72)', borderRadius:28, padding:'8px 8px 8px 18px', border:'1px solid rgba(0,0,0,0.07)' }}>
-          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key==='Enter' && send()} placeholder="Kirjoita viesti..." style={{ flex:1, background:'none', border:'none', outline:'none', fontSize:17, color:'#1A1714' }} />
-          <button onClick={send} style={{ width:50, height:50, borderRadius:'50%', background:'linear-gradient(135deg,#D4B8FF,#A381DC)', border:'none', cursor:'pointer', fontSize:22, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(163,129,220,0.4)' }}>🎙</button>
-        </div>
-      </div>
-      <div style={{ height:90 }} />
-      <BottomDock active="chat" navigate={navigate} />
-    </div>
-  );
-}
-
-/* ─── HelpScreen ─── */
-function HelpScreen({ navigate }) {
-  const guides = [
-    { icon:'📱', title:'Miten soitan videolle?', time:'3 min', cat:'Puhelu', step:1 },
-    { icon:'📷', title:'Kuinka lähetän kuvan?', time:'4 min', cat:'Kuvat', step:1 },
-    { icon:'🔒', title:'Salasanan vaihtaminen', time:'5 min', cat:'Turvallisuus', step:1 },
-  ];
-  return (
-    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
-      <StatusBar />
-      <div style={{ padding:'4px 28px 16px', display:'flex', alignItems:'center', gap:12 }}>
-        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer' }}>‹</button>
-        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714' }}>Ohjeet ja vinkit</div>
-      </div>
-      <div style={{ margin:'0 20px 16px', padding:20, borderRadius:24, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', boxShadow:'0 8px 24px rgba(241,138,110,0.3)' }}>
-        <div style={{ fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(255,255,255,0.75)', marginBottom:5 }}>Päivän vinkki</div>
-        <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.3 }}>Paina ja pidä kuvaa — saat lisävalinnat</div>
-        <div style={{ fontSize:14, color:'rgba(255,255,255,0.8)', marginTop:5 }}>Toimii galleriassa ja viesteissä</div>
-      </div>
-      <div style={{ padding:'0 20px', display:'flex', gap:8, marginBottom:14 }}>
-        {['Kaikki','Puhelut','Kuvat','Turva'].map((c,i) => (
-          <div key={c} style={{ padding:'8px 14px', borderRadius:20, fontSize:13, fontWeight:i===0?600:400, background:i===0?'#F18A6E':'rgba(255,255,255,0.65)', color:i===0?'#fff':'rgba(60,50,40,0.7)', border:'1px solid rgba(0,0,0,0.06)', cursor:'pointer' }}>{c}</div>
-        ))}
-      </div>
-      <div style={{ flex:1, padding:'0 20px', display:'flex', flexDirection:'column', gap:10, overflowY:'auto' }}>
-        {guides.map((g,i) => (
-          <button key={i} onClick={() => navigate('guide')} style={{ padding:'16px 18px', borderRadius:20, display:'flex', alignItems:'center', gap:16, background:'rgba(255,255,255,0.65)', border:'1px solid rgba(0,0,0,0.05)', cursor:'pointer', textAlign:'left' }}>
-            <div style={{ width:52, height:52, borderRadius:16, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, flexShrink:0 }}>{g.icon}</div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontSize:17, fontWeight:600, color:'#1A1714' }}>{g.title}</div>
-              <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginTop:2 }}>{g.cat} · {g.time}</div>
-            </div>
-            <div style={{ fontSize:22, color:'rgba(60,50,40,0.3)' }}>›</div>
-          </button>
-        ))}
-      </div>
-      <div style={{ height:90 }} />
-      <BottomDock active="help" navigate={navigate} />
-    </div>
-  );
-}
-
-/* ─── GuideScreen ─── */
-const GUIDE_STEPS = [
-  { img:'📱', title:'Avaa kameraohjelma', body:'Etsi puhelimesi etusivulta kameran kuvake. Se näyttää pieneltä kameralta.' },
-  { img:'👆', title:'Napauta kameran kuvaketta', body:'Paina kamerakuvaketta kerran. Ohjelma avautuu muutamassa sekunnissa.' },
-  { img:'🔄', title:'Valitse selfie-tila', body:'Etsi pyöreä nuoli-kuvake. Sen avulla kamera kääntyy katsomaan sinuun päin.' },
-  { img:'😊', title:'Katso kameraan', body:'Katso suoraan puhelimen etukameraan ja hymyile. Olet valmis!' },
-  { img:'📸', title:'Ota kuva', body:'Paina isoa pyöreää nappia ruudun alareunassa. Kuva on otettu!' },
-];
-
-function GuideScreen({ navigate }) {
-  const [step, setStep] = useState(0);
-  const s = GUIDE_STEPS[step];
-  return (
-    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
-      <StatusBar />
-      <div style={{ padding:'4px 28px 12px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-        <button onClick={() => step===0 ? navigate('help') : setStep(s => s-1)} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer' }}>‹</button>
-        <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', fontWeight:500 }}>Vaihe {step+1} / {GUIDE_STEPS.length}</div>
-        <div style={{ width:24 }} />
-      </div>
-      <div style={{ margin:'0 28px 20px', display:'flex', gap:6 }}>
-        {GUIDE_STEPS.map((_,i) => <div key={i} style={{ flex:1, height:4, borderRadius:2, background:i<=step?'#F18A6E':'rgba(0,0,0,0.1)', transition:'background .25s' }} />)}
-      </div>
-      <div key={step} className="screen-enter" style={{ margin:'0 24px 22px', borderRadius:28, height:210, background:'linear-gradient(135deg,#FFF0E8,#FFD4B8)', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:10 }}>
-        <div style={{ fontSize:76 }}>{s.img}</div>
-      </div>
-      <div key={step+'t'} className="screen-enter" style={{ padding:'0 28px', flex:1 }}>
-        <div style={{ fontSize:12, color:'#F18A6E', fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', marginBottom:8 }}>Vaihe {step+1}</div>
-        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:26, color:'#1A1714', lineHeight:1.3, marginBottom:10 }}>{s.title}</div>
-        <div style={{ fontSize:17, color:'rgba(60,50,40,0.65)', lineHeight:1.55 }}>{s.body}</div>
-      </div>
-      <div style={{ padding:'16px 24px 36px' }}>
-        {step < GUIDE_STEPS.length-1 ? (
-          <button onClick={() => setStep(s => s+1)} style={{ width:'100%', height:64, borderRadius:22, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', border:'none', cursor:'pointer', fontSize:20, fontWeight:700, color:'#fff', boxShadow:'0 8px 20px rgba(241,138,110,0.35)', transition:'transform .12s' }}
-            onMouseDown={e => e.currentTarget.style.transform='scale(0.97)'}
-            onMouseUp={e => e.currentTarget.style.transform=''}
-            onTouchStart={e => e.currentTarget.style.transform='scale(0.97)'}
-            onTouchEnd={e => e.currentTarget.style.transform=''}>
-            Seuraava →
-          </button>
-        ) : (
-          <button onClick={() => { setStep(0); navigate('help'); }} style={{ width:'100%', height:64, borderRadius:22, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', border:'none', cursor:'pointer', fontSize:20, fontWeight:700, color:'#fff', boxShadow:'0 8px 20px rgba(241,138,110,0.35)' }}>
-            Valmis ✓
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ─── SOSScreen ─── */
-function SOSScreen({ navigate }) {
+/* ─────────────────────────────────────────────────────────────
+   SOS SCREEN
+───────────────────────────────────────────────────────────── */
+function SOSScreen({ onNavigate, onMenu }) {
   const [count, setCount] = useState(5);
   const [called, setCalled] = useState(false);
 
   useEffect(() => {
     if (called) return;
     if (count <= 0) { setCalled(true); return; }
-    const t = setTimeout(() => setCount(c => c-1), 1000);
+    const t = setTimeout(() => setCount(c => c - 1), 1000);
     return () => clearTimeout(t);
   }, [count, called]);
 
-  const cancel = () => { setCount(5); setCalled(false); navigate('home'); };
+  const cancel = () => { setCount(5); setCalled(false); onNavigate('home'); };
+
+  const contacts = [
+    { name: 'Liisa',    rel: 'Tytär',      orb: 'help' },
+    { name: 'Pekka',    rel: 'Naapuri',    orb: 'chat' },
+    { name: 'Hätä 112', rel: 'Hätäkeskus', orb: 'emer' },
+  ];
 
   return (
-    <div style={{ width:'100%', height:'100%', background:'linear-gradient(170deg,#FFF5E8 0%,#FFE8C8 50%,#FFDAA8 100%)', display:'flex', flexDirection:'column' }}>
+    <div className="ss-screen" style={{ background: 'linear-gradient(180deg,#FFF7E8 0%,#FFE7C2 100%)' }}>
       <StatusBar />
-      <div style={{ padding:'4px 28px 0', display:'flex', justifyContent:'flex-end' }}>
-        <button onClick={cancel} style={{ padding:'10px 20px', borderRadius:16, background:'rgba(0,0,0,0.09)', fontSize:16, fontWeight:600, color:'#1A1714', border:'none', cursor:'pointer' }}>Peruuta</button>
-      </div>
-      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 32px', gap:22 }}>
-        <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'center', width:200, height:200 }}>
-          <div style={{ position:'absolute', width:200, height:200, borderRadius:'50%', background:'rgba(240,151,58,0.1)' }} />
-          <div style={{ position:'absolute', width:155, height:155, borderRadius:'50%', background:'rgba(240,151,58,0.16)' }} />
-          <div style={{ position:'absolute', width:110, height:110, borderRadius:'50%', background:'rgba(240,151,58,0.22)' }} />
-          <Orb kind="emer" size={82} halo style={{ zIndex:1 }} />
+      <Island />
+      <TopBar onMenu={onMenu} right={
+        <button onClick={cancel} style={{
+          padding: '12px 20px', borderRadius: 999, border: 'none', cursor: 'pointer',
+          background: 'rgba(255,255,255,0.85)', fontSize: 16, fontWeight: 600,
+          fontFamily: 'inherit', color: 'var(--ink)',
+          boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
+        }}>
+          Peruuta
+        </button>
+      } />
+
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        textAlign: 'center', padding: '130px 28px 0',
+      }}>
+        <div className="ss-eyebrow" style={{ color: '#B25208' }}>Hätä</div>
+        <div className="ss-display" style={{ marginTop: 10, fontSize: 40, maxWidth: 320 }}>
+          {called ? 'Soitetaan…' : <>Soitto Liisalle <em>{count} sek.</em></>}
         </div>
-        <div style={{ textAlign:'center' }}>
-          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:26, color:'#1A1714', marginBottom:12 }}>
-            {called ? 'Soitetaan...' : 'Soitetaan hätänumeroon'}
+        <div className="ss-body" style={{ marginTop: 8, maxWidth: 280, fontSize: 16 }}>
+          {called ? 'Yhteys muodostettu' : 'Pidä paikallasi tai paina peruuta.'}
+        </div>
+
+        <div style={{
+          position: 'relative', marginTop: 36, width: 240, height: 240,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <div className="ss-ring" />
+          <div className="ss-ring r2" />
+          <div className="ss-ring r3" />
+          <div className="ss-pulse">
+            <Orb kind="emer" size={200} halo={true} />
           </div>
-          {!called && (
-            <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:72, height:72, borderRadius:'50%', background:'rgba(240,151,58,0.15)', border:'3px solid #F0973A', fontFamily:'Instrument Serif, Georgia, serif', fontSize:44, color:'#C86A18', fontWeight:700, transition:'all .3s' }}>{count}</div>
-          )}
-          {called && <div style={{ fontSize:60 }}>📞</div>}
-          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', marginTop:10 }}>
-            {called ? 'Yhteys muodostettu' : 'Soitto alkaa automaattisesti'}
+          <div style={{
+            position: 'absolute', color: '#fff', zIndex: 10,
+            fontSize: called ? 40 : 56,
+            fontFamily: 'var(--serif)', fontWeight: 400,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            {called ? Icon.phone(40) : count}
           </div>
         </div>
-      </div>
-      <div style={{ padding:'0 20px 36px' }}>
-        <div style={{ fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(60,50,40,0.5)', marginBottom:10, paddingLeft:4 }}>Tai soita läheiselle</div>
-        {[{ name:'Liisa (tytär)', phone:'040 123 4567' },{ name:'Pekka (poika)', phone:'050 765 4321' }].map((c,i) => (
-          <div key={i} style={{ display:'flex', alignItems:'center', gap:14, padding:'13px 16px', borderRadius:20, marginBottom:10, background:'rgba(255,255,255,0.55)', border:'1px solid rgba(0,0,0,0.06)' }}>
-            <div style={{ width:44, height:44, borderRadius:14, background:'linear-gradient(135deg,#FFD88A,#F0973A)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>👤</div>
-            <div style={{ flex:1 }}>
-              <div style={{ fontSize:17, fontWeight:600, color:'#1A1714' }}>{c.name}</div>
-              <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)' }}>{c.phone}</div>
-            </div>
-            <div style={{ width:44, height:44, borderRadius:14, background:'#4CAF50', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, cursor:'pointer' }}>📞</div>
+
+        <div style={{ marginTop: 'auto', marginBottom: 124, width: '100%' }}>
+          <div className="ss-tiny" style={{ marginBottom: 12, color: '#7a4a14' }}>Tai valitse joku muu</div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
+            {contacts.map(c => (
+              <button key={c.name} style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                background: 'transparent', border: 'none', cursor: 'pointer', fontFamily: 'inherit',
+              }}>
+                <Orb kind={c.orb} size={64} halo={false} />
+                <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>{c.name}</div>
+                <div className="ss-tiny" style={{ fontSize: 12 }}>{c.rel}</div>
+              </button>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
 }
 
-/* ─── App ─── */
+/* ─────────────────────────────────────────────────────────────
+   DRAWER
+───────────────────────────────────────────────────────────── */
+const chipBtn = {
+  width: 36, height: 36, borderRadius: 18,
+  border: '1px solid var(--hairline)',
+  background: '#fff', fontSize: 14, fontWeight: 600,
+  fontFamily: 'inherit', cursor: 'pointer', color: 'var(--ink)',
+};
+
+function Drawer({ open, onClose, onNavigate, fontSize, setFontSize }) {
+  if (!open) return null;
+  const items = [
+    { key: 'home', label: 'Etusivu',    icon: Icon.home },
+    { key: 'ai',   label: 'Apuri',      icon: Icon.mic  },
+    { key: 'chat', label: 'Juttuseura', icon: Icon.chat },
+    { key: 'book', label: 'Ohjeet',     icon: Icon.book },
+    { key: 'sos',  label: 'Hätä',       icon: Icon.sos  },
+  ];
+  const sizeLabel = fontSize <= 16 ? 'Pieni' : fontSize >= 20 ? 'Suuri' : 'Normaali';
+
+  return (
+    <div className="ss-drawer" onClick={onClose}>
+      <div className="ss-drawer-panel ss-fade" onClick={e => e.stopPropagation()}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Orb kind="soft" size={56} halo={false} />
+          <div>
+            <div style={{ fontFamily: 'var(--serif)', fontSize: 26, lineHeight: 1 }}>Aino V.</div>
+            <div className="ss-tiny" style={{ marginTop: 4 }}>78 vuotta · Tampere</div>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 14 }}>
+          {items.map(it => (
+            <button
+              key={it.key}
+              onClick={() => { onNavigate(it.key); onClose(); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 14,
+                padding: '14px 8px', background: 'transparent', border: 'none',
+                textAlign: 'left', fontFamily: 'inherit', fontSize: 19,
+                color: 'var(--ink)', cursor: 'pointer',
+                borderBottom: '1px solid var(--hairline)',
+              }}
+            >
+              <div style={{
+                width: 40, height: 40, borderRadius: 20,
+                background: 'var(--bg-card)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--ink-2)',
+              }}>
+                {it.icon(20)}
+              </div>
+              <span style={{ flex: 1 }}>{it.label}</span>
+              <div style={{ color: 'var(--ink-3)' }}>{Icon.chevron(16)}</div>
+            </button>
+          ))}
+        </div>
+
+        <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{
+            padding: 16, borderRadius: 22, background: 'var(--bg-card)',
+            display: 'flex', alignItems: 'center', gap: 12,
+          }}>
+            <div style={{ width: 36, height: 36, borderRadius: 18, background: 'var(--g-soft)', flexShrink: 0 }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 15 }}>Tekstin koko</div>
+              <div className="ss-tiny" style={{ marginTop: 2 }}>{sizeLabel}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button onClick={() => setFontSize(f => Math.max(14, f - 2))} style={chipBtn}>A−</button>
+              <button onClick={() => setFontSize(f => Math.min(22, f + 2))} style={{ ...chipBtn, background: 'var(--ink)', color: '#fff', border: 'none' }}>A+</button>
+            </div>
+          </div>
+          <div style={{ padding: 16, borderRadius: 22, background: 'var(--bg-card)', fontSize: 15, color: 'var(--ink-2)', cursor: 'pointer' }}>
+            Asetukset &amp; Yksityisyys
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────
+   APP ROOT
+───────────────────────────────────────────────────────────── */
 function App() {
-  const [screen, setScreen] = useState('lock');
-  const [prevScreen, setPrev] = useState(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [screen, setScreen]   = useState('lock');
+  const [drawer, setDrawer]   = useState(false);
   const [fontSize, setFontSize] = useState(18);
 
-  const navigate = useCallback((s) => {
-    setPrev(screen);
-    setScreen(s);
-  }, [screen]);
+  const navigate    = useCallback(s => setScreen(s), []);
+  const openDrawer  = useCallback(() => setDrawer(true), []);
+  const closeDrawer = useCallback(() => setDrawer(false), []);
 
-  const openDrawer = useCallback(() => setDrawerOpen(true), []);
-  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
-
-  const screenMap = {
-    lock:  <LockScreen navigate={navigate} />,
-    home:  <HomeScreen navigate={navigate} openDrawer={openDrawer} />,
-    ai:    <AIScreen navigate={navigate} />,
-    chat:  <ChatScreen navigate={navigate} />,
-    help:  <HelpScreen navigate={navigate} />,
-    guide: <GuideScreen navigate={navigate} />,
-    sos:   <SOSScreen navigate={navigate} />,
+  const screens = {
+    lock:  <LockScreen  onNavigate={navigate} />,
+    home:  <HomeScreen  onNavigate={navigate} onMenu={openDrawer} />,
+    ai:    <AIScreen    onNavigate={navigate} onMenu={openDrawer} />,
+    chat:  <ChatScreen  onNavigate={navigate} onMenu={openDrawer} />,
+    book:  <HelpScreen  onNavigate={navigate} onMenu={openDrawer} />,
+    guide: <GuideScreen onNavigate={navigate} onMenu={openDrawer} />,
+    sos:   <SOSScreen   onNavigate={navigate} onMenu={openDrawer} />,
   };
 
   return (
-    <div className="phone-wrap" style={{ fontSize }}>
-      <Island />
-      <div key={screen} className="screen-enter" style={{ width:'100%', height:'100%' }}>
-        {screenMap[screen] ?? screenMap.home}
-      </div>
-      {drawerOpen && (
-        <div style={{ position:'absolute', inset:0, zIndex:20 }}>
-          <Drawer onClose={closeDrawer} navigate={navigate} fontSize={fontSize} setFontSize={setFontSize} />
+    <div className="phone-wrap">
+      <div className="phone-inner" style={{ fontSize }}>
+        <Island />
+        <div key={screen} className="screen-enter" style={{ width: '100%', height: '100%' }}>
+          {screens[screen] ?? screens.home}
         </div>
-      )}
+        {drawer && (
+          <Drawer
+            open={drawer}
+            onClose={closeDrawer}
+            onNavigate={navigate}
+            fontSize={fontSize}
+            setFontSize={setFontSize}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -555,14 +1183,14 @@ function App() {
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 </script>
 <script>
-/* Generate apple-touch-icon from canvas so no external image needed */
-(function() {
+/* Generate crisp apple-touch-icon from canvas */
+(function () {
   try {
     const c = document.createElement('canvas');
     c.width = c.height = 180;
     const ctx = c.getContext('2d');
     const g = ctx.createLinearGradient(0, 0, 180, 180);
-    g.addColorStop(0, '#8AB8FF'); g.addColorStop(1, '#3F7FE0');
+    g.addColorStop(0, '#8FC6FF'); g.addColorStop(1, '#3F7FE0');
     ctx.fillStyle = g;
     if (ctx.roundRect) ctx.roundRect(0, 0, 180, 180, 38); else ctx.rect(0, 0, 180, 180);
     ctx.fill();
@@ -572,7 +1200,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     ctx.fillText('S', 90, 96);
     const el = document.getElementById('touch-icon');
     if (el) el.href = c.toDataURL('image/png');
-  } catch(e) {}
+  } catch (e) {}
 })();
 </script>
 </body>

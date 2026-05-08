@@ -5,8 +5,8 @@
   "start_url": "/SenioriselkoMVP/",
   "scope": "/SenioriselkoMVP/",
   "display": "standalone",
-  "background_color": "#f0eee9",
-  "theme_color": "#f0eee9",
+  "background_color": "#F4F1EC",
+  "theme_color": "#F4F1EC",
   "orientation": "portrait-primary",
   "lang": "fi",
   "icons": [
