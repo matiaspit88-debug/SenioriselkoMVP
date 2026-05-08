@@ -55,6 +55,13 @@ html, body {
   .dock-inner { padding-bottom: env(safe-area-inset-bottom, 0px) !important; }
 }
 .safe-top { display: none; }
+/* Spacer above bottom dock — grows with home indicator on real phones */
+.dock-spacer { height: 90px; }
+@media (max-width: 430px) {
+  .dock-spacer { height: calc(90px + env(safe-area-inset-bottom, 0px)); }
+  /* Drawer header clears the notch on viewport-fit:cover */
+  .drawer-header { padding-top: max(60px, calc(env(safe-area-inset-top, 0px) + 20px)) !important; }
+}
 /* Screen fade transition */
 .screen-enter { animation: fadeIn 0.22s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
@@ -62,8 +69,8 @@ html, body {
 .drawer-enter { animation: slideIn 0.24s cubic-bezier(0.32,0,0.2,1) both; }
 @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 </style>
-<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
-<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -161,7 +168,7 @@ function Drawer({ onClose, navigate, fontSize, setFontSize }) {
     <>
       <div onClick={onClose} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.28)', zIndex:20 }} />
       <div className="drawer-enter" style={{ position:'absolute', top:0, left:0, bottom:0, width:'78%', background:'#f5f3ee', zIndex:30, display:'flex', flexDirection:'column', boxShadow:'4px 0 40px rgba(0,0,0,0.14)' }}>
-        <div style={{ padding:'60px 24px 22px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
+        <div className="drawer-header" style={{ padding:'60px 24px 22px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
           <div style={{ width:64, height:64, borderRadius:22, background:'linear-gradient(135deg,#8AB8FF,#3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, marginBottom:12 }}>👤</div>
           <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:24, color:'#1A1714' }}>Matti Virtanen</div>
           <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', marginTop:2 }}>matti.v@email.fi</div>
@@ -223,7 +230,7 @@ function HomeScreen({ navigate, openDrawer }) {
           </button>
         ))}
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="home" navigate={navigate} />
     </div>
   );
@@ -301,7 +308,7 @@ function AIScreen({ navigate }) {
           onTouchEnd={e => e.currentTarget.style.transform=''}>🎙</button>
         <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)' }}>Napauta lopettaaksesi</div>
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="ai" navigate={navigate} />
     </div>
   );
@@ -357,7 +364,7 @@ function ChatScreen({ navigate }) {
           <button onClick={send} style={{ width:50, height:50, borderRadius:'50%', background:'linear-gradient(135deg,#D4B8FF,#A381DC)', border:'none', cursor:'pointer', fontSize:22, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(163,129,220,0.4)' }}>🎙</button>
         </div>
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="chat" navigate={navigate} />
     </div>
   );
@@ -399,7 +406,7 @@ function HelpScreen({ navigate }) {
           </button>
         ))}
       </div>
-      <div style={{ height:90 }} />
+      <div className="dock-spacer" />
       <BottomDock active="help" navigate={navigate} />
     </div>
   );
