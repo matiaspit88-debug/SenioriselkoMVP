@@ -1,0 +1,20 @@
+{
+  "name": "SenioriSelko",
+  "short_name": "SenioriSelko",
+  "description": "Lämmin appi senioreille — ohjeet, apuri, juttuseura ja hätänappi",
+  "start_url": "/SenioriselkoMVP/",
+  "scope": "/SenioriselkoMVP/",
+  "display": "standalone",
+  "background_color": "#F4F1EC",
+  "theme_color": "#F4F1EC",
+  "orientation": "portrait-primary",
+  "lang": "fi",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
