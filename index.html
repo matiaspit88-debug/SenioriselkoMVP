@@ -4,6 +4,12 @@
 <meta charset="utf-8" />
 <title>SenioriSelko</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="SenioriSelko" />
+<meta name="theme-color" content="#f0eee9" />
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" id="touch-icon" href="icon.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
@@ -40,11 +46,15 @@ html, body {
     width: 100vw; height: 100dvh;
     border-radius: 0; box-shadow: none;
   }
+  .mock-statusbar { display: none !important; }
+  .mock-island    { display: none !important; }
+  .safe-top { display: block !important; height: env(safe-area-inset-top, 0px); }
+  .safe-bot { height: calc(90px + env(safe-area-inset-bottom, 0px)) !important; }
+  .dock-inner { padding-bottom: env(safe-area-inset-bottom, 0px) !important; }
 }
-/* Screen fade transition */
+.safe-top { display: none; }
 .screen-enter { animation: fadeIn 0.22s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-/* Drawer slide-in */
 .drawer-enter { animation: slideIn 0.24s cubic-bezier(0.32,0,0.2,1) both; }
 @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 </style>
@@ -67,7 +77,6 @@ const ORB = {
   emer: { c1:'#FFD88A', c2:'#F0973A', c3:'#C86A18', s:'rgba(240,151,58,0.28)' },
 };
 
-/* ─── Orb ─── */
 function Orb({ kind, size=80, halo=false, style={} }) {
   const c = ORB[kind];
   return <div style={{
@@ -80,26 +89,27 @@ function Orb({ kind, size=80, halo=false, style={} }) {
   }} />;
 }
 
-/* ─── StatusBar ─── */
 function StatusBar({ light=false }) {
   const col = light ? 'rgba(255,255,255,0.9)' : '#1A1714';
   return (
-    <div style={{ height:54, display:'flex', alignItems:'flex-end', justifyContent:'space-between', padding:'0 28px 8px', flexShrink:0, pointerEvents:'none' }}>
-      <span style={{ fontSize:16, fontWeight:600, color:col }}>9:41</span>
-      <div style={{ display:'flex', gap:5, alignItems:'center' }}>
-        <svg width="17" height="12" viewBox="0 0 17 12" fill={col}><rect x="0" y="4" width="3" height="8" rx="1" opacity=".4"/><rect x="4" y="2.5" width="3" height="9.5" rx="1" opacity=".6"/><rect x="8" y="1" width="3" height="11" rx="1" opacity=".8"/><rect x="12" y="0" width="3" height="12" rx="1"/></svg>
-        <svg width="16" height="12" viewBox="0 0 16 12" fill={col}><path d="M8 2.5C10.5 2.5 12.7 3.5 14.2 5.2L15.5 3.8C13.6 1.7 11 0.5 8 0.5C5 0.5 2.4 1.7 0.5 3.8L1.8 5.2C3.3 3.5 5.5 2.5 8 2.5Z"/><path d="M8 5.5C9.8 5.5 11.4 6.3 12.5 7.5L13.8 6.1C12.4 4.6 10.3 3.7 8 3.7C5.7 3.7 3.6 4.6 2.2 6.1L3.5 7.5C4.6 6.3 6.2 5.5 8 5.5Z"/><circle cx="8" cy="10.5" r="1.5"/></svg>
-        <div style={{ display:'flex', alignItems:'center' }}>
-          <div style={{ width:22, height:11, borderRadius:3, border:`1.5px solid ${col}`, padding:'1.5px', display:'flex', alignItems:'center' }}>
-            <div style={{ width:'75%', height:'100%', background:col, borderRadius:1.5 }} />
+    <>
+      <div className="safe-top" />
+      <div className="mock-statusbar" style={{ height:54, display:'flex', alignItems:'flex-end', justifyContent:'space-between', padding:'0 28px 8px', flexShrink:0, pointerEvents:'none' }}>
+        <span style={{ fontSize:16, fontWeight:600, color:col }}>9:41</span>
+        <div style={{ display:'flex', gap:5, alignItems:'center' }}>
+          <svg width="17" height="12" viewBox="0 0 17 12" fill={col}><rect x="0" y="4" width="3" height="8" rx="1" opacity=".4"/><rect x="4" y="2.5" width="3" height="9.5" rx="1" opacity=".6"/><rect x="8" y="1" width="3" height="11" rx="1" opacity=".8"/><rect x="12" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill={col}><path d="M8 2.5C10.5 2.5 12.7 3.5 14.2 5.2L15.5 3.8C13.6 1.7 11 0.5 8 0.5C5 0.5 2.4 1.7 0.5 3.8L1.8 5.2C3.3 3.5 5.5 2.5 8 2.5Z"/><path d="M8 5.5C9.8 5.5 11.4 6.3 12.5 7.5L13.8 6.1C12.4 4.6 10.3 3.7 8 3.7C5.7 3.7 3.6 4.6 2.2 6.1L3.5 7.5C4.6 6.3 6.2 5.5 8 5.5Z"/><circle cx="8" cy="10.5" r="1.5"/></svg>
+          <div style={{ display:'flex', alignItems:'center' }}>
+            <div style={{ width:22, height:11, borderRadius:3, border:`1.5px solid ${col}`, padding:'1.5px', display:'flex', alignItems:'center' }}>
+              <div style={{ width:'75%', height:'100%', background:col, borderRadius:1.5 }} />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
-/* ─── BottomDock ─── */
 function BottomDock({ active, navigate }) {
   const items = [
     { kind:'ai', label:'Apuri', screen:'ai' },
@@ -108,7 +118,8 @@ function BottomDock({ active, navigate }) {
     { kind:'emer', label:'Hätä', screen:'sos' },
   ];
   return (
-    <div style={{ position:'absolute', bottom:0, left:0, right:0, height:90, background:'rgba(240,238,233,0.9)', backdropFilter:'blur(20px)', borderTop:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'flex-start', justifyContent:'space-around', paddingTop:12, zIndex:50 }}>
+    <div className="safe-bot" style={{ position:'absolute', bottom:0, left:0, right:0, height:90, zIndex:50 }}>
+    <div className="dock-inner" style={{ height:'100%', background:'rgba(240,238,233,0.9)', backdropFilter:'blur(20px)', borderTop:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'flex-start', justifyContent:'space-around', paddingTop:12 }}>
       {items.map(it => {
         const c = ORB[it.kind]; const on = active === it.kind;
         return (
@@ -121,15 +132,14 @@ function BottomDock({ active, navigate }) {
         );
       })}
     </div>
+    </div>
   );
 }
 
-/* ─── Dynamic island ─── */
 function Island() {
-  return <div style={{ position:'absolute', top:12, left:'50%', transform:'translateX(-50%)', width:120, height:34, borderRadius:20, background:'#000', zIndex:100, pointerEvents:'none' }} />;
+  return <div className="mock-island" style={{ position:'absolute', top:12, left:'50%', transform:'translateX(-50%)', width:120, height:34, borderRadius:20, background:'#000', zIndex:100, pointerEvents:'none' }} />;
 }
 
-/* ─── Drawer ─── */
 function Drawer({ onClose, navigate, fontSize, setFontSize }) {
   const nav = [
     { kind:'ai', label:'Apuri', screen:'ai' },
@@ -168,7 +178,6 @@ function Drawer({ onClose, navigate, fontSize, setFontSize }) {
   );
 }
 
-/* ─── HomeScreen ─── */
 function HomeScreen({ navigate, openDrawer }) {
   const tiles = [
     { kind:'ai', label:'Apuri', sub:'Kysy mitä vaan', screen:'ai' },
@@ -210,7 +219,6 @@ function HomeScreen({ navigate, openDrawer }) {
   );
 }
 
-/* ─── LockScreen ─── */
 function LockScreen({ navigate }) {
   return (
     <div style={{ width:'100%', height:'100%', background:'linear-gradient(160deg,#2A2420 0%,#1A1714 60%,#2E2418 100%)', display:'flex', flexDirection:'column' }}>
@@ -239,7 +247,6 @@ function LockScreen({ navigate }) {
   );
 }
 
-/* ─── AIScreen ─── */
 function AIScreen({ navigate }) {
   const [listening, setListening] = useState(true);
   const waves = [.4,.7,1,.8,.5,.9,.6,1,.7,.4,.8,.5];
@@ -288,7 +295,6 @@ function AIScreen({ navigate }) {
   );
 }
 
-/* ─── ChatScreen ─── */
 function ChatScreen({ navigate }) {
   const [msgs, setMsgs] = useState([
     { from:'bot', text:'Hei Matti! Mukava jutella taas. Miten päiväsi on mennyt? 😊' },
@@ -344,12 +350,11 @@ function ChatScreen({ navigate }) {
   );
 }
 
-/* ─── HelpScreen ─── */
 function HelpScreen({ navigate }) {
   const guides = [
-    { icon:'📱', title:'Miten soitan videolle?', time:'3 min', cat:'Puhelu', step:1 },
-    { icon:'📷', title:'Kuinka lähetän kuvan?', time:'4 min', cat:'Kuvat', step:1 },
-    { icon:'🔒', title:'Salasanan vaihtaminen', time:'5 min', cat:'Turvallisuus', step:1 },
+    { icon:'📱', title:'Miten soitan videolle?', time:'3 min', cat:'Puhelu' },
+    { icon:'📷', title:'Kuinka lähetän kuvan?', time:'4 min', cat:'Kuvat' },
+    { icon:'🔒', title:'Salasanan vaihtaminen', time:'5 min', cat:'Turvallisuus' },
   ];
   return (
     <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
@@ -386,7 +391,6 @@ function HelpScreen({ navigate }) {
   );
 }
 
-/* ─── GuideScreen ─── */
 const GUIDE_STEPS = [
   { img:'📱', title:'Avaa kameraohjelma', body:'Etsi puhelimesi etusivulta kameran kuvake. Se näyttää pieneltä kameralta.' },
   { img:'👆', title:'Napauta kameran kuvaketta', body:'Paina kamerakuvaketta kerran. Ohjelma avautuu muutamassa sekunnissa.' },
@@ -436,7 +440,6 @@ function GuideScreen({ navigate }) {
   );
 }
 
-/* ─── SOSScreen ─── */
 function SOSScreen({ navigate }) {
   const [count, setCount] = useState(5);
   const [called, setCalled] = useState(false);
@@ -493,7 +496,6 @@ function SOSScreen({ navigate }) {
   );
 }
 
-/* ─── App ─── */
 function App() {
   const [screen, setScreen] = useState('lock');
   const [prevScreen, setPrev] = useState(null);
@@ -534,6 +536,26 @@ function App() {
 }
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+<script>
+(function() {
+  try {
+    const c = document.createElement('canvas');
+    c.width = c.height = 180;
+    const ctx = c.getContext('2d');
+    const g = ctx.createLinearGradient(0, 0, 180, 180);
+    g.addColorStop(0, '#8AB8FF'); g.addColorStop(1, '#3F7FE0');
+    ctx.fillStyle = g;
+    if (ctx.roundRect) ctx.roundRect(0, 0, 180, 180, 38); else ctx.rect(0, 0, 180, 180);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.94)';
+    ctx.font = 'italic bold 108px Georgia,serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('S', 90, 96);
+    const el = document.getElementById('touch-icon');
+    if (el) el.href = c.toDataURL('image/png');
+  } catch(e) {}
+})();
 </script>
 </body>
 </html>
