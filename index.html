@@ -44,6 +44,9 @@ html, body {
 /* Screen fade transition */
 .screen-enter { animation: fadeIn 0.22s ease both; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* Drawer slide-in */
+.drawer-enter { animation: slideIn 0.24s cubic-bezier(0.32,0,0.2,1) both; }
+@keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 </style>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
@@ -126,8 +129,47 @@ function Island() {
   return <div style={{ position:'absolute', top:12, left:'50%', transform:'translateX(-50%)', width:120, height:34, borderRadius:20, background:'#000', zIndex:100, pointerEvents:'none' }} />;
 }
 
+/* ─── Drawer ─── */
+function Drawer({ onClose, navigate, fontSize, setFontSize }) {
+  const nav = [
+    { kind:'ai', label:'Apuri', screen:'ai' },
+    { kind:'chat', label:'Juttuseura', screen:'chat' },
+    { kind:'help', label:'Ohjeet', screen:'help' },
+    { kind:'emer', label:'Hätä', screen:'sos' },
+  ];
+  const sizes = [14, 18, 22];
+  return (
+    <>
+      <div onClick={onClose} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.28)', zIndex:20 }} />
+      <div className="drawer-enter" style={{ position:'absolute', top:0, left:0, bottom:0, width:'78%', background:'#f5f3ee', zIndex:30, display:'flex', flexDirection:'column', boxShadow:'4px 0 40px rgba(0,0,0,0.14)' }}>
+        <div style={{ padding:'60px 24px 22px', borderBottom:'1px solid rgba(0,0,0,0.07)' }}>
+          <div style={{ width:64, height:64, borderRadius:22, background:'linear-gradient(135deg,#8AB8FF,#3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, marginBottom:12 }}>👤</div>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:24, color:'#1A1714' }}>Matti Virtanen</div>
+          <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', marginTop:2 }}>matti.v@email.fi</div>
+        </div>
+        <div style={{ padding:'16px', flex:1 }}>
+          {nav.map(it => (
+            <button key={it.kind} onClick={() => { onClose(); navigate(it.screen); }} style={{ width:'100%', display:'flex', alignItems:'center', gap:14, padding:'13px 12px', borderRadius:16, marginBottom:4, background:'none', border:'none', cursor:'pointer', textAlign:'left' }}>
+              <Orb kind={it.kind} size={36} />
+              <span style={{ fontSize:18, fontWeight:500, color:'#1A1714' }}>{it.label}</span>
+            </button>
+          ))}
+        </div>
+        <div style={{ padding:'16px 20px 44px', borderTop:'1px solid rgba(0,0,0,0.07)' }}>
+          <div style={{ fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(60,50,40,0.45)', marginBottom:12 }}>Tekstin koko</div>
+          <div style={{ display:'flex', gap:8 }}>
+            {sizes.map((sz, i) => (
+              <button key={i} onClick={() => setFontSize(sz)} style={{ flex:1, height:44, borderRadius:12, display:'flex', alignItems:'center', justifyContent:'center', background: fontSize===sz?'#3F7FE0':'rgba(0,0,0,0.06)', color: fontSize===sz?'#fff':'rgba(60,50,40,0.6)', fontSize:sz, fontWeight: fontSize===sz?700:400, border:'none', cursor:'pointer', transition:'background .15s' }}>A</button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 /* ─── HomeScreen ─── */
-function HomeScreen({ navigate }) {
+function HomeScreen({ navigate, openDrawer }) {
   const tiles = [
     { kind:'ai', label:'Apuri', sub:'Kysy mitä vaan', screen:'ai' },
     { kind:'chat', label:'Juttuseura', sub:'Onni odottaa', screen:'chat' },
@@ -137,11 +179,14 @@ function HomeScreen({ navigate }) {
   return (
     <div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column', background:'#f0eee9' }}>
       <StatusBar />
-      <div style={{ padding:'8px 28px 18px' }}>
-        <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginBottom:3 }}>Tiistai, 5. toukokuuta</div>
-        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:30, color:'#1A1714', lineHeight:1.15 }}>
-          Hyvää iltapäivää,<br /><em>Matti</em>
+      <div style={{ padding:'8px 28px 18px', display:'flex', alignItems:'flex-start', justifyContent:'space-between' }}>
+        <div>
+          <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginBottom:3 }}>Tiistai, 5. toukokuuta</div>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:30, color:'#1A1714', lineHeight:1.15 }}>
+            Hyvää iltapäivää,<br /><em>Matti</em>
+          </div>
         </div>
+        <button onClick={openDrawer} style={{ marginTop:4, width:44, height:44, borderRadius:14, background:'linear-gradient(135deg,#8AB8FF,#3F7FE0)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, border:'none', cursor:'pointer', boxShadow:'0 4px 12px rgba(63,127,224,0.3)', flexShrink:0 }}>👤</button>
       </div>
       <div style={{ flex:1, padding:'0 20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
         {tiles.map(t => (
@@ -452,15 +497,20 @@ function SOSScreen({ navigate }) {
 function App() {
   const [screen, setScreen] = useState('lock');
   const [prevScreen, setPrev] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [fontSize, setFontSize] = useState(18);
 
   const navigate = useCallback((s) => {
     setPrev(screen);
     setScreen(s);
   }, [screen]);
 
+  const openDrawer = useCallback(() => setDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setDrawerOpen(false), []);
+
   const screenMap = {
     lock:  <LockScreen navigate={navigate} />,
-    home:  <HomeScreen navigate={navigate} />,
+    home:  <HomeScreen navigate={navigate} openDrawer={openDrawer} />,
     ai:    <AIScreen navigate={navigate} />,
     chat:  <ChatScreen navigate={navigate} />,
     help:  <HelpScreen navigate={navigate} />,
@@ -469,11 +519,16 @@ function App() {
   };
 
   return (
-    <div className="phone-wrap">
+    <div className="phone-wrap" style={{ fontSize }}>
       <Island />
       <div key={screen} className="screen-enter" style={{ width:'100%', height:'100%' }}>
         {screenMap[screen] ?? screenMap.home}
       </div>
+      {drawerOpen && (
+        <div style={{ position:'absolute', inset:0, zIndex:20 }}>
+          <Drawer onClose={closeDrawer} navigate={navigate} fontSize={fontSize} setFontSize={setFontSize} />
+        </div>
+      )}
     </div>
   );
 }
