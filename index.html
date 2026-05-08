@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="utf-8" />
+<title>SenioriSelko</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f0eee9; --bg-card: rgba(255,255,255,0.6);
+  --ink: #1A1714; --ink-2: rgba(60,50,40,0.7); --ink-3: rgba(60,50,40,0.45);
+  --hairline: rgba(0,0,0,0.07);
+  --ai: #3F7FE0; --chat: #A381DC; --help: #F18A6E; --emer: #F0973A;
+}
+html, body {
+  width: 100%; height: 100%;
+  background: #e8e4dd;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+#root {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.phone-wrap {
+  position: relative;
+  width: 390px; height: 844px;
+  border-radius: 52px;
+  background: var(--bg);
+  box-shadow: 0 40px 100px rgba(40,30,20,0.22), 0 0 0 1px rgba(0,0,0,0.08);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+@media (max-width: 430px) {
+  html, body { background: var(--bg); }
+  .phone-wrap {
+    width: 100vw; height: 100dvh;
+    border-radius: 0; box-shadow: none;
+  }
+}
+/* Screen fade transition */
+.screen-enter { animation: fadeIn 0.22s ease both; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback } = React;
+
+const PHONE_W = 390;
+const PHONE_H = 844;
+
+const ORB = {
+  ai:   { c1:'#8AB8FF', c2:'#3F7FE0', c3:'#1A4FA8', s:'rgba(63,127,224,0.28)' },
+  chat: { c1:'#D4B8FF', c2:'#A381DC', c3:'#6B4FB8', s:'rgba(163,129,220,0.28)' },
+  help: { c1:'#FFC4A8', c2:'#F18A6E', c3:'#C85A38', s:'rgba(241,138,110,0.28)' },
+  emer: { c1:'#FFD88A', c2:'#F0973A', c3:'#C86A18', s:'rgba(240,151,58,0.28)' },
+};
+
+/* ─── Orb ─── */
+function Orb({ kind, size=80, halo=false, style={} }) {
+  const c = ORB[kind];
+  return <div style={{
+    width:size, height:size, borderRadius:'50%', flexShrink:0,
+    background:`radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2} 52%, ${c.c3})`,
+    boxShadow: halo
+      ? `0 0 ${size*.35}px ${size*.12}px ${c.s}, 0 ${size*.08}px ${size*.22}px rgba(0,0,0,0.13)`
+      : `0 ${size*.05}px ${size*.14}px rgba(0,0,0,0.11)`,
+    ...style,
+  }} />;
+}
+
+/* ─── StatusBar ─── */
+function StatusBar({ light=false }) {
+  const col = light ? 'rgba(255,255,255,0.9)' : '#1A1714';
+  return (
+    <div style={{ height:54, display:'flex', alignItems:'flex-end', justifyContent:'space-between', padding:'0 28px 8px', flexShrink:0, pointerEvents:'none' }}>
+      <span style={{ fontSize:16, fontWeight:600, color:col }}>9:41</span>
+      <div style={{ display:'flex', gap:5, alignItems:'center' }}>
+        <svg width="17" height="12" viewBox="0 0 17 12" fill={col}><rect x="0" y="4" width="3" height="8" rx="1" opacity=".4"/><rect x="4" y="2.5" width="3" height="9.5" rx="1" opacity=".6"/><rect x="8" y="1" width="3" height="11" rx="1" opacity=".8"/><rect x="12" y="0" width="3" height="12" rx="1"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill={col}><path d="M8 2.5C10.5 2.5 12.7 3.5 14.2 5.2L15.5 3.8C13.6 1.7 11 0.5 8 0.5C5 0.5 2.4 1.7 0.5 3.8L1.8 5.2C3.3 3.5 5.5 2.5 8 2.5Z"/><path d="M8 5.5C9.8 5.5 11.4 6.3 12.5 7.5L13.8 6.1C12.4 4.6 10.3 3.7 8 3.7C5.7 3.7 3.6 4.6 2.2 6.1L3.5 7.5C4.6 6.3 6.2 5.5 8 5.5Z"/><circle cx="8" cy="10.5" r="1.5"/></svg>
+        <div style={{ display:'flex', alignItems:'center' }}>
+          <div style={{ width:22, height:11, borderRadius:3, border:`1.5px solid ${col}`, padding:'1.5px', display:'flex', alignItems:'center' }}>
+            <div style={{ width:'75%', height:'100%', background:col, borderRadius:1.5 }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── BottomDock ─── */
+function BottomDock({ active, navigate }) {
+  const items = [
+    { kind:'ai', label:'Apuri', screen:'ai' },
+    { kind:'chat', label:'Juttuseura', screen:'chat' },
+    { kind:'help', label:'Ohjeet', screen:'help' },
+    { kind:'emer', label:'Hätä', screen:'sos' },
+  ];
+  return (
+    <div style={{ position:'absolute', bottom:0, left:0, right:0, height:90, background:'rgba(240,238,233,0.9)', backdropFilter:'blur(20px)', borderTop:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'flex-start', justifyContent:'space-around', paddingTop:12, zIndex:50 }}>
+      {items.map(it => {
+        const c = ORB[it.kind]; const on = active === it.kind;
+        return (
+          <button key={it.kind} onClick={() => navigate(it.screen)} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, background:'none', border:'none', cursor:'pointer', padding:'4px 8px' }}>
+            <div style={{ width:52, height:52, borderRadius:18, background: on?`radial-gradient(circle at 32% 28%, ${c.c1}, ${c.c2})`:'rgba(0,0,0,0.06)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow: on?`0 4px 14px ${c.s}`:'none', transition:'all .18s' }}>
+              <Orb kind={it.kind} size={on?30:26} />
+            </div>
+            <span style={{ fontSize:10, color: on?c.c2:'rgba(60,50,40,0.5)', fontWeight: on?600:400 }}>{it.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─── Dynamic island ─── */
+function Island() {
+  return <div style={{ position:'absolute', top:12, left:'50%', transform:'translateX(-50%)', width:120, height:34, borderRadius:20, background:'#000', zIndex:100, pointerEvents:'none' }} />;
+}
+
+/* ─── HomeScreen ─── */
+function HomeScreen({ navigate }) {
+  const tiles = [
+    { kind:'ai', label:'Apuri', sub:'Kysy mitä vaan', screen:'ai' },
+    { kind:'chat', label:'Juttuseura', sub:'Onni odottaa', screen:'chat' },
+    { kind:'help', label:'Ohjeet', sub:'Vinkit ja oppaat', screen:'help' },
+    { kind:'emer', label:'Hätä', sub:'Apua nopeasti', screen:'sos' },
+  ];
+  return (
+    <div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column', background:'#f0eee9' }}>
+      <StatusBar />
+      <div style={{ padding:'8px 28px 18px' }}>
+        <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginBottom:3 }}>Tiistai, 5. toukokuuta</div>
+        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:30, color:'#1A1714', lineHeight:1.15 }}>
+          Hyvää iltapäivää,<br /><em>Matti</em>
+        </div>
+      </div>
+      <div style={{ flex:1, padding:'0 20px', display:'grid', gridTemplateColumns:'1fr 1fr', gap:14 }}>
+        {tiles.map(t => (
+          <button key={t.kind} onClick={() => navigate(t.screen)} style={{ borderRadius:28, padding:'22px 20px', background:'rgba(255,255,255,0.65)', border:'1px solid rgba(0,0,0,0.06)', boxShadow:'0 2px 12px rgba(40,30,20,0.07)', display:'flex', flexDirection:'column', gap:12, cursor:'pointer', textAlign:'left', transition:'transform .12s, box-shadow .12s' }}
+            onMouseDown={e => e.currentTarget.style.transform='scale(0.97)'}
+            onMouseUp={e => e.currentTarget.style.transform=''}
+            onMouseLeave={e => e.currentTarget.style.transform=''}
+            onTouchStart={e => e.currentTarget.style.transform='scale(0.97)'}
+            onTouchEnd={e => e.currentTarget.style.transform=''}>
+            <Orb kind={t.kind} size={54} halo />
+            <div>
+              <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>{t.label}</div>
+              <div style={{ fontSize:13, color:'rgba(60,50,40,0.6)', marginTop:2 }}>{t.sub}</div>
+            </div>
+          </button>
+        ))}
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="home" navigate={navigate} />
+    </div>
+  );
+}
+
+/* ─── LockScreen ─── */
+function LockScreen({ navigate }) {
+  return (
+    <div style={{ width:'100%', height:'100%', background:'linear-gradient(160deg,#2A2420 0%,#1A1714 60%,#2E2418 100%)', display:'flex', flexDirection:'column' }}>
+      <StatusBar light />
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'space-between', padding:'20px 32px 60px' }}>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:80, color:'rgba(255,255,255,0.92)', lineHeight:1, letterSpacing:'-.02em' }}>9:41</div>
+          <div style={{ fontSize:16, color:'rgba(255,255,255,0.5)', marginTop:8 }}>Tiistai, 5. toukokuuta</div>
+        </div>
+        <div style={{ width:'100%' }}>
+          <div style={{ fontSize:12, color:'rgba(255,255,255,0.4)', letterSpacing:'.1em', textTransform:'uppercase', marginBottom:12, textAlign:'center' }}>Muisto tänään</div>
+          <div style={{ borderRadius:24, padding:20, background:'rgba(255,255,255,0.08)', backdropFilter:'blur(20px)', border:'1px solid rgba(255,255,255,0.12)', display:'flex', alignItems:'center', gap:16 }}>
+            <div style={{ width:64, height:64, borderRadius:18, flexShrink:0, background:'linear-gradient(135deg,#F0973A,#F18A6E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28 }}>👨‍👩‍👧</div>
+            <div>
+              <div style={{ fontSize:17, fontWeight:600, color:'rgba(255,255,255,0.9)' }}>Liisa soitti eilen</div>
+              <div style={{ fontSize:14, color:'rgba(255,255,255,0.5)', marginTop:3 }}>Haluatko soittaa takaisin?</div>
+            </div>
+          </div>
+        </div>
+        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', cursor:'pointer', textAlign:'center' }}>
+          <div style={{ width:48, height:4, borderRadius:2, background:'rgba(255,255,255,0.3)', margin:'0 auto 12px' }} />
+          <div style={{ fontSize:14, color:'rgba(255,255,255,0.45)' }}>Pyyhkäise avataksesi</div>
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ─── AIScreen ─── */
+function AIScreen({ navigate }) {
+  const [listening, setListening] = useState(true);
+  const waves = [.4,.7,1,.8,.5,.9,.6,1,.7,.4,.8,.5];
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 14px', display:'flex', alignItems:'center', gap:12 }}>
+        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer', paddingRight:4 }}>‹</button>
+        <Orb kind="ai" size={36} />
+        <div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>Apuri</div>
+          <div style={{ fontSize:12, color:'rgba(60,50,40,0.5)' }}>Tekoälyavustaja</div>
+        </div>
+      </div>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:28, padding:'0 32px' }}>
+        <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'center', width:200, height:200 }}>
+          <div style={{ position:'absolute', width:200, height:200, borderRadius:'50%', background:'radial-gradient(circle, rgba(63,127,224,0.1) 0%, transparent 70%)' }} />
+          <div style={{ position:'absolute', width:148, height:148, borderRadius:'50%', background:'radial-gradient(circle, rgba(63,127,224,0.17) 0%, transparent 70%)' }} />
+          <Orb kind="ai" size={108} halo style={{ position:'relative', zIndex:1 }} />
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714', marginBottom:8 }}>
+            {listening ? 'Kuuntelen...' : 'Hetki...'}
+          </div>
+          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', lineHeight:1.5, maxWidth:280 }}>
+            Puhu rauhallisesti. Vastaan heti kun olet valmis.
+          </div>
+        </div>
+        <div style={{ display:'flex', alignItems:'center', gap:5, height:44 }}>
+          {waves.map((h,i) => (
+            <div key={i} style={{ width:4, height:44*h, borderRadius:2, background:`rgba(63,127,224,${.3+h*.55})`, transition:'height .3s' }} />
+          ))}
+        </div>
+      </div>
+      <div style={{ padding:'20px 32px 24px', display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
+        <button onClick={() => setListening(l => !l)} style={{ width:80, height:80, borderRadius:'50%', background:'linear-gradient(135deg,#6FA8FF,#3F7FE0)', boxShadow:'0 8px 24px rgba(63,127,224,0.4)', border:'none', cursor:'pointer', fontSize:32, display:'flex', alignItems:'center', justifyContent:'center', transition:'transform .12s' }}
+          onMouseDown={e => e.currentTarget.style.transform='scale(0.93)'}
+          onMouseUp={e => e.currentTarget.style.transform=''}
+          onTouchStart={e => e.currentTarget.style.transform='scale(0.93)'}
+          onTouchEnd={e => e.currentTarget.style.transform=''}>🎙</button>
+        <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)' }}>Napauta lopettaaksesi</div>
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="ai" navigate={navigate} />
+    </div>
+  );
+}
+
+/* ─── ChatScreen ─── */
+function ChatScreen({ navigate }) {
+  const [msgs, setMsgs] = useState([
+    { from:'bot', text:'Hei Matti! Mukava jutella taas. Miten päiväsi on mennyt? 😊' },
+    { from:'user', text:'Ihan hyvin, kävin aamulla puutarhassa.' },
+    { from:'bot', text:'Kuulostaa ihanalta! Mitä siellä puuhailit?' },
+  ]);
+  const [input, setInput] = useState('');
+
+  const send = () => {
+    const t = input.trim();
+    if (!t) return;
+    setMsgs(m => [...m, { from:'user', text:t }]);
+    setInput('');
+    setTimeout(() => setMsgs(m => [...m, { from:'bot', text:'Kuulostaapa hyvältä! Kerro lisää 😊' }]), 800);
+  };
+
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 24px 14px', borderBottom:'1px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', gap:14 }}>
+        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer' }}>‹</button>
+        <div style={{ position:'relative' }}>
+          <Orb kind="chat" size={46} halo />
+          <div style={{ position:'absolute', bottom:0, right:0, width:13, height:13, borderRadius:'50%', background:'#4CAF50', border:'2px solid #f0eee9' }} />
+        </div>
+        <div>
+          <div style={{ fontSize:20, fontWeight:700, color:'#1A1714' }}>Onni</div>
+          <div style={{ fontSize:13, color:'#A381DC' }}>● Paikalla</div>
+        </div>
+      </div>
+      <div style={{ flex:1, padding:'16px 20px 10px', display:'flex', flexDirection:'column', gap:12, overflowY:'auto' }}>
+        {msgs.map((m,i) => {
+          const bot = m.from==='bot';
+          return (
+            <div key={i} style={{ display:'flex', justifyContent:bot?'flex-start':'flex-end', alignItems:'flex-end', gap:8 }}>
+              {bot && <Orb kind="chat" size={30} style={{ flexShrink:0 }} />}
+              <div style={{ maxWidth:'76%', padding:'13px 17px', borderRadius:bot?'20px 20px 20px 6px':'20px 20px 6px 20px', background:bot?'rgba(255,255,255,0.75)':'linear-gradient(135deg,#C4A8F0,#A381DC)', color:bot?'#1A1714':'#fff', fontSize:17, lineHeight:1.45, boxShadow:'0 2px 8px rgba(40,30,20,0.07)', border:bot?'1px solid rgba(0,0,0,0.05)':'none' }}>
+                {m.text}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div style={{ padding:'10px 18px 18px' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:10, background:'rgba(255,255,255,0.72)', borderRadius:28, padding:'8px 8px 8px 18px', border:'1px solid rgba(0,0,0,0.07)' }}>
+          <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key==='Enter' && send()} placeholder="Kirjoita viesti..." style={{ flex:1, background:'none', border:'none', outline:'none', fontSize:17, color:'#1A1714' }} />
+          <button onClick={send} style={{ width:50, height:50, borderRadius:'50%', background:'linear-gradient(135deg,#D4B8FF,#A381DC)', border:'none', cursor:'pointer', fontSize:22, display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 4px 12px rgba(163,129,220,0.4)' }}>🎙</button>
+        </div>
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="chat" navigate={navigate} />
+    </div>
+  );
+}
+
+/* ─── HelpScreen ─── */
+function HelpScreen({ navigate }) {
+  const guides = [
+    { icon:'📱', title:'Miten soitan videolle?', time:'3 min', cat:'Puhelu', step:1 },
+    { icon:'📷', title:'Kuinka lähetän kuvan?', time:'4 min', cat:'Kuvat', step:1 },
+    { icon:'🔒', title:'Salasanan vaihtaminen', time:'5 min', cat:'Turvallisuus', step:1 },
+  ];
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 16px', display:'flex', alignItems:'center', gap:12 }}>
+        <button onClick={() => navigate('home')} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer' }}>‹</button>
+        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:28, color:'#1A1714' }}>Ohjeet ja vinkit</div>
+      </div>
+      <div style={{ margin:'0 20px 16px', padding:20, borderRadius:24, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', boxShadow:'0 8px 24px rgba(241,138,110,0.3)' }}>
+        <div style={{ fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', color:'rgba(255,255,255,0.75)', marginBottom:5 }}>Päivän vinkki</div>
+        <div style={{ fontSize:19, fontWeight:700, color:'#fff', lineHeight:1.3 }}>Paina ja pidä kuvaa — saat lisävalinnat</div>
+        <div style={{ fontSize:14, color:'rgba(255,255,255,0.8)', marginTop:5 }}>Toimii galleriassa ja viesteissä</div>
+      </div>
+      <div style={{ padding:'0 20px', display:'flex', gap:8, marginBottom:14 }}>
+        {['Kaikki','Puhelut','Kuvat','Turva'].map((c,i) => (
+          <div key={c} style={{ padding:'8px 14px', borderRadius:20, fontSize:13, fontWeight:i===0?600:400, background:i===0?'#F18A6E':'rgba(255,255,255,0.65)', color:i===0?'#fff':'rgba(60,50,40,0.7)', border:'1px solid rgba(0,0,0,0.06)', cursor:'pointer' }}>{c}</div>
+        ))}
+      </div>
+      <div style={{ flex:1, padding:'0 20px', display:'flex', flexDirection:'column', gap:10, overflowY:'auto' }}>
+        {guides.map((g,i) => (
+          <button key={i} onClick={() => navigate('guide')} style={{ padding:'16px 18px', borderRadius:20, display:'flex', alignItems:'center', gap:16, background:'rgba(255,255,255,0.65)', border:'1px solid rgba(0,0,0,0.05)', cursor:'pointer', textAlign:'left' }}>
+            <div style={{ width:52, height:52, borderRadius:16, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, flexShrink:0 }}>{g.icon}</div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:17, fontWeight:600, color:'#1A1714' }}>{g.title}</div>
+              <div style={{ fontSize:13, color:'rgba(60,50,40,0.5)', marginTop:2 }}>{g.cat} · {g.time}</div>
+            </div>
+            <div style={{ fontSize:22, color:'rgba(60,50,40,0.3)' }}>›</div>
+          </button>
+        ))}
+      </div>
+      <div style={{ height:90 }} />
+      <BottomDock active="help" navigate={navigate} />
+    </div>
+  );
+}
+
+/* ─── GuideScreen ─── */
+const GUIDE_STEPS = [
+  { img:'📱', title:'Avaa kameraohjelma', body:'Etsi puhelimesi etusivulta kameran kuvake. Se näyttää pieneltä kameralta.' },
+  { img:'👆', title:'Napauta kameran kuvaketta', body:'Paina kamerakuvaketta kerran. Ohjelma avautuu muutamassa sekunnissa.' },
+  { img:'🔄', title:'Valitse selfie-tila', body:'Etsi pyöreä nuoli-kuvake. Sen avulla kamera kääntyy katsomaan sinuun päin.' },
+  { img:'😊', title:'Katso kameraan', body:'Katso suoraan puhelimen etukameraan ja hymyile. Olet valmis!' },
+  { img:'📸', title:'Ota kuva', body:'Paina isoa pyöreää nappia ruudun alareunassa. Kuva on otettu!' },
+];
+
+function GuideScreen({ navigate }) {
+  const [step, setStep] = useState(0);
+  const s = GUIDE_STEPS[step];
+  return (
+    <div style={{ width:'100%', height:'100%', background:'#f0eee9', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 12px', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+        <button onClick={() => step===0 ? navigate('help') : setStep(s => s-1)} style={{ background:'none', border:'none', fontSize:24, color:'rgba(60,50,40,0.4)', cursor:'pointer' }}>‹</button>
+        <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)', fontWeight:500 }}>Vaihe {step+1} / {GUIDE_STEPS.length}</div>
+        <div style={{ width:24 }} />
+      </div>
+      <div style={{ margin:'0 28px 20px', display:'flex', gap:6 }}>
+        {GUIDE_STEPS.map((_,i) => <div key={i} style={{ flex:1, height:4, borderRadius:2, background:i<=step?'#F18A6E':'rgba(0,0,0,0.1)', transition:'background .25s' }} />)}
+      </div>
+      <div key={step} className="screen-enter" style={{ margin:'0 24px 22px', borderRadius:28, height:210, background:'linear-gradient(135deg,#FFF0E8,#FFD4B8)', display:'flex', alignItems:'center', justifyContent:'center', flexDirection:'column', gap:10 }}>
+        <div style={{ fontSize:76 }}>{s.img}</div>
+      </div>
+      <div key={step+'t'} className="screen-enter" style={{ padding:'0 28px', flex:1 }}>
+        <div style={{ fontSize:12, color:'#F18A6E', fontWeight:600, letterSpacing:'.08em', textTransform:'uppercase', marginBottom:8 }}>Vaihe {step+1}</div>
+        <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:26, color:'#1A1714', lineHeight:1.3, marginBottom:10 }}>{s.title}</div>
+        <div style={{ fontSize:17, color:'rgba(60,50,40,0.65)', lineHeight:1.55 }}>{s.body}</div>
+      </div>
+      <div style={{ padding:'16px 24px 36px' }}>
+        {step < GUIDE_STEPS.length-1 ? (
+          <button onClick={() => setStep(s => s+1)} style={{ width:'100%', height:64, borderRadius:22, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', border:'none', cursor:'pointer', fontSize:20, fontWeight:700, color:'#fff', boxShadow:'0 8px 20px rgba(241,138,110,0.35)', transition:'transform .12s' }}
+            onMouseDown={e => e.currentTarget.style.transform='scale(0.97)'}
+            onMouseUp={e => e.currentTarget.style.transform=''}
+            onTouchStart={e => e.currentTarget.style.transform='scale(0.97)'}
+            onTouchEnd={e => e.currentTarget.style.transform=''}>
+            Seuraava →
+          </button>
+        ) : (
+          <button onClick={() => { setStep(0); navigate('help'); }} style={{ width:'100%', height:64, borderRadius:22, background:'linear-gradient(135deg,#FFC4A8,#F18A6E)', border:'none', cursor:'pointer', fontSize:20, fontWeight:700, color:'#fff', boxShadow:'0 8px 20px rgba(241,138,110,0.35)' }}>
+            Valmis ✓
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ─── SOSScreen ─── */
+function SOSScreen({ navigate }) {
+  const [count, setCount] = useState(5);
+  const [called, setCalled] = useState(false);
+
+  useEffect(() => {
+    if (called) return;
+    if (count <= 0) { setCalled(true); return; }
+    const t = setTimeout(() => setCount(c => c-1), 1000);
+    return () => clearTimeout(t);
+  }, [count, called]);
+
+  const cancel = () => { setCount(5); setCalled(false); navigate('home'); };
+
+  return (
+    <div style={{ width:'100%', height:'100%', background:'linear-gradient(170deg,#FFF5E8 0%,#FFE8C8 50%,#FFDAA8 100%)', display:'flex', flexDirection:'column' }}>
+      <StatusBar />
+      <div style={{ padding:'4px 28px 0', display:'flex', justifyContent:'flex-end' }}>
+        <button onClick={cancel} style={{ padding:'10px 20px', borderRadius:16, background:'rgba(0,0,0,0.09)', fontSize:16, fontWeight:600, color:'#1A1714', border:'none', cursor:'pointer' }}>Peruuta</button>
+      </div>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'0 32px', gap:22 }}>
+        <div style={{ position:'relative', display:'flex', alignItems:'center', justifyContent:'center', width:200, height:200 }}>
+          <div style={{ position:'absolute', width:200, height:200, borderRadius:'50%', background:'rgba(240,151,58,0.1)' }} />
+          <div style={{ position:'absolute', width:155, height:155, borderRadius:'50%', background:'rgba(240,151,58,0.16)' }} />
+          <div style={{ position:'absolute', width:110, height:110, borderRadius:'50%', background:'rgba(240,151,58,0.22)' }} />
+          <Orb kind="emer" size={82} halo style={{ zIndex:1 }} />
+        </div>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontFamily:'Instrument Serif, Georgia, serif', fontSize:26, color:'#1A1714', marginBottom:12 }}>
+            {called ? 'Soitetaan...' : 'Soitetaan hätänumeroon'}
+          </div>
+          {!called && (
+            <div style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:72, height:72, borderRadius:'50%', background:'rgba(240,151,58,0.15)', border:'3px solid #F0973A', fontFamily:'Instrument Serif, Georgia, serif', fontSize:44, color:'#C86A18', fontWeight:700, transition:'all .3s' }}>{count}</div>
+          )}
+          {called && <div style={{ fontSize:60 }}>📞</div>}
+          <div style={{ fontSize:15, color:'rgba(60,50,40,0.6)', marginTop:10 }}>
+            {called ? 'Yhteys muodostettu' : 'Soitto alkaa automaattisesti'}
+          </div>
+        </div>
+      </div>
+      <div style={{ padding:'0 20px 36px' }}>
+        <div style={{ fontSize:11, letterSpacing:'.1em', textTransform:'uppercase', color:'rgba(60,50,40,0.5)', marginBottom:10, paddingLeft:4 }}>Tai soita läheiselle</div>
+        {[{ name:'Liisa (tytär)', phone:'040 123 4567' },{ name:'Pekka (poika)', phone:'050 765 4321' }].map((c,i) => (
+          <div key={i} style={{ display:'flex', alignItems:'center', gap:14, padding:'13px 16px', borderRadius:20, marginBottom:10, background:'rgba(255,255,255,0.55)', border:'1px solid rgba(0,0,0,0.06)' }}>
+            <div style={{ width:44, height:44, borderRadius:14, background:'linear-gradient(135deg,#FFD88A,#F0973A)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, flexShrink:0 }}>👤</div>
+            <div style={{ flex:1 }}>
+              <div style={{ fontSize:17, fontWeight:600, color:'#1A1714' }}>{c.name}</div>
+              <div style={{ fontSize:14, color:'rgba(60,50,40,0.5)' }}>{c.phone}</div>
+            </div>
+            <div style={{ width:44, height:44, borderRadius:14, background:'#4CAF50', display:'flex', alignItems:'center', justifyContent:'center', fontSize:20, cursor:'pointer' }}>📞</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── App ─── */
+function App() {
+  const [screen, setScreen] = useState('lock');
+  const [prevScreen, setPrev] = useState(null);
+
+  const navigate = useCallback((s) => {
+    setPrev(screen);
+    setScreen(s);
+  }, [screen]);
+
+  const screenMap = {
+    lock:  <LockScreen navigate={navigate} />,
+    home:  <HomeScreen navigate={navigate} />,
+    ai:    <AIScreen navigate={navigate} />,
+    chat:  <ChatScreen navigate={navigate} />,
+    help:  <HelpScreen navigate={navigate} />,
+    guide: <GuideScreen navigate={navigate} />,
+    sos:   <SOSScreen navigate={navigate} />,
+  };
+
+  return (
+    <div className="phone-wrap">
+      <Island />
+      <div key={screen} className="screen-enter" style={{ width:'100%', height:'100%' }}>
+        {screenMap[screen] ?? screenMap.home}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
