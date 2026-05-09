@@ -1,6 +1,9 @@
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import HeroScene from './components/3d/HeroScene'
+import GuideScreen from './components/screens/GuideScreen'
+
+type Screen = 'hero' | 'guide'
 
 function MicIcon() {
   return (
@@ -12,6 +15,12 @@ function MicIcon() {
 }
 
 export default function App() {
+  const [screen, setScreen] = useState<Screen>('hero')
+
+  if (screen === 'guide') {
+    return <GuideScreen onBack={() => setScreen('hero')} />
+  }
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-bg">
       <Canvas
@@ -35,6 +44,12 @@ export default function App() {
             <MicIcon />
           </div>
           <p className="text-ink-3 text-sm">Napauta aloittaaksesi</p>
+          <button
+            onClick={() => setScreen('guide')}
+            className="mt-2 px-5 py-2 rounded-full bg-white/70 text-sm font-medium text-ink-2 backdrop-blur border border-black/5"
+          >
+            Kokeile Ohjeet →
+          </button>
         </div>
       </div>
     </div>
