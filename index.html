@@ -80,8 +80,13 @@ html, body {
 /* ── Touch / tap fixes ── */
 button, a  { touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; }
 input      { touch-action: manipulation; }
-/* Prevent scroll chaining on iOS */
-.ss-screen > div[style*="overflow"] { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+/* iOS scroll helper — apply to any content div that needs touch scroll */
+.ss-scroll {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
 
 /* ── Screen base ── */
 .ss-screen {
@@ -148,7 +153,7 @@ input      { touch-action: manipulation; }
 /* ── Floating dock pill ── */
 .ss-dock {
   position: absolute;
-  left: 50%; bottom: 28px;
+  left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   display: flex; align-items: center; gap: 10px;
   padding: 10px;
@@ -161,10 +166,9 @@ input      { touch-action: manipulation; }
   z-index: 40;
 }
 .ss-dock-item {
-  height: auto; min-width: 52px;
-  border-radius: 16px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; padding: 6px 8px 5px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
   background: transparent; border: none; cursor: pointer;
 }
 
@@ -424,10 +428,10 @@ function TopBar({ onMenu, right, dark = false }) {
 
 function Dock({ active = 'home', onChange }) {
   const items = [
-    { key: 'home', icon: Icon.home, kind: 'soft', label: 'Etusivu' },
-    { key: 'ai',   icon: Icon.mic,  kind: 'ai',   label: 'Apuri' },
-    { key: 'chat', icon: Icon.chat, kind: 'chat', label: 'Juttu' },
-    { key: 'book', icon: Icon.book, kind: 'help', label: 'Ohjeet' },
+    { key: 'home', icon: Icon.home, kind: 'soft' },
+    { key: 'ai',   icon: Icon.mic,  kind: 'ai'   },
+    { key: 'chat', icon: Icon.chat, kind: 'chat'  },
+    { key: 'book', icon: Icon.book, kind: 'help'  },
   ];
   return (
     <div className="ss-dock">
@@ -455,11 +459,6 @@ function Dock({ active = 'home', onChange }) {
                 {it.icon(22)}
               </div>
             )}
-            <span style={{
-              fontSize: 10, letterSpacing: '0.01em',
-              color: on ? 'var(--ink)' : 'var(--ink-3)',
-              fontWeight: on ? 600 : 400,
-            }}>{it.label}</span>
           </button>
         );
       })}
@@ -529,10 +528,10 @@ function HomeScreen({ onNavigate, onMenu }) {
           {Icon.sun(16)}&nbsp;<span style={{ fontWeight: 500 }}>Helsinki · 4°</span>
         </div>
       } />
-      <div style={{
+      <div className="ss-scroll" style={{
         position: 'absolute', inset: 0, paddingTop: 116,
-        paddingLeft: 24, paddingRight: 24, paddingBottom: 130,
-        overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+        paddingLeft: 24, paddingRight: 24,
+        paddingBottom: 'calc(120px + env(safe-area-inset-bottom, 0px))',
         display: 'flex', flexDirection: 'column',
       }}>
         <div style={{ marginBottom: 22 }}>
@@ -633,7 +632,7 @@ function AIScreen({ onNavigate, onMenu }) {
         </div>
 
         <div style={{
-          marginTop: 'auto', marginBottom: 140, maxWidth: 320,
+          marginTop: 24, maxWidth: 320,
           fontFamily: 'var(--serif)', fontSize: 26, lineHeight: 1.2,
           letterSpacing: '-0.01em', minHeight: 64, color: 'var(--ink)',
         }}>
@@ -642,7 +641,9 @@ function AIScreen({ onNavigate, onMenu }) {
         </div>
 
         <div style={{
-          position: 'absolute', bottom: 130, left: 0, right: 0,
+          position: 'absolute',
+          bottom: 'calc(108px + env(safe-area-inset-bottom, 0px))',
+          left: 0, right: 0,
           display: 'flex', justifyContent: 'center', gap: 18,
         }}>
           <button style={ctrlBtn}>{Icon.text(22)}</button>
@@ -718,11 +719,12 @@ function ChatScreen({ onNavigate, onMenu }) {
 
       <div
         ref={scrollRef}
+        className="ss-scroll"
         style={{
           position: 'absolute', inset: 0,
-          paddingTop: 116, paddingBottom: 220,
+          paddingTop: 116,
+          paddingBottom: 'calc(200px + env(safe-area-inset-bottom, 0px))',
           paddingLeft: 22, paddingRight: 22,
-          overflowY: 'auto', WebkitOverflowScrolling: 'touch',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -751,7 +753,9 @@ function ChatScreen({ onNavigate, onMenu }) {
       </div>
 
       <div style={{
-        position: 'absolute', bottom: 128, left: 22, right: 22,
+        position: 'absolute',
+        bottom: 'calc(108px + env(safe-area-inset-bottom, 0px))',
+        left: 22, right: 22,
         background: 'rgba(255,255,255,0.85)',
         backdropFilter: 'blur(20px) saturate(180%)',
         WebkitBackdropFilter: 'blur(20px) saturate(180%)',
@@ -818,10 +822,10 @@ function HelpScreen({ onNavigate, onMenu }) {
         </button>
       } />
 
-      <div style={{
+      <div className="ss-scroll" style={{
         position: 'absolute', inset: 0,
-        paddingTop: 116, paddingLeft: 24, paddingRight: 24, paddingBottom: 130,
-        overflowY: 'auto', WebkitOverflowScrolling: 'touch', WebkitOverflowScrolling: 'touch',
+        paddingTop: 116, paddingLeft: 24, paddingRight: 24,
+        paddingBottom: 'calc(120px + env(safe-area-inset-bottom, 0px))',
       }}>
         <div className="ss-eyebrow">Ohjeet</div>
         <div className="ss-display" style={{ marginTop: 10, fontSize: 44 }}>
@@ -919,10 +923,10 @@ function GuideScreen({ onNavigate, onMenu }) {
         </button>
       } />
 
-      <div style={{
+      <div className="ss-scroll" style={{
         position: 'absolute', inset: 0,
-        paddingTop: 116, paddingLeft: 24, paddingRight: 24, paddingBottom: 130,
-        overflowY: 'auto', WebkitOverflowScrolling: 'touch',
+        paddingTop: 116, paddingLeft: 24, paddingRight: 24,
+        paddingBottom: 'calc(110px + env(safe-area-inset-bottom, 0px))',
       }}>
         <div className="ss-eyebrow" style={{ marginBottom: 12 }}>Vaihe {step + 1} / {GUIDE_STEPS.length}</div>
         <div key={step} className="ss-display ss-fade" style={{ fontSize: 36 }}>
@@ -968,8 +972,8 @@ function GuideScreen({ onNavigate, onMenu }) {
       </div>
 
       <div style={{
-        position: 'absolute', bottom: 30, left: 22, right: 22,
-        display: 'flex', gap: 10, zIndex: 30,
+        position: 'absolute', bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))',
+        left: 22, right: 22, display: 'flex', gap: 10, zIndex: 30,
       }}>
         <button onClick={prev} style={{
           height: 64, padding: '0 26px', borderRadius: 32,
@@ -1068,7 +1072,7 @@ function SOSScreen({ onNavigate, onMenu }) {
           </div>
         </div>
 
-        <div style={{ marginTop: 'auto', marginBottom: 44, width: '100%' }}>
+        <div style={{ marginTop: 'auto', marginBottom: 'calc(44px + env(safe-area-inset-bottom, 0px))', width: '100%' }}>
           <div className="ss-tiny" style={{ marginBottom: 12, color: '#7a4a14' }}>Tai valitse joku muu</div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 16 }}>
             {contacts.map(c => (
