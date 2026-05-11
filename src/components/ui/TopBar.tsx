@@ -19,7 +19,7 @@ export default function TopBar({ onMenu, right, dark = false }: TopBarProps) {
         onClick={onMenu}
         style={{
           width: 44, height: 44, borderRadius: '50%',
-          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
           color, cursor: 'pointer',
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
