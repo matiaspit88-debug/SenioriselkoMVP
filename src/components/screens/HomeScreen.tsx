@@ -12,19 +12,36 @@ const TILES = [
   { key: 'sos'  as Screen, kind: 'emer' as const, title: 'Hätä',       sub: 'Soita läheiselle',  floatClass: 'ss-float-d' },
 ]
 
+const DAY_NAMES = ['Sunnuntai', 'Maanantai', 'Tiistai', 'Keskiviikko', 'Torstai', 'Perjantai', 'Lauantai']
+
+function getDateLabel() {
+  const now = new Date()
+  return `${DAY_NAMES[now.getDay()]} · ${now.getDate()}.${now.getMonth() + 1}.`
+}
+
+function getGreeting() {
+  const h = new Date().getHours()
+  if (h < 12) return 'aamua'
+  if (h < 18) return 'iltapäivää'
+  return 'iltaa'
+}
+
 interface HomeScreenProps {
   onNavigate: (s: Screen) => void
   onMenu: () => void
 }
 
 export default function HomeScreen({ onNavigate, onMenu }: HomeScreenProps) {
+  const greeting = getGreeting()
+  const dateLabel = getDateLabel()
+
   return (
     <div className="ss-screen">
       <StatusBar />
       <TopBar onMenu={onMenu} right={
         <div style={{
           padding: '10px 16px', borderRadius: 999,
-          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           fontSize: 14, color: 'var(--ink-2)',
           display: 'flex', alignItems: 'center', gap: 8,
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
@@ -40,8 +57,8 @@ export default function HomeScreen({ onNavigate, onMenu }: HomeScreenProps) {
       }}>
         <div style={{ padding: '12px 24px 20px' }}>
           <div style={{ marginBottom: 22 }}>
-            <div className="ss-eyebrow" style={{ marginBottom: 10 }}>Sunnuntai · 26.4.</div>
-            <div className="ss-display">Hyvää<br /><em>iltapäivää, Aino</em></div>
+            <div className="ss-eyebrow" style={{ marginBottom: 10 }}>{dateLabel}</div>
+            <div className="ss-display">Hyvää<br /><em>{greeting}, Aino</em></div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginTop: 4 }}>

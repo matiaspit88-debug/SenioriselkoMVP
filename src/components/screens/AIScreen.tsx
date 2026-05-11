@@ -9,7 +9,7 @@ import { Icons } from '../ui/icons'
 const ctrlBtn: React.CSSProperties = {
   width: 60, height: 60, borderRadius: '50%',
   border: '1px solid var(--hairline)',
-  background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+  background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   color: 'var(--ink)', cursor: 'pointer', fontFamily: 'inherit',
 }
@@ -27,7 +27,7 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
       <TopBar onMenu={onMenu} right={
         <button onClick={() => onNavigate('home')} style={{
           padding: '10px 18px', borderRadius: 999,
-          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           border: 'none', fontSize: 15, color: 'var(--ink-2)',
           fontWeight: 500, fontFamily: 'inherit', cursor: 'pointer',
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',
@@ -42,8 +42,7 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         textAlign: 'center', padding: '12px 28px 0', overflow: 'hidden',
       }}>
-        <div className="ss-eyebrow">Apuri kuuntelee</div>
-        <div className="ss-display" style={{ marginTop: 10, fontSize: 36, maxWidth: 300 }}>
+        <div className="ss-display" style={{ marginTop: 4, fontSize: 36, maxWidth: 300 }}>
           Kysy <em>mitä tahansa.</em>
         </div>
         <div className="ss-body" style={{ marginTop: 8, maxWidth: 280, fontSize: 15 }}>
@@ -54,9 +53,22 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
           <Orb kind="ai" size={200} halo={true} pulse={true} orbClass="ss-morph" />
         </div>
 
-        <div style={{ paddingBottom: 12, maxWidth: 300, fontFamily: 'var(--serif)', fontSize: 23, lineHeight: 1.2, letterSpacing: '-0.01em', color: 'var(--ink)' }}>
-          <span>"Mihin aikaan </span>
-          <span style={{ color: 'var(--ink-3)' }}>tytär tulee tänään käymään?"</span>
+        <div style={{
+          marginBottom: 10,
+          padding: '8px 20px', borderRadius: 999,
+          background: active ? 'rgba(63,127,224,0.12)' : 'rgba(200,194,187,0.4)',
+          display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'background 0.3s',
+        }}>
+          {active && (
+            <span style={{
+              width: 8, height: 8, borderRadius: '50%',
+              background: 'var(--ai)', display: 'inline-block',
+              animation: 'ss-pulse 1.2s ease-in-out infinite',
+            }} />
+          )}
+          <span style={{ fontSize: 14, fontWeight: 600, color: active ? 'var(--ai)' : 'var(--ink-3)', letterSpacing: '0.02em' }}>
+            {active ? 'Kuuntelee…' : 'Paina mikrofoni aloittaaksesi'}
+          </span>
         </div>
       </div>
 

@@ -26,6 +26,15 @@ export default {
         serif: ['Instrument Serif', 'Georgia', 'serif'],
         sans: ['system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
+      keyframes: {
+        fade: {
+          from: { opacity: '0', transform: 'translateY(6px)' },
+          to:   { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        fade: 'fade 0.5s ease-out both',
+      },
     },
   },
   plugins: [],
