@@ -9,7 +9,7 @@ import { Icons } from '../ui/icons'
 const ctrlBtn: React.CSSProperties = {
   width: 60, height: 60, borderRadius: '50%',
   border: '1px solid var(--hairline)',
-  background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+  background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   color: 'var(--ink)', cursor: 'pointer', fontFamily: 'inherit',
 }
@@ -27,7 +27,7 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
       <TopBar onMenu={onMenu} right={
         <button onClick={() => onNavigate('home')} style={{
           padding: '10px 18px', borderRadius: 999,
-          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           border: 'none', fontSize: 15, color: 'var(--ink-2)',
           fontWeight: 500, fontFamily: 'inherit', cursor: 'pointer',
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',

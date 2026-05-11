@@ -42,7 +42,7 @@ export default function GuideScreen({ onBack }: GuideScreenProps) {
     <div className="relative w-full h-screen overflow-hidden bg-[#F4F1EC] font-sans flex flex-col">
 
       {/* ── Top bar ── */}
-      <div className="flex items-center justify-between px-6 pt-14 pb-3 shrink-0">
+      <div className="flex items-center justify-between px-6 pb-3 shrink-0" style={{ paddingTop: 'max(56px, calc(14px + env(safe-area-inset-top, 0px)))' }}>
         <button
           onClick={onBack}
           className="w-11 h-11 rounded-full bg-white/70 backdrop-blur flex items-center justify-center border border-black/5 text-[#5A544D]"

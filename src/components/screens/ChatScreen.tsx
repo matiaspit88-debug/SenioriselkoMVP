@@ -93,7 +93,7 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
         <div style={{
           display: 'flex', alignItems: 'center',
           padding: 4, borderRadius: 999,
-          background: 'rgba(255,255,255,0.55)', backdropFilter: 'blur(10px)',
+          background: 'rgba(255,255,255,0.55)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.05)', gap: 2,
         }}>
           <button style={segStyle(!isInfo)} onClick={() => switchMode('companion')}>

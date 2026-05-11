@@ -59,7 +59,7 @@ export default function SOSScreen({ onNavigate }: SOSScreenProps) {
         {!called && (
           <button onClick={cancel} style={{
             padding: '16px 36px', borderRadius: 999, background: 'rgba(255,255,255,0.7)',
-            backdropFilter: 'blur(10px)', border: 'none',
+            backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)', border: 'none',
             fontSize: 17, fontWeight: 600, color: 'var(--ink)', cursor: 'pointer',
             fontFamily: 'inherit', marginBottom: 40,
           }}>

@@ -19,11 +19,20 @@
   --ink-3: #8E867D;
   --ink-4: #C9C2B7;
   --hairline: rgba(26,23,20,0.08);
+
+  /* Solid brand colors */
+  --ai:   #3F7FE0;
+  --chat: #A381DC;
+  --help: #F18A6E;
+  --emer: #F0973A;
+
+  /* Orb gradients */
   --g-help: radial-gradient(circle at 35% 30%, #FFE4D2 0%, #FFB39A 35%, #F18A6E 65%, #C75A4D 100%);
   --g-ai:   radial-gradient(circle at 30% 25%, #DDF0FF 0%, #8FC6FF 35%, #3F7FE0 70%, #18316E 100%);
   --g-chat: radial-gradient(circle at 35% 30%, #F4E6FF 0%, #D5B6F2 35%, #A381DC 70%, #5A3A9E 100%);
   --g-emer: radial-gradient(circle at 35% 30%, #FFF1D2 0%, #FFD487 35%, #F0973A 70%, #B25208 100%);
   --g-soft: radial-gradient(circle at 30% 30%, #FFFFFF 0%, #F4ECE2 50%, #E5D6C4 100%);
+
   --serif: 'Instrument Serif', 'Georgia', serif;
   --sans:  'Geist', -apple-system, system-ui, sans-serif;
 }

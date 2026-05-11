@@ -24,7 +24,7 @@ export default function HomeScreen({ onNavigate, onMenu }: HomeScreenProps) {
       <TopBar onMenu={onMenu} right={
         <div style={{
           padding: '10px 16px', borderRadius: 999,
-          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           fontSize: 14, color: 'var(--ink-2)',
           display: 'flex', alignItems: 'center', gap: 8,
           boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.04)',

@@ -28,7 +28,7 @@ export default function HelpScreen({ onNavigate, onMenu }: HelpScreenProps) {
       <TopBar onMenu={onMenu} right={
         <button style={{
           width: 44, height: 44, borderRadius: '50%',
-          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)',
+          background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'var(--ink-2)', cursor: 'pointer',
         }}>
@@ -50,7 +50,7 @@ export default function HelpScreen({ onNavigate, onMenu }: HelpScreenProps) {
                 background: cat === c ? 'var(--ink)' : 'rgba(255,255,255,0.7)',
                 color: cat === c ? '#fff' : 'var(--ink-2)',
                 border: 'none', fontFamily: 'inherit', fontSize: 14, fontWeight: 500,
-                cursor: 'pointer', backdropFilter: 'blur(10px)',
+                cursor: 'pointer', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
                 boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.06)',
               }}>
                 {c}
