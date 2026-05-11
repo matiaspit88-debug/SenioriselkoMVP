@@ -20,4 +20,5 @@ export const Icons = {
   plus:    (size: number) => (<svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>),
   search:  (size: number) => s(size, <><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></>),
   chevron: (size: number) => s(size, <path d="M9 5l7 7-7 7"/>),
+  send:    (size: number) => s(size, <><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></>),
 }

@@ -167,11 +167,12 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
         />
         <button onClick={send} style={{
           width: 56, height: 56, borderRadius: '50%', border: 'none',
-          background: sendGradient, color: '#fff',
+          background: input.trim() ? sendGradient : 'rgba(200,194,187,0.6)',
+          color: input.trim() ? '#fff' : 'var(--ink-3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', flexShrink: 0, transition: 'background 0.3s',
+          cursor: 'pointer', flexShrink: 0, transition: 'background 0.25s, color 0.25s',
         }}>
-          {Icons.mic(24)}
+          {input.trim() ? Icons.send(22) : Icons.mic(24)}
         </button>
       </div>
 

@@ -30,7 +30,7 @@ function HeroView({ onStart }: { onStart: () => void }) {
         </Suspense>
       </Canvas>
 
-      <div className="relative z-10 flex flex-col items-center justify-between h-full px-6 pt-14 pb-10 pointer-events-none select-none">
+      <div className="relative z-10 flex flex-col items-center justify-between h-full px-6 pb-10 pointer-events-none select-none" style={{ paddingTop: 'max(56px, calc(14px + env(safe-area-inset-top, 0px)))' }}>
         <div className="text-center">
           <p className="font-serif italic text-[#1A1714] text-5xl leading-tight tracking-tight">SenioriSelko</p>
           <p className="mt-1 text-[#8E867D] text-sm tracking-widest uppercase font-medium">Lämmin appi senioreille</p>
