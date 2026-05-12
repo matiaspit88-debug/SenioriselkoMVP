@@ -2,6 +2,7 @@ import { Suspense, useState, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { Screen } from './types'
 import HeroScene from './components/3d/HeroScene'
+import PinScreen from './components/screens/PinScreen'
 import HomeScreen from './components/screens/HomeScreen'
 import AIScreen from './components/screens/AIScreen'
 import ChatScreen from './components/screens/ChatScreen'
@@ -25,21 +26,6 @@ function HeroView({ onStart }: { onStart: () => void }) {
       background: '#F4F1EC', overflow: 'hidden',
     }}>
 
-      {/* Brand — above the canvas, never overlaps WebGL */}
-      <div style={{
-        textAlign: 'center', flexShrink: 0,
-        paddingTop: 'max(52px, env(safe-area-inset-top, 0px))',
-        padding: 'max(52px, env(safe-area-inset-top, 0px)) 24px 12px',
-      }}>
-        <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 40, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-          SenioriSelko
-        </p>
-        <p style={{ color: '#8E867D', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 500, marginTop: 5 }}>
-          Lämmin appi senioreille
-        </p>
-      </div>
-
-      {/* 3D Canvas — flex:1 takes whatever height remains between brand and CTA */}
       <div style={{ flex: 1, minHeight: 0 }}>
         <Canvas
           camera={{ position: [0, 0, 5], fov: 45 }}
@@ -51,10 +37,7 @@ function HeroView({ onStart }: { onStart: () => void }) {
         </Canvas>
       </div>
 
-      {/* Trust message + pills + CTA — below the canvas, never overlaps WebGL */}
-      <div style={{
-        flexShrink: 0, display: 'flex', flexDirection: 'column',
-        alignItems: 'center', gap: 14, textAlign: 'center',
+
         padding: '4px 24px max(28px, env(safe-area-inset-bottom, 28px))',
       }}>
         <div>
@@ -96,7 +79,7 @@ function HeroView({ onStart }: { onStart: () => void }) {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('hero')
+  const [screen, setScreen] = useState<Screen>('pin')
   const [drawer, setDrawer] = useState(false)
   const [fontSize, setFontSize] = useState(18)
 
@@ -104,9 +87,8 @@ export default function App() {
   const openDrawer  = useCallback(() => setDrawer(true), [])
   const closeDrawer = useCallback(() => setDrawer(false), [])
 
-  if (screen === 'hero') {
-    return <HeroView onStart={() => navigate('home')} />
-  }
+  if (screen === 'pin')  return <PinScreen onSuccess={() => navigate('hero')} />
+  if (screen === 'hero') return <HeroView  onStart={() => navigate('home')} />
 
   const renderScreen = () => {
     switch (screen) {

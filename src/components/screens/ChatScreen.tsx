@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import type { Screen, ChatMode, Message } from '../../types'
+import { askClaude, type ClaudeMessage } from '../../lib/claude'
 import Orb from '../ui/Orb'
 import StatusBar from '../ui/StatusBar'
 import TopBar from '../ui/TopBar'
@@ -20,22 +21,6 @@ const INFO_MSGS: Message[] = [
   { from: 'bot',  text: 'Apteekki: arkisin 9–18, lauantai 9–15, sunnuntai kiinni.' },
 ]
 
-const COMPANION_REPLIES = [
-  'Kuulostaa tärkeältä. Haluatko kertoa lisää?',
-  'Ymmärrän sinut. Olet nähnyt niin paljon elämässä.',
-  'Se on aivan luonnollinen tunne. Onni on tässä sinulle.',
-  'Hyvä että kerroit. Kuinka voin auttaa tänään?',
-  'Kuuntelen. Jatka vain omaan tahtiisi.',
-]
-
-const INFO_REPLIES = [
-  'Apteekki on auki arkisin kello 9–18.',
-  'Keliä kannattaa seurata Yle Sää -sovelluksesta.',
-  'Muistineuvolaan voi soittaa numeroon 116 117.',
-  'Yleensä lääkäriaika saa 1–3 arkipäivässä.',
-  'Kysyin varmasti — voin hakea lisätietoa tarvittaessa.',
-]
-
 interface ChatScreenProps {
   onNavigate: (s: Screen) => void
   onMenu: () => void
@@ -53,6 +38,7 @@ const segStyle = (active: boolean): React.CSSProperties => ({
 export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
   const [chatMode, setChatMode] = useState<ChatMode>('companion')
   const [msgs, setMsgs] = useState<Message[]>(COMPANION_MSGS)
+  const [claudeHistory, setClaudeHistory] = useState<ClaudeMessage[]>([])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -64,22 +50,29 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
   const switchMode = (m: ChatMode) => {
     setChatMode(m)
     setMsgs(m === 'info' ? INFO_MSGS : COMPANION_MSGS)
+    setClaudeHistory([])
     setTyping(false)
     setInput('')
   }
 
-  const send = () => {
+  const send = async () => {
     const t = input.trim()
-    if (!t) return
+    if (!t || typing) return
+
+    const userMsg: ClaudeMessage = { role: 'user', content: t }
+    const newHistory = [...claudeHistory, userMsg]
+
     setMsgs(m => [...m, { from: 'user', text: t }])
     setInput('')
     setTyping(true)
-    const replies = chatMode === 'info' ? INFO_REPLIES : COMPANION_REPLIES
-    const reply = replies[Math.floor(Math.random() * replies.length)]
-    setTimeout(() => {
-      setTyping(false)
-      setMsgs(m => [...m, { from: 'bot', text: reply }])
-    }, 1200)
+    setClaudeHistory(newHistory)
+
+    const mode = chatMode === 'info' ? 'info' : 'companion'
+    const reply = await askClaude(newHistory, mode)
+
+    setClaudeHistory(h => [...h, { role: 'assistant', content: reply }])
+    setTyping(false)
+    setMsgs(m => [...m, { from: 'bot', text: reply }])
   }
 
   const isInfo = chatMode === 'info'
@@ -114,7 +107,7 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
         <div style={{ padding: '8px 22px 16px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ textAlign: 'center', color: 'var(--ink-3)', fontSize: 12, marginBottom: 4, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Tänään · 14.12
+              Tänään
             </div>
             <div style={{ textAlign: 'center', marginBottom: 8 }}>
               <span style={{
@@ -165,12 +158,14 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
           placeholder={placeholder}
           style={{ flex: 1, background: 'none', border: 'none', outline: 'none', fontSize: 17, color: 'var(--ink)', fontFamily: 'inherit' }}
         />
-        <button onClick={send} style={{
+        <button onClick={send} disabled={typing} style={{
           width: 56, height: 56, borderRadius: '50%', border: 'none',
           background: input.trim() ? sendGradient : 'rgba(200,194,187,0.6)',
           color: input.trim() ? '#fff' : 'var(--ink-3)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', flexShrink: 0, transition: 'background 0.25s, color 0.25s',
+          cursor: typing ? 'default' : 'pointer', flexShrink: 0,
+          transition: 'background 0.25s, color 0.25s',
+          opacity: typing ? 0.6 : 1,
         }}>
           {input.trim() ? Icons.send(22) : Icons.mic(24)}
         </button>

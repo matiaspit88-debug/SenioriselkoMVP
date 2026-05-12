@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Screen } from '../../types'
+import { askClaude } from '../../lib/claude'
 import Orb from '../ui/Orb'
 import StatusBar from '../ui/StatusBar'
 import TopBar from '../ui/TopBar'
@@ -20,12 +21,37 @@ interface AIScreenProps {
 }
 
 export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
-  const [active, setActive] = useState(true)
+  const [active, setActive] = useState(false)
+  const [response, setResponse] = useState('')
+
+  const handleMic = async () => {
+    if (active) {
+      setActive(false)
+      return
+    }
+    setActive(true)
+    setResponse('')
+    // Simulate 1.5s "listening" before sending to Claude
+    await new Promise(r => setTimeout(r, 1500))
+    const reply = await askClaude(
+      [{ role: 'user', content: 'Hei Onni, miten voit auttaa minua tänään?' }],
+      'companion',
+    )
+    setActive(false)
+    setResponse(reply)
+  }
+
+  const handleClose = () => {
+    setActive(false)
+    setResponse('')
+    onNavigate('home')
+  }
+
   return (
     <div className="ss-screen">
       <StatusBar />
       <TopBar onMenu={onMenu} right={
-        <button onClick={() => onNavigate('home')} style={{
+        <button onClick={handleClose} style={{
           padding: '10px 18px', borderRadius: 999,
           background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
           border: 'none', fontSize: 15, color: 'var(--ink-2)',
@@ -54,7 +80,7 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
         </div>
 
         <div style={{
-          marginBottom: 10,
+          marginBottom: 8,
           padding: '8px 20px', borderRadius: 999,
           background: active ? 'rgba(63,127,224,0.12)' : 'rgba(200,194,187,0.4)',
           display: 'inline-flex', alignItems: 'center', gap: 8, transition: 'background 0.3s',
@@ -70,6 +96,16 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
             {active ? 'Kuuntelee…' : 'Paina mikrofoni aloittaaksesi'}
           </span>
         </div>
+
+        {response && (
+          <div style={{
+            marginTop: 10, maxWidth: 300, paddingBottom: 8,
+            fontFamily: 'var(--serif)', fontSize: 20, lineHeight: 1.35,
+            color: 'var(--ink)', textAlign: 'center',
+          }}>
+            "{response}"
+          </div>
+        )}
       </div>
 
       <div style={{
@@ -80,7 +116,7 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
       }}>
         <button style={ctrlBtn}>{Icons.text(22)}</button>
         <button
-          onClick={() => setActive(a => !a)}
+          onClick={handleMic}
           style={{
             ...ctrlBtn,
             background: active ? '#1A1714' : 'rgba(255,255,255,0.7)',
@@ -93,7 +129,7 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
             <span className="b" /><span className="b" /><span className="b" />
           </span>
         </button>
-        <button style={ctrlBtn}>{Icons.close(22)}</button>
+        <button onClick={handleClose} style={ctrlBtn}>{Icons.close(22)}</button>
       </div>
 
       <Dock active="ai" onChange={onNavigate} />
