@@ -38,6 +38,9 @@ function HeroView({ onStart }: { onStart: () => void }) {
       </div>
 
 
+      <div style={{
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20,
+        textAlign: 'center',
         padding: '4px 24px max(28px, env(safe-area-inset-bottom, 28px))',
       }}>
         <div>
