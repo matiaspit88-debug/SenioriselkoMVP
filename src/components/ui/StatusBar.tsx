@@ -77,9 +77,9 @@ export default function StatusBar({ dark = false }: StatusBarProps) {
     <div className="ss-status" style={{ color: c }}>
       <span>{time}</span>
       {weather && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: c2, fontWeight: 600, fontSize: 15 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: c2, fontWeight: 500, fontSize: 14 }}>
           <WeatherGlyph icon={weather.icon} color={c2} />
-          <span>{weather.temp}°</span>
+          <span>Helsinki · {weather.temp}°</span>
         </div>
       )}
     </div>
