@@ -261,7 +261,7 @@ input      { touch-action: manipulation; }
   position: relative;
   width: 100%;
   height: 100%;
-  border-radius: 36% 36% 36% 36% / 36% 36% 36% 36%;
+  border-radius: 62px 62px 62px 62px / 62px 62px 62px 62px;
   background:
     /* Top inner highlight */
     radial-gradient(ellipse 55% 25% at 50% 10%, rgba(255, 215, 165, 0.28) 0%, transparent 70%),
@@ -284,7 +284,7 @@ input      { touch-action: manipulation; }
     inset 0 36px 80px rgba(12, 5, 3, 0.70),
     inset 0 0 120px rgba(255, 200, 140, 0.12);
   animation:
-    pin-orb-morph 11s ease-in-out infinite,
+    pin-orb-morph 9s ease-in-out infinite,
     pin-orb-glow 4.5s ease-in-out infinite alternate;
 }
 .pin-orb::before {
@@ -308,11 +308,13 @@ input      { touch-action: manipulation; }
   animation: pin-orb-glow 4.5s ease-in-out infinite alternate;
 }
 @keyframes pin-orb-morph {
-  0%,100% { border-radius: 36% 36% 36% 36% / 36% 36% 36% 36%; }
-  20%     { border-radius: 38% 34% 37% 35% / 35% 38% 35% 36%; }
-  40%     { border-radius: 34% 38% 35% 37% / 38% 35% 37% 34%; }
-  60%     { border-radius: 37% 35% 38% 34% / 36% 38% 34% 37%; }
-  80%     { border-radius: 35% 37% 34% 38% / 37% 34% 38% 35%; }
+  0%,100% { border-radius: 62px 62px 62px 62px / 62px 62px 62px 62px; }
+  15%     { border-radius: 80px 48px 72px 52px / 55px 78px 52px 70px; }
+  30%     { border-radius: 50px 76px 54px 68px / 74px 50px 68px 56px; }
+  45%     { border-radius: 74px 54px 64px 74px / 58px 70px 56px 64px; }
+  60%     { border-radius: 52px 70px 50px 78px / 72px 54px 76px 50px; }
+  75%     { border-radius: 68px 52px 76px 56px / 50px 72px 54px 74px; }
+  90%     { border-radius: 54px 72px 58px 66px / 68px 56px 70px 58px; }
 }
 @keyframes pin-orb-glow {
   0%   { filter: brightness(1) saturate(1); }
