@@ -1,6 +1,6 @@
-// SenioriSelko — Cloudflare Worker CORS proxy for Anthropic API
+// SenioriSelko — Cloudflare Worker CORS proxy for Groq API
 // Deploy: wrangler deploy
-// Secret: wrangler secret put ANTHROPIC_API_KEY
+// Secret: wrangler secret put GROQ_API_KEY
 
 const ALLOWED_ORIGINS = [
   'https://matiaspit88-debug.github.io',
@@ -34,12 +34,11 @@ export default {
       return new Response('Invalid JSON', { status: 400 })
     }
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json',
+        'Authorization': `Bearer ${env.GROQ_API_KEY}`,
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
     })
