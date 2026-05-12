@@ -34,7 +34,7 @@ export default function AIScreen({ onNavigate, onMenu }: AIScreenProps) {
     // Simulate 1.5s "listening" before sending to Claude
     await new Promise(r => setTimeout(r, 1500))
     const reply = await askClaude(
-      [{ role: 'user', content: 'Hei Onni, miten voit auttaa minua tänään?' }],
+      [{ role: 'user', content: 'Hei, miten voit auttaa minua tänään?' }],
       'companion',
     )
     setActive(false)

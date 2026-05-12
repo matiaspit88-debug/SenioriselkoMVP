@@ -1,29 +1,20 @@
 import { useState, useEffect, useRef } from 'react'
-import type { Screen, ChatMode, Message } from '../../types'
-import { askClaude, type ClaudeMessage } from '../../lib/claude'
+import type { Screen, ChatMode } from '../../types'
+import { askClaude } from '../../lib/claude'
+import type { ModeSession } from '../../App'
 import Orb from '../ui/Orb'
 import StatusBar from '../ui/StatusBar'
 import TopBar from '../ui/TopBar'
 import Dock from '../ui/Dock'
 import { Icons } from '../ui/icons'
 
-const COMPANION_MSGS: Message[] = [
-  { from: 'bot',  text: 'Hei Aino! Mukava kuulla sinusta. Miltä sinusta tuntuu tänä iltapäivänä?' },
-  { from: 'user', text: 'Sade taukosi vihdoin. Kävin pihalla.' },
-  { from: 'bot',  text: 'Hienoa että ehdit ulos. Tuoksuiko ilma raikkaalta sateen jälkeen?' },
-  { from: 'user', text: 'Mullalta tuoksui. Liisa tulee illalla.' },
-  { from: 'bot',  text: 'Voi mukavaa, Liisahan on tyttäresi. Mitä aiotte tehdä yhdessä?' },
-]
-
-const INFO_MSGS: Message[] = [
-  { from: 'bot',  text: 'Hei Aino! Mitä haluaisit tietää tänään? Kysy rohkeasti — täällä ei tuomita.' },
-  { from: 'user', text: 'Milloin apteekki on auki?' },
-  { from: 'bot',  text: 'Apteekki: arkisin 9–18, lauantai 9–15, sunnuntai kiinni.' },
-]
-
 interface ChatScreenProps {
   onNavigate: (s: Screen) => void
   onMenu: () => void
+  miloSession: ModeSession
+  setMiloSession: React.Dispatch<React.SetStateAction<ModeSession>>
+  apuriSession: ModeSession
+  setApuriSession: React.Dispatch<React.SetStateAction<ModeSession>>
 }
 
 const segStyle = (active: boolean): React.CSSProperties => ({
@@ -35,22 +26,26 @@ const segStyle = (active: boolean): React.CSSProperties => ({
   transition: 'background 0.2s, box-shadow 0.2s',
 })
 
-export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
+export default function ChatScreen({
+  onNavigate, onMenu,
+  miloSession, setMiloSession,
+  apuriSession, setApuriSession,
+}: ChatScreenProps) {
   const [chatMode, setChatMode] = useState<ChatMode>('companion')
-  const [msgs, setMsgs] = useState<Message[]>(COMPANION_MSGS)
-  const [claudeHistory, setClaudeHistory] = useState<ClaudeMessage[]>([])
   const [input, setInput] = useState('')
   const [typing, setTyping] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  const isInfo = chatMode === 'info'
+  const session = isInfo ? apuriSession : miloSession
+  const setSession = isInfo ? setApuriSession : setMiloSession
+
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-  }, [msgs, typing])
+  }, [session.msgs, typing])
 
   const switchMode = (m: ChatMode) => {
     setChatMode(m)
-    setMsgs(m === 'info' ? INFO_MSGS : COMPANION_MSGS)
-    setClaudeHistory([])
     setTyping(false)
     setInput('')
   }
@@ -59,25 +54,30 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
     const t = input.trim()
     if (!t || typing) return
 
-    const userMsg: ClaudeMessage = { role: 'user', content: t }
-    const newHistory = [...claudeHistory, userMsg]
+    const userMsg = { role: 'user' as const, content: t }
+    const baseHistory = session.started ? session.history : []
+    const newHistory = [...baseHistory, userMsg]
 
-    setMsgs(m => [...m, { from: 'user', text: t }])
+    setSession(s => ({
+      started: true,
+      msgs: [...(s.started ? s.msgs : []), { from: 'user' as const, text: t }],
+      history: newHistory,
+    }))
     setInput('')
     setTyping(true)
-    setClaudeHistory(newHistory)
 
-    const mode = chatMode === 'info' ? 'info' : 'companion'
-    const reply = await askClaude(newHistory, mode)
+    const reply = await askClaude(newHistory, isInfo ? 'info' : 'companion')
 
-    setClaudeHistory(h => [...h, { role: 'assistant', content: reply }])
+    setSession(s => ({
+      ...s,
+      msgs: [...s.msgs, { from: 'bot' as const, text: reply }],
+      history: [...s.history, { role: 'assistant' as const, content: reply }],
+    }))
     setTyping(false)
-    setMsgs(m => [...m, { from: 'bot', text: reply }])
   }
 
-  const isInfo = chatMode === 'info'
   const sendGradient = isInfo ? 'var(--g-ai)' : 'var(--g-chat)'
-  const placeholder = isInfo ? 'Kysy mitä tahansa…' : 'Kerro kuulumisesi, Onni kuuntelee…'
+  const placeholder = isInfo ? 'Kysy mitä tahansa…' : 'Kerro kuulumisesi, Milo kuuntelee…'
 
   return (
     <div className="ss-screen">
@@ -91,7 +91,7 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
         }}>
           <button style={segStyle(!isInfo)} onClick={() => switchMode('companion')}>
             <Orb kind="chat" size={26} halo={false} />
-            <span style={{ fontSize: 13, color: 'var(--ink-2)', fontWeight: 600 }}>Onni</span>
+            <span style={{ fontSize: 13, color: 'var(--ink-2)', fontWeight: 600 }}>Milo</span>
           </button>
           <button style={segStyle(isInfo)} onClick={() => switchMode('info')}>
             <Orb kind="ai" size={26} halo={false} />
@@ -117,10 +117,10 @@ export default function ChatScreen({ onNavigate, onMenu }: ChatScreenProps) {
                 borderRadius: 999, padding: '4px 12px',
                 fontWeight: 600, letterSpacing: '0.04em',
               }}>
-                {isInfo ? 'Apuri — lyhyet vastaukset' : 'Onni — seurasi, aina paikalla'}
+                {isInfo ? 'Apuri — lyhyet vastaukset' : 'Milo — seurasi, aina paikalla'}
               </span>
             </div>
-            {msgs.map((m, i) => (
+            {session.msgs.map((m, i) => (
               <div key={i} className="ss-fade" style={{ display: 'flex', justifyContent: m.from === 'bot' ? 'flex-start' : 'flex-end' }}>
                 <div className={`ss-bubble ${m.from === 'bot' ? 'bot' : 'user'}`}>{m.text}</div>
               </div>
