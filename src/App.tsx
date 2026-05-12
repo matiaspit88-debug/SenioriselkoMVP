@@ -19,51 +19,79 @@ const SECTIONS = [
 
 function HeroView({ onStart }: { onStart: () => void }) {
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-[#F4F1EC]">
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
-        className="absolute inset-0"
-        gl={{ antialias: true, alpha: true }}
-      >
-        <Suspense fallback={null}>
-          <HeroScene />
-        </Suspense>
-      </Canvas>
+    <div style={{ position: 'fixed', inset: 0, background: '#F4F1EC', overflow: 'hidden' }}>
 
-      <div className="relative z-10 flex flex-col items-center justify-between h-full px-6 pb-10 pointer-events-none select-none" style={{ paddingTop: 'max(56px, calc(14px + env(safe-area-inset-top, 0px)))' }}>
-        <div className="text-center">
-          <p className="font-serif italic text-[#1A1714] text-5xl leading-tight tracking-tight">SenioriSelko</p>
-          <p className="mt-1 text-[#8E867D] text-sm tracking-widest uppercase font-medium">Lämmin appi senioreille</p>
+      {/* Canvas wrapper — inline absolute so R3F can't override with its own position:relative */}
+      <div style={{ position: 'absolute', inset: 0 }}>
+        <Canvas
+          camera={{ position: [0, 0, 5], fov: 45 }}
+          gl={{ antialias: true, alpha: true }}
+        >
+          <Suspense fallback={null}>
+            <HeroScene />
+          </Suspense>
+        </Canvas>
+      </div>
+
+      {/* Text + CTA — absolute + high z-index ensures it renders above the WebGL canvas */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 10,
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingTop: 'max(56px, env(safe-area-inset-top, 0px))',
+        paddingBottom: 40, paddingLeft: 24, paddingRight: 24,
+      }}>
+
+        {/* Brand */}
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 42, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+            SenioriSelko
+          </p>
+          <p style={{ color: '#8E867D', fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 500, marginTop: 6 }}>
+            Lämmin appi senioreille
+          </p>
         </div>
 
-        <div className="flex flex-col items-center gap-5 text-center">
+        {/* Trust message + section pills */}
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div>
-            <p className="font-serif italic text-[#1A1714] leading-snug" style={{ fontSize: 30 }}>
-              Täällä voit puhua<br /><em>kaiken ääneen.</em>
+            <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 30, lineHeight: 1.25 }}>
+              Täällä voit puhua<br />kaiken ääneen.
             </p>
-            <p className="mt-3 text-[#8E867D] text-sm tracking-wide">
-              Ei tuomita.&nbsp; Ei kiirettä.&nbsp; Aina paikalla.
+            <p style={{ color: '#8E867D', fontSize: 14, letterSpacing: '0.03em', marginTop: 12 }}>
+              Ei tuomita.&nbsp;&nbsp;Ei kiirettä.&nbsp;&nbsp;Aina paikalla.
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-2 mt-1">
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
             {SECTIONS.map(s => (
-              <span key={s.label} style={{ background: s.bg, color: s.color }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-sm">
-                <span style={{ background: s.color }} className="w-2 h-2 rounded-full inline-block" />
+              <span key={s.label} style={{
+                background: s.bg, color: s.color,
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '6px 14px', borderRadius: 999,
+                fontSize: 13, fontWeight: 600,
+              }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
                 {s.label}
               </span>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-col items-center gap-3 pointer-events-auto">
+        {/* CTA */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
           <button
             onClick={onStart}
-            className="px-8 py-4 rounded-full text-white font-semibold text-base shadow-lg"
-            style={{ background: 'linear-gradient(135deg, #3F7FE0 0%, #A381DC 100%)', boxShadow: '0 8px 28px rgba(63,127,224,0.35)', minHeight: 56 }}
+            style={{
+              padding: '16px 44px', borderRadius: 999, border: 'none',
+              color: '#fff', fontWeight: 700, fontSize: 18,
+              background: 'linear-gradient(135deg, #3F7FE0 0%, #A381DC 100%)',
+              boxShadow: '0 8px 28px rgba(63,127,224,0.35)',
+              minHeight: 60, cursor: 'pointer', fontFamily: 'inherit',
+            }}
           >
             Aloita →
           </button>
-          <p className="text-[#8E867D] text-xs tracking-wide">Turvallinen &amp; yksityinen</p>
+          <p style={{ color: '#8E867D', fontSize: 13 }}>Turvallinen &amp; yksityinen</p>
         </div>
       </div>
     </div>
