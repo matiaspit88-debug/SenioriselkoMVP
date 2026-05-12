@@ -1,6 +1,7 @@
 import { Suspense, useState, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
-import type { Screen } from './types'
+import type { Screen, Message } from './types'
+import type { ClaudeMessage } from './lib/claude'
 import HeroScene from './components/3d/HeroScene'
 import PinScreen from './components/screens/PinScreen'
 import HomeScreen from './components/screens/HomeScreen'
@@ -11,11 +12,31 @@ import GuideScreen from './components/screens/GuideScreen'
 import SOSScreen from './components/screens/SOSScreen'
 import Drawer from './components/ui/Drawer'
 
+export interface ModeSession {
+  msgs: Message[]
+  history: ClaudeMessage[]
+  started: boolean
+}
+
+const MILO_INIT: Message[] = [
+  { from: 'bot',  text: 'Hei Aino! Mukava kuulla sinusta. Miltä sinusta tuntuu tänä iltapäivänä?' },
+  { from: 'user', text: 'Sade taukosi vihdoin. Kävin pihalla.' },
+  { from: 'bot',  text: 'Voi kuinka ihana! Tuoksuiko ilma raikkaalta sateen jälkeen?' },
+  { from: 'user', text: 'Mullalta tuoksui. Liisa tulee illalla.' },
+  { from: 'bot',  text: 'Ihana juttu — Liisahan on tyttäresi. Mitä aiotte tehdä yhdessä?' },
+]
+
+const APURI_INIT: Message[] = [
+  { from: 'bot',  text: 'Hei Aino! Mitä haluaisit tietää tänään? Kysy rohkeasti.' },
+  { from: 'user', text: 'Milloin apteekki on auki?' },
+  { from: 'bot',  text: 'Apteekki: arkisin 9–18, lauantai 9–15, sunnuntai kiinni.' },
+]
+
 const SECTIONS = [
-  { label: 'Apuri',  color: '#3F7FE0', bg: 'rgba(63,127,224,0.12)' },
-  { label: 'Onni',   color: '#A381DC', bg: 'rgba(163,129,220,0.12)' },
+  { label: 'Apuri', color: '#3F7FE0', bg: 'rgba(63,127,224,0.12)' },
+  { label: 'Milo',  color: '#A381DC', bg: 'rgba(163,129,220,0.12)' },
   { label: 'Ohjeet', color: '#F18A6E', bg: 'rgba(241,138,110,0.12)' },
-  { label: 'Hätä',   color: '#F0973A', bg: 'rgba(240,151,58,0.12)'  },
+  { label: 'Hätä',  color: '#F0973A', bg: 'rgba(240,151,58,0.12)'  },
 ]
 
 function HeroView({ onStart }: { onStart: () => void }) {
@@ -25,7 +46,6 @@ function HeroView({ onStart }: { onStart: () => void }) {
       width: '100%', height: '100%',
       background: '#F4F1EC', overflow: 'hidden',
     }}>
-
       <div style={{ flex: 1, minHeight: 0 }}>
         <Canvas
           camera={{ position: [0, 0, 5], fov: 45 }}
@@ -36,7 +56,6 @@ function HeroView({ onStart }: { onStart: () => void }) {
           </Suspense>
         </Canvas>
       </div>
-
 
       <div style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20,
@@ -86,6 +105,13 @@ export default function App() {
   const [drawer, setDrawer] = useState(false)
   const [fontSize, setFontSize] = useState(18)
 
+  const [miloSession, setMiloSession] = useState<ModeSession>({
+    msgs: MILO_INIT, history: [], started: false,
+  })
+  const [apuriSession, setApuriSession] = useState<ModeSession>({
+    msgs: APURI_INIT, history: [], started: false,
+  })
+
   const navigate = useCallback((s: Screen) => setScreen(s), [])
   const openDrawer  = useCallback(() => setDrawer(true), [])
   const closeDrawer = useCallback(() => setDrawer(false), [])
@@ -97,7 +123,16 @@ export default function App() {
     switch (screen) {
       case 'home':  return <HomeScreen onNavigate={navigate} onMenu={openDrawer} />
       case 'ai':    return <AIScreen   onNavigate={navigate} onMenu={openDrawer} />
-      case 'chat':  return <ChatScreen onNavigate={navigate} onMenu={openDrawer} />
+      case 'chat':  return (
+        <ChatScreen
+          onNavigate={navigate}
+          onMenu={openDrawer}
+          miloSession={miloSession}
+          setMiloSession={setMiloSession}
+          apuriSession={apuriSession}
+          setApuriSession={setApuriSession}
+        />
+      )
       case 'book':  return <HelpScreen onNavigate={navigate} onMenu={openDrawer} />
       case 'guide': return <GuideScreen onBack={() => navigate('book')} />
       case 'sos':   return <SOSScreen  onNavigate={navigate} />
