@@ -248,6 +248,14 @@ input      { touch-action: manipulation; }
 .ss-fade      { animation: ss-fade .5s  ease-out both; }
 .screen-enter { animation: ss-fade .22s ease    both; }
 
+/* ── PIN shake (wrong code) ── */
+@keyframes ss-pin-shake {
+  0%,100%  { transform: translateX(0); }
+  20%,60%  { transform: translateX(-10px); }
+  40%,80%  { transform: translateX(10px); }
+}
+.ss-pin-shake { animation: ss-pin-shake 0.4s ease-out; }
+
 /* ── Typing dots ── */
 .typing-dot { width:8px; height:8px; border-radius:50%; background:var(--ink-3); display:inline-block; animation: ss-bar 1s ease-in-out infinite; }
 

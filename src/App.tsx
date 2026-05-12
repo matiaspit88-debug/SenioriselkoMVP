@@ -2,6 +2,7 @@ import { Suspense, useState, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { Screen } from './types'
 import HeroScene from './components/3d/HeroScene'
+import PinScreen from './components/screens/PinScreen'
 import HomeScreen from './components/screens/HomeScreen'
 import AIScreen from './components/screens/AIScreen'
 import ChatScreen from './components/screens/ChatScreen'
@@ -19,10 +20,26 @@ const SECTIONS = [
 
 function HeroView({ onStart }: { onStart: () => void }) {
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#F4F1EC', overflow: 'hidden' }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column',
+      width: '100%', height: '100%',
+      background: '#F4F1EC', overflow: 'hidden',
+    }}>
+      {/* Brand — above the 3D canvas, never overlaps WebGL */}
+      <div style={{
+        textAlign: 'center', flexShrink: 0,
+        padding: 'max(52px, env(safe-area-inset-top, 0px)) 24px 12px',
+      }}>
+        <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 40, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
+          SenioriSelko
+        </p>
+        <p style={{ color: '#8E867D', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 500, marginTop: 5 }}>
+          Lämmin appi senioreille
+        </p>
+      </div>
 
-      {/* Canvas wrapper — inline absolute so R3F can't override with its own position:relative */}
-      <div style={{ position: 'absolute', inset: 0 }}>
+      {/* 3D Canvas — flex:1 takes remaining height, no HTML overlaps it */}
+      <div style={{ flex: 1, minHeight: 0 }}>
         <Canvas
           camera={{ position: [0, 0, 5], fov: 45 }}
           gl={{ antialias: true, alpha: true }}
@@ -33,73 +50,52 @@ function HeroView({ onStart }: { onStart: () => void }) {
         </Canvas>
       </div>
 
-      {/* Text + CTA — absolute + high z-index ensures it renders above the WebGL canvas */}
+      {/* Trust message + pills + CTA — below canvas, never overlaps WebGL */}
       <div style={{
-        position: 'absolute', inset: 0, zIndex: 10,
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingTop: 'max(56px, env(safe-area-inset-top, 0px))',
-        paddingBottom: 40, paddingLeft: 24, paddingRight: 24,
+        flexShrink: 0, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', gap: 12, textAlign: 'center',
+        padding: '4px 24px max(28px, env(safe-area-inset-bottom, 28px))',
       }}>
-
-        {/* Brand */}
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 42, lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-            SenioriSelko
+        <div>
+          <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 26, lineHeight: 1.25 }}>
+            Täällä voit puhua kaiken ääneen.
           </p>
-          <p style={{ color: '#8E867D', fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 500, marginTop: 6 }}>
-            Lämmin appi senioreille
+          <p style={{ color: '#8E867D', fontSize: 13, marginTop: 8 }}>
+            Ei tuomita.&nbsp;&nbsp;Ei kiirettä.&nbsp;&nbsp;Aina paikalla.
           </p>
         </div>
-
-        {/* Trust message + section pills */}
-        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-          <div>
-            <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 30, lineHeight: 1.25 }}>
-              Täällä voit puhua<br />kaiken ääneen.
-            </p>
-            <p style={{ color: '#8E867D', fontSize: 14, letterSpacing: '0.03em', marginTop: 12 }}>
-              Ei tuomita.&nbsp;&nbsp;Ei kiirettä.&nbsp;&nbsp;Aina paikalla.
-            </p>
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
-            {SECTIONS.map(s => (
-              <span key={s.label} style={{
-                background: s.bg, color: s.color,
-                display: 'inline-flex', alignItems: 'center', gap: 6,
-                padding: '6px 14px', borderRadius: 999,
-                fontSize: 13, fontWeight: 600,
-              }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
-                {s.label}
-              </span>
-            ))}
-          </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 7 }}>
+          {SECTIONS.map(s => (
+            <span key={s.label} style={{
+              background: s.bg, color: s.color,
+              display: 'inline-flex', alignItems: 'center', gap: 5,
+              padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600,
+            }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
+              {s.label}
+            </span>
+          ))}
         </div>
-
-        {/* CTA */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-          <button
-            onClick={onStart}
-            style={{
-              padding: '16px 44px', borderRadius: 999, border: 'none',
-              color: '#fff', fontWeight: 700, fontSize: 18,
-              background: 'linear-gradient(135deg, #3F7FE0 0%, #A381DC 100%)',
-              boxShadow: '0 8px 28px rgba(63,127,224,0.35)',
-              minHeight: 60, cursor: 'pointer', fontFamily: 'inherit',
-            }}
-          >
-            Aloita →
-          </button>
-          <p style={{ color: '#8E867D', fontSize: 13 }}>Turvallinen &amp; yksityinen</p>
-        </div>
+        <button
+          onClick={onStart}
+          style={{
+            padding: '15px 44px', borderRadius: 999, border: 'none',
+            color: '#fff', fontWeight: 700, fontSize: 18,
+            background: 'linear-gradient(135deg, #3F7FE0 0%, #A381DC 100%)',
+            boxShadow: '0 8px 28px rgba(63,127,224,0.35)',
+            minHeight: 58, cursor: 'pointer', fontFamily: 'inherit', width: '100%',
+          }}
+        >
+          Aloita →
+        </button>
+        <p style={{ color: '#8E867D', fontSize: 12 }}>Turvallinen &amp; yksityinen</p>
       </div>
     </div>
   )
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('hero')
+  const [screen, setScreen] = useState<Screen>('pin')
   const [drawer, setDrawer] = useState(false)
   const [fontSize, setFontSize] = useState(18)
 
@@ -107,9 +103,8 @@ export default function App() {
   const openDrawer  = useCallback(() => setDrawer(true), [])
   const closeDrawer = useCallback(() => setDrawer(false), [])
 
-  if (screen === 'hero') {
-    return <HeroView onStart={() => navigate('home')} />
-  }
+  if (screen === 'pin')  return <PinScreen onSuccess={() => navigate('hero')} />
+  if (screen === 'hero') return <HeroView  onStart={() => navigate('home')} />
 
   const renderScreen = () => {
     switch (screen) {
