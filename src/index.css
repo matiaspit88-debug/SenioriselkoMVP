@@ -256,6 +256,43 @@ input      { touch-action: manipulation; }
 }
 .ss-pin-shake { animation: ss-pin-shake 0.4s ease-out; }
 
+/* ── PIN aurora orb (Auro-inspired hologram) ── */
+.pin-orb {
+  position: relative;
+  width: 240px;
+  height: 310px;
+  border-radius: 50% / 44%;
+  background:
+    radial-gradient(ellipse 85% 45% at 50% 92%, rgba(248, 215, 165, 1) 0%, rgba(248, 215, 165, 0) 70%),
+    radial-gradient(ellipse 75% 55% at 50% 70%, rgba(232, 150, 80, 0.92) 0%, rgba(232, 150, 80, 0) 70%),
+    radial-gradient(ellipse 60% 40% at 38% 35%, rgba(74, 32, 18, 0.7) 0%, rgba(74, 32, 18, 0) 75%),
+    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(20, 10, 6, 0.95) 0%, rgba(20, 10, 6, 0) 60%),
+    linear-gradient(180deg, #14080A 0%, #2E140C 25%, #6B321A 55%, #D88450 78%, #F8D7A5 100%);
+  box-shadow:
+    0 0 80px rgba(232, 150, 80, 0.32),
+    0 0 160px rgba(255, 170, 90, 0.18),
+    inset 0 -30px 70px rgba(255, 220, 160, 0.32),
+    inset 0 30px 60px rgba(20, 8, 6, 0.55);
+  animation: pin-orb-float 7s ease-in-out infinite, pin-orb-glow 4s ease-in-out infinite alternate;
+}
+.pin-orb::after {
+  content: '';
+  position: absolute;
+  inset: 12% 18% 60% 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 30%, rgba(255, 240, 220, 0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+@keyframes pin-orb-float {
+  0%,100% { transform: translateY(0) scale(1) rotate(0deg); }
+  33%     { transform: translateY(-6px) scale(1.015) rotate(-0.6deg); }
+  66%     { transform: translateY(-3px) scale(1.005) rotate(0.4deg); }
+}
+@keyframes pin-orb-glow {
+  0%   { filter: brightness(1) saturate(1); }
+  100% { filter: brightness(1.08) saturate(1.12); }
+}
+
 /* ── Typing dots ── */
 .typing-dot { width:8px; height:8px; border-radius:50%; background:var(--ink-3); display:inline-block; animation: ss-bar 1s ease-in-out infinite; }
 
