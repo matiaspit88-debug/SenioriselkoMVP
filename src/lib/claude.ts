@@ -23,15 +23,17 @@ export async function askClaude(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
+        model: 'llama-3.1-8b-instant',
         max_tokens: 300,
-        system: SYSTEMS[mode],
-        messages,
+        messages: [
+          { role: 'system', content: SYSTEMS[mode] },
+          ...messages,
+        ],
       }),
     })
     if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = await res.json()
-    return data.content?.[0]?.text?.trim() ?? 'En ymmärtänyt. Voitko toistaa?'
+    return data.choices?.[0]?.message?.content?.trim() ?? 'En ymmärtänyt. Voitko toistaa?'
   } catch {
     return 'Anteeksi, minulla on nyt tekninen vika. Yritä hetken päästä uudelleen.'
   }
