@@ -41,101 +41,112 @@ export default function PinScreen({ onSuccess }: PinScreenProps) {
   return (
     <div style={{
       width: '100%', height: '100%',
-      background: 'radial-gradient(ellipse at 50% 60%, #3A2818 0%, #261A11 70%, #1C1209 100%)',
+      background: 'radial-gradient(ellipse at 50% 55%, #3D2A1A 0%, #281B11 65%, #1A1108 100%)',
       display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'flex-start',
+      alignItems: 'center',
       paddingTop: 'max(56px, env(safe-area-inset-top, 56px))',
-      paddingBottom: 'max(36px, env(safe-area-inset-bottom, 36px))',
+      paddingBottom: 'max(28px, env(safe-area-inset-bottom, 28px))',
     }}>
 
       {/* Brand */}
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center', marginBottom: 28 }}>
         <p style={{
           fontFamily: 'var(--serif)', fontStyle: 'italic',
-          color: '#F4E8D2', fontSize: 36, lineHeight: 1.1,
-          textShadow: '0 1px 12px rgba(0,0,0,0.25)',
+          color: '#F5E9D2', fontSize: 36, lineHeight: 1.1,
+          textShadow: '0 2px 14px rgba(0,0,0,0.3)',
         }}>
           SenioriSelko
         </p>
         <p style={{
-          color: 'rgba(244, 232, 210, 0.55)', fontSize: 12,
-          letterSpacing: '0.12em', textTransform: 'uppercase',
+          color: 'rgba(245, 233, 210, 0.50)', fontSize: 12,
+          letterSpacing: '0.14em', textTransform: 'uppercase',
           fontWeight: 500, marginTop: 6,
         }}>
           Kirjaudu sisään
         </p>
       </div>
 
-      {/* Orb + PIN dots overlay */}
-      <div
-        className={shake ? 'ss-pin-shake' : ''}
-        style={{
-          position: 'relative',
-          width: 240, height: 310,
-          marginTop: 36, marginBottom: 'auto',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
-      >
+      {/* Orb container — orb fills, dots + keypad overlaid on top */}
+      <div style={{
+        position: 'relative',
+        width: 332, height: 472,
+      }}>
+        {/* The orb itself */}
         <div className="pin-orb" />
+
+        {/* Content overlay: PIN dots + keypad */}
         <div style={{
-          position: 'absolute', display: 'flex', gap: 20,
-          bottom: 36,
-          filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.55))',
+          position: 'absolute', inset: 0,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          gap: 30,
+          padding: '0 28px',
+          zIndex: 2,
         }}>
-          {[0,1,2,3].map(i => (
-            <div key={i} style={{
-              width: 16, height: 16, borderRadius: '50%',
-              background: digits.length > i
-                ? (error ? '#FF8B6A' : '#FFFAEF')
-                : 'transparent',
-              border: `2px solid ${digits.length > i
-                ? (error ? '#FF8B6A' : '#FFFAEF')
-                : 'rgba(255, 245, 225, 0.45)'}`,
-              transition: 'background 0.15s, border-color 0.15s',
-            }} />
-          ))}
+          {/* PIN dots */}
+          <div
+            className={shake ? 'ss-pin-shake' : ''}
+            style={{
+              display: 'flex', gap: 20,
+              filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.55))',
+            }}
+          >
+            {[0,1,2,3].map(i => (
+              <div key={i} style={{
+                width: 14, height: 14, borderRadius: '50%',
+                background: digits.length > i
+                  ? (error ? '#FF8B6A' : '#FFFAEF')
+                  : 'transparent',
+                border: `2px solid ${digits.length > i
+                  ? (error ? '#FF8B6A' : '#FFFAEF')
+                  : 'rgba(255, 250, 235, 0.55)'}`,
+                transition: 'background 0.15s, border-color 0.15s',
+              }} />
+            ))}
+          </div>
+
+          {/* Keypad — true liquid glass */}
+          <div style={{
+            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
+            gap: 11, width: '100%',
+          }}>
+            {KEYS.map((k, i) => (
+              <button
+                key={i}
+                onClick={() => handleKey(k)}
+                disabled={k === '' || digits.length >= 4}
+                style={{
+                  height: 64, borderRadius: 20,
+                  background: k === ''
+                    ? 'transparent'
+                    : 'linear-gradient(135deg, rgba(255,240,215,0.13) 0%, rgba(40,20,12,0.18) 100%)',
+                  border: k === ''
+                    ? 'none'
+                    : '1px solid rgba(255, 240, 215, 0.22)',
+                  backdropFilter: k !== '' ? 'blur(12px) saturate(160%)' : undefined,
+                  WebkitBackdropFilter: k !== '' ? 'blur(12px) saturate(160%)' : undefined,
+                  boxShadow: k !== ''
+                    ? 'inset 0 1px 0 rgba(255, 250, 240, 0.28), inset 0 -1px 0 rgba(0, 0, 0, 0.10), 0 4px 14px rgba(0, 0, 0, 0.30)'
+                    : 'none',
+                  fontSize: k === '⌫' ? 22 : 26,
+                  fontWeight: k === '⌫' ? 400 : 300,
+                  color: '#F5E9D2',
+                  textShadow: k !== '' ? '0 1px 4px rgba(0, 0, 0, 0.55)' : undefined,
+                  cursor: k === '' ? 'default' : 'pointer',
+                  fontFamily: 'inherit',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  transition: 'background 0.15s, transform 0.08s',
+                }}
+              >
+                {k}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Keypad — liquid glass */}
-      <div style={{
-        display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 14, width: 260, marginTop: 24,
-      }}>
-        {KEYS.map((k, i) => (
-          <button
-            key={i}
-            onClick={() => handleKey(k)}
-            disabled={k === '' || digits.length >= 4}
-            style={{
-              height: 72, borderRadius: 22,
-              background: k === ''
-                ? 'transparent'
-                : 'rgba(255, 248, 232, 0.07)',
-              border: k === ''
-                ? 'none'
-                : '1px solid rgba(255, 240, 215, 0.14)',
-              backdropFilter: k !== '' ? 'blur(20px) saturate(180%)' : undefined,
-              WebkitBackdropFilter: k !== '' ? 'blur(20px) saturate(180%)' : undefined,
-              boxShadow: k !== ''
-                ? 'inset 0 1px 0 rgba(255, 250, 240, 0.10), 0 2px 10px rgba(0, 0, 0, 0.25)'
-                : 'none',
-              fontSize: k === '⌫' ? 22 : 26,
-              fontWeight: k === '⌫' ? 400 : 300,
-              color: '#F4E8D2',
-              cursor: k === '' ? 'default' : 'pointer',
-              fontFamily: 'inherit',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'background 0.15s, transform 0.1s',
-            }}
-          >
-            {k}
-          </button>
-        ))}
-      </div>
-
       {error && (
-        <p style={{ marginTop: 16, color: '#FF8B6A', fontSize: 14, fontWeight: 500 }}>
+        <p style={{ marginTop: 18, color: '#FF8B6A', fontSize: 14, fontWeight: 500 }}>
           Väärä koodi — yritä uudelleen
         </p>
       )}

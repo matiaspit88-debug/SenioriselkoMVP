@@ -259,38 +259,68 @@ input      { touch-action: manipulation; }
 /* ── PIN aurora orb (Auro-inspired hologram) ── */
 .pin-orb {
   position: relative;
-  width: 240px;
-  height: 310px;
-  border-radius: 50% / 44%;
+  width: 100%;
+  height: 100%;
+  border-radius: 36% 36% 36% 36% / 36% 36% 36% 36%;
   background:
-    radial-gradient(ellipse 85% 45% at 50% 92%, rgba(248, 215, 165, 1) 0%, rgba(248, 215, 165, 0) 70%),
-    radial-gradient(ellipse 75% 55% at 50% 70%, rgba(232, 150, 80, 0.92) 0%, rgba(232, 150, 80, 0) 70%),
-    radial-gradient(ellipse 60% 40% at 38% 35%, rgba(74, 32, 18, 0.7) 0%, rgba(74, 32, 18, 0) 75%),
-    radial-gradient(ellipse 90% 70% at 50% 18%, rgba(20, 10, 6, 0.95) 0%, rgba(20, 10, 6, 0) 60%),
-    linear-gradient(180deg, #14080A 0%, #2E140C 25%, #6B321A 55%, #D88450 78%, #F8D7A5 100%);
+    /* Top inner highlight */
+    radial-gradient(ellipse 55% 25% at 50% 10%, rgba(255, 215, 165, 0.28) 0%, transparent 70%),
+    /* Bottom cream glow */
+    radial-gradient(ellipse 92% 50% at 50% 96%, rgba(255, 226, 175, 1) 0%, rgba(255, 226, 175, 0) 70%),
+    /* Mid warm amber band */
+    radial-gradient(ellipse 78% 50% at 50% 72%, rgba(242, 162, 90, 0.95) 0%, rgba(242, 162, 90, 0) 70%),
+    /* Side red-brown shadows */
+    radial-gradient(ellipse 45% 60% at 14% 52%, rgba(94, 38, 22, 0.55) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 60% at 86% 52%, rgba(94, 38, 22, 0.55) 0%, transparent 65%),
+    /* Top dark crown */
+    radial-gradient(ellipse 92% 55% at 50% 16%, rgba(10, 6, 4, 0.96) 0%, rgba(10, 6, 4, 0) 65%),
+    /* Base gradient */
+    linear-gradient(180deg, #060302 0%, #1F100A 20%, #5A2818 48%, #C97843 76%, #F5C684 100%);
   box-shadow:
-    0 0 80px rgba(232, 150, 80, 0.32),
-    0 0 160px rgba(255, 170, 90, 0.18),
-    inset 0 -30px 70px rgba(255, 220, 160, 0.32),
-    inset 0 30px 60px rgba(20, 8, 6, 0.55);
-  animation: pin-orb-float 7s ease-in-out infinite, pin-orb-glow 4s ease-in-out infinite alternate;
+    0 0 90px rgba(232, 150, 80, 0.40),
+    0 0 180px rgba(255, 170, 90, 0.20),
+    0 0 280px rgba(255, 180, 100, 0.10),
+    inset 0 -50px 100px rgba(255, 220, 170, 0.42),
+    inset 0 36px 80px rgba(12, 5, 3, 0.70),
+    inset 0 0 120px rgba(255, 200, 140, 0.12);
+  animation:
+    pin-orb-morph 11s ease-in-out infinite,
+    pin-orb-glow 4.5s ease-in-out infinite alternate;
+}
+.pin-orb::before {
+  content: '';
+  position: absolute;
+  inset: 4% 18% 56% 18%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 45% 35%, rgba(255, 240, 220, 0.22) 0%, rgba(255, 240, 220, 0) 65%);
+  pointer-events: none;
+  animation: pin-orb-shine 7s ease-in-out infinite alternate;
 }
 .pin-orb::after {
   content: '';
   position: absolute;
-  inset: 12% 18% 60% 18%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 30%, rgba(255, 240, 220, 0.18) 0%, transparent 60%);
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse 30% 8% at 50% 96%, rgba(255, 240, 200, 0.55) 0%, transparent 70%);
   pointer-events: none;
+  mix-blend-mode: screen;
+  animation: pin-orb-glow 4.5s ease-in-out infinite alternate;
 }
-@keyframes pin-orb-float {
-  0%,100% { transform: translateY(0) scale(1) rotate(0deg); }
-  33%     { transform: translateY(-6px) scale(1.015) rotate(-0.6deg); }
-  66%     { transform: translateY(-3px) scale(1.005) rotate(0.4deg); }
+@keyframes pin-orb-morph {
+  0%,100% { border-radius: 36% 36% 36% 36% / 36% 36% 36% 36%; }
+  20%     { border-radius: 38% 34% 37% 35% / 35% 38% 35% 36%; }
+  40%     { border-radius: 34% 38% 35% 37% / 38% 35% 37% 34%; }
+  60%     { border-radius: 37% 35% 38% 34% / 36% 38% 34% 37%; }
+  80%     { border-radius: 35% 37% 34% 38% / 37% 34% 38% 35%; }
 }
 @keyframes pin-orb-glow {
   0%   { filter: brightness(1) saturate(1); }
-  100% { filter: brightness(1.08) saturate(1.12); }
+  100% { filter: brightness(1.08) saturate(1.14); }
+}
+@keyframes pin-orb-shine {
+  0%   { opacity: 0.65; transform: translate(-3%, -1%) scale(0.98); }
+  100% { opacity: 1;    transform: translate(3%, 1%)   scale(1.02); }
 }
 
 /* ── Typing dots ── */
