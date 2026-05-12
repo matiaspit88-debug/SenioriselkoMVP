@@ -33,43 +33,43 @@ export default function HeroScene() {
 
   return (
     <>
-      <ambientLight intensity={0.45} />
+      <ambientLight intensity={0.35} />
 
-      {/* Key light — cool blue from upper-right */}
-      <directionalLight position={[5, 6, 4]} intensity={1.8} color="#C8DEFF" />
+      {/* Key light — warm amber from upper-right */}
+      <directionalLight position={[5, 6, 4]} intensity={1.6} color="#FFD6A0" />
 
-      {/* Fill light — warm peach from lower-left */}
-      <pointLight position={[-4, -3, 2]} intensity={1.0} color="#FFD6A8" />
+      {/* Fill light — deep ember from lower-left */}
+      <pointLight position={[-4, -3, 2]} intensity={1.1} color="#FF9A5C" />
 
-      {/* Rim light — purple from behind */}
-      <pointLight position={[2, 4, -5]} intensity={0.7} color="#D4B8FF" />
+      {/* Rim light — dark cocoa from behind */}
+      <pointLight position={[2, 4, -5]} intensity={0.6} color="#8C4A1E" />
 
-      {/* Coral glow from lower-right for help/emer orbs */}
-      <pointLight position={[4, -4, 2]} intensity={0.5} color="#FFC4A8" />
+      {/* Coral glow from lower-right */}
+      <pointLight position={[4, -4, 2]} intensity={0.6} color="#FFB07A" />
 
       {/* Warm orange accent from bottom */}
-      <pointLight position={[0, -5, 1]} intensity={0.4} color="#FFB870" />
+      <pointLight position={[0, -5, 1]} intensity={0.5} color="#FFA050" />
 
-      <Environment preset="city" />
+      <Environment preset="sunset" />
 
-      {/* Primary orb — Apuri (blue), center-left */}
+      {/* Primary orb — deep amber, center-left */}
       <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.50}>
         <mesh ref={aiRef} scale={base * 0.95} position={[-base * 0.3, base * 0.1, 0]}>
           <sphereGeometry args={[1, 128, 128]} />
           <MeshDistortMaterial
-            color="#3F7FE0"
+            color="#C97843"
             distort={0.26}
             speed={1.5}
-            roughness={0.04}
-            metalness={0.08}
-            envMapIntensity={1.4}
+            roughness={0.10}
+            metalness={0.05}
+            envMapIntensity={1.3}
             transparent
             opacity={0.94}
           />
         </mesh>
       </Float>
 
-      {/* Secondary orb — Onni/chat (purple), upper-right */}
+      {/* Secondary orb — warm amber-cream, upper-right */}
       <Float speed={1.9} rotationIntensity={0.22} floatIntensity={0.85}>
         <mesh
           ref={chatRef}
@@ -78,19 +78,19 @@ export default function HeroScene() {
         >
           <sphereGeometry args={[1, 64, 64]} />
           <MeshDistortMaterial
-            color="#A381DC"
+            color="#E8A86A"
             distort={0.36}
             speed={2.1}
-            roughness={0.06}
-            metalness={0.05}
+            roughness={0.12}
+            metalness={0.04}
             envMapIntensity={1.1}
             transparent
-            opacity={0.84}
+            opacity={0.86}
           />
         </mesh>
       </Float>
 
-      {/* Tertiary orb — Ohjeet (coral), lower-right */}
+      {/* Tertiary orb — burnt sienna, lower-right */}
       <Float speed={2.4} rotationIntensity={0.28} floatIntensity={1.1}>
         <mesh
           ref={helpRef}
@@ -99,19 +99,19 @@ export default function HeroScene() {
         >
           <sphereGeometry args={[1, 48, 48]} />
           <MeshDistortMaterial
-            color="#F18A6E"
+            color="#A85E2E"
             distort={0.30}
             speed={1.8}
-            roughness={0.08}
-            metalness={0.04}
-            envMapIntensity={1.0}
+            roughness={0.14}
+            metalness={0.03}
+            envMapIntensity={0.95}
             transparent
-            opacity={0.80}
+            opacity={0.82}
           />
         </mesh>
       </Float>
 
-      {/* Quaternary orb — Hätä (orange), lower-left */}
+      {/* Quaternary orb — pale cream-gold, lower-left */}
       <Float speed={1.6} rotationIntensity={0.20} floatIntensity={0.70}>
         <mesh
           ref={emerRef}
@@ -120,14 +120,14 @@ export default function HeroScene() {
         >
           <sphereGeometry args={[1, 48, 48]} />
           <MeshDistortMaterial
-            color="#F0973A"
+            color="#F5C684"
             distort={0.22}
             speed={2.4}
-            roughness={0.07}
-            metalness={0.04}
+            roughness={0.10}
+            metalness={0.03}
             envMapIntensity={0.9}
             transparent
-            opacity={0.76}
+            opacity={0.80}
           />
         </mesh>
       </Float>

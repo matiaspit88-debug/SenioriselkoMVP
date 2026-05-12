@@ -32,19 +32,13 @@ const APURI_INIT: Message[] = [
   { from: 'bot',  text: 'Apteekki: arkisin 9–18, lauantai 9–15, sunnuntai kiinni.' },
 ]
 
-const SECTIONS = [
-  { label: 'Apuri', color: '#3F7FE0', bg: 'rgba(63,127,224,0.12)' },
-  { label: 'Milo',  color: '#A381DC', bg: 'rgba(163,129,220,0.12)' },
-  { label: 'Ohjeet', color: '#F18A6E', bg: 'rgba(241,138,110,0.12)' },
-  { label: 'Hätä',  color: '#F0973A', bg: 'rgba(240,151,58,0.12)'  },
-]
-
 function HeroView({ onStart }: { onStart: () => void }) {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column',
       width: '100%', height: '100%',
-      background: '#F4F1EC', overflow: 'hidden',
+      background: 'radial-gradient(ellipse at 50% 55%, #3D2A1A 0%, #281B11 65%, #1A1108 100%)',
+      overflow: 'hidden', position: 'relative',
     }}>
       <div style={{ flex: 1, minHeight: 0 }}>
         <Canvas
@@ -58,43 +52,28 @@ function HeroView({ onStart }: { onStart: () => void }) {
       </div>
 
       <div style={{
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20,
-        textAlign: 'center',
-        padding: '4px 24px max(28px, env(safe-area-inset-bottom, 28px))',
+        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        padding: '0 24px max(56px, env(safe-area-inset-bottom, 56px))',
       }}>
-        <div>
-          <p style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', color: '#1A1714', fontSize: 26, lineHeight: 1.25 }}>
-            Täällä voit puhua kaiken ääneen.
-          </p>
-          <p style={{ color: '#8E867D', fontSize: 13, marginTop: 8 }}>
-            Ei tuomita.&nbsp;&nbsp;Ei kiirettä.&nbsp;&nbsp;Aina paikalla.
-          </p>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 7 }}>
-          {SECTIONS.map(s => (
-            <span key={s.label} style={{
-              background: s.bg, color: s.color,
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-              padding: '5px 12px', borderRadius: 999, fontSize: 12, fontWeight: 600,
-            }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: s.color, flexShrink: 0 }} />
-              {s.label}
-            </span>
-          ))}
-        </div>
         <button
           onClick={onStart}
           style={{
-            padding: '15px 44px', borderRadius: 999, border: 'none',
-            color: '#fff', fontWeight: 700, fontSize: 18,
-            background: 'linear-gradient(135deg, #3F7FE0 0%, #A381DC 100%)',
-            boxShadow: '0 8px 28px rgba(63,127,224,0.35)',
-            minHeight: 58, cursor: 'pointer', fontFamily: 'inherit', width: '100%',
+            width: 132, height: 132, borderRadius: '50%',
+            border: '1px solid rgba(255, 240, 215, 0.20)',
+            color: '#F5E9D2',
+            fontWeight: 500, fontSize: 22,
+            fontFamily: 'var(--serif)', fontStyle: 'italic',
+            background: 'linear-gradient(145deg, rgba(255,220,170,0.10) 0%, rgba(180,90,40,0.08) 50%, rgba(40,20,12,0.14) 100%)',
+            backdropFilter: 'blur(22px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(22px) saturate(180%)',
+            boxShadow: 'inset 0 1.5px 0 rgba(255,250,235,0.30), inset 0 -1.5px 0 rgba(0,0,0,0.10), 0 6px 28px rgba(232,150,80,0.18), 0 0 60px rgba(255,170,90,0.10)',
+            textShadow: '0 1px 8px rgba(0,0,0,0.55)',
+            cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}
         >
-          Aloita →
+          Aloita
         </button>
-        <p style={{ color: '#8E867D', fontSize: 12 }}>Turvallinen &amp; yksityinen</p>
       </div>
     </div>
   )

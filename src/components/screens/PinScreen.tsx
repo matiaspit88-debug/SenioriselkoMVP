@@ -50,18 +50,18 @@ export default function PinScreen({ onSuccess }: PinScreenProps) {
     }}>
 
       {/* Brand */}
-      <div style={{ textAlign: 'center', marginBottom: 22 }}>
+      <div style={{ textAlign: 'center', marginBottom: 'auto', marginTop: 8 }}>
         <p style={{
           fontFamily: 'var(--serif)', fontStyle: 'italic',
-          color: '#F5E9D2', fontSize: 36, lineHeight: 1.1,
+          color: '#F5E9D2', fontSize: 52, lineHeight: 1.05,
           textShadow: '0 2px 14px rgba(0,0,0,0.3)',
         }}>
           SenioriSelko
         </p>
         <p style={{
-          color: 'rgba(245, 233, 210, 0.50)', fontSize: 12,
+          color: 'rgba(245, 233, 210, 0.55)', fontSize: 17,
           letterSpacing: '0.14em', textTransform: 'uppercase',
-          fontWeight: 500, marginTop: 6,
+          fontWeight: 500, marginTop: 10,
         }}>
           Kirjaudu sisään
         </p>
@@ -106,10 +106,10 @@ export default function PinScreen({ onSuccess }: PinScreenProps) {
             ))}
           </div>
 
-          {/* Keypad — true liquid glass */}
+          {/* Keypad — true liquid glass circles */}
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 11, width: '100%',
+            display: 'grid', gridTemplateColumns: 'repeat(3, 76px)',
+            gap: 14, justifyContent: 'center',
           }}>
             {KEYS.map((k, i) => (
               <button
@@ -117,26 +117,27 @@ export default function PinScreen({ onSuccess }: PinScreenProps) {
                 onClick={() => handleKey(k)}
                 disabled={k === '' || digits.length >= 4}
                 style={{
-                  height: 64, borderRadius: 32,
+                  width: 76, height: 76, borderRadius: '50%',
                   background: k === ''
                     ? 'transparent'
-                    : 'linear-gradient(145deg, rgba(255,240,215,0.07) 0%, rgba(255,210,160,0.04) 50%, rgba(40,20,12,0.10) 100%)',
+                    : 'rgba(255, 240, 215, 0.03)',
                   border: k === ''
                     ? 'none'
-                    : '1px solid rgba(255, 240, 215, 0.18)',
-                  backdropFilter: k !== '' ? 'blur(20px) saturate(180%)' : undefined,
-                  WebkitBackdropFilter: k !== '' ? 'blur(20px) saturate(180%)' : undefined,
+                    : '1px solid rgba(255, 240, 215, 0.13)',
+                  backdropFilter: k !== '' ? 'blur(22px) saturate(180%)' : undefined,
+                  WebkitBackdropFilter: k !== '' ? 'blur(22px) saturate(180%)' : undefined,
                   boxShadow: k !== ''
-                    ? 'inset 0 1.5px 0 rgba(255, 250, 235, 0.32), inset 0 -1px 0 rgba(0, 0, 0, 0.08), 0 2px 18px rgba(0, 0, 0, 0.22)'
+                    ? 'inset 0 1.5px 0 rgba(255, 250, 235, 0.22), inset 0 -1px 0 rgba(0, 0, 0, 0.05), 0 2px 14px rgba(0, 0, 0, 0.18)'
                     : 'none',
-                  fontSize: k === '⌫' ? 22 : 26,
+                  fontSize: k === '⌫' ? 22 : 28,
                   fontWeight: k === '⌫' ? 400 : 300,
                   color: '#F5E9D2',
-                  textShadow: k !== '' ? '0 1px 6px rgba(0, 0, 0, 0.60)' : undefined,
+                  textShadow: k !== '' ? '0 1px 6px rgba(0, 0, 0, 0.55)' : undefined,
                   cursor: k === '' ? 'default' : 'pointer',
                   fontFamily: 'inherit',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   transition: 'background 0.15s, transform 0.08s',
+                  padding: 0,
                 }}
               >
                 {k}
