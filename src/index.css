@@ -175,10 +175,10 @@ input      { touch-action: manipulation; }
   cursor: pointer;
   position: relative;
   overflow: hidden;
-  aspect-ratio: 1 / 1.18;
   text-align: left;
   transition: transform .12s;
   font-family: inherit;
+  min-height: 0;
 }
 .ss-tile:active { transform: scale(0.97); }
 
