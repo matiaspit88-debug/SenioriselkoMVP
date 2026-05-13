@@ -1,27 +1,24 @@
 import { useState } from 'react'
 import type { Screen } from '../../types'
+import type { Guide } from '../../lib/guides'
+import { GUIDES, CATS } from '../../lib/guides'
 import Orb from '../ui/Orb'
 import StatusBar from '../ui/StatusBar'
 import TopBar from '../ui/TopBar'
 import Dock from '../ui/Dock'
 import { Icons } from '../ui/icons'
 
-const GUIDES = [
-  { id: 1, title: 'Kuinka otat selfien',       meta: '5 vaihetta · 3 min',  kind: 'help' as const },
-  { id: 2, title: 'WhatsApp-viesti lapselle',   meta: '4 vaihetta · 2 min',  kind: 'chat' as const },
-  { id: 3, title: 'Tunnista huijausviesti',      meta: '3 vaihetta · 2 min',  kind: 'emer' as const },
-  { id: 4, title: 'Sää-sovelluksen käyttö',      meta: '3 vaihetta · 2 min',  kind: 'ai'   as const },
-]
-
-const CATS = ['Suosituimmat', 'Puhelin', 'Viestintä', 'Turvallisuus', 'Terveys']
-
 interface HelpScreenProps {
   onNavigate: (s: Screen) => void
   onMenu: () => void
+  onGuideSelect: (guide: Guide) => void
 }
 
-export default function HelpScreen({ onNavigate, onMenu }: HelpScreenProps) {
-  const [cat, setCat] = useState('Suosituimmat')
+export default function HelpScreen({ onNavigate, onMenu, onGuideSelect }: HelpScreenProps) {
+  const [cat, setCat] = useState('Kaikki')
+
+  const filtered = cat === 'Kaikki' ? GUIDES : GUIDES.filter(g => g.category === cat)
+
   return (
     <div className="ss-screen">
       <StatusBar />
@@ -43,6 +40,7 @@ export default function HelpScreen({ onNavigate, onMenu }: HelpScreenProps) {
             <div className="ss-display" style={{ fontSize: 40 }}>Mitä <em>opitaan?</em></div>
           </div>
 
+          {/* Category pills */}
           <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, marginBottom: 18, WebkitOverflowScrolling: 'touch' as const }}>
             {CATS.map(c => (
               <button key={c} onClick={() => setCat(c)} style={{
@@ -58,8 +56,9 @@ export default function HelpScreen({ onNavigate, onMenu }: HelpScreenProps) {
             ))}
           </div>
 
+          {/* Tip of day */}
           <div className="ss-card" style={{ marginBottom: 18, display: 'flex', gap: 14, alignItems: 'center', padding: 16 }}>
-            <Orb kind="help" size={52} halo={false} />
+            <Orb kind="emer" size={52} halo={false} />
             <div style={{ flex: 1 }}>
               <div className="ss-eyebrow" style={{ marginBottom: 4 }}>Vinkki tänään</div>
               <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--ink)' }}>Tunnista huijausviesti</div>
@@ -67,9 +66,10 @@ export default function HelpScreen({ onNavigate, onMenu }: HelpScreenProps) {
             </div>
           </div>
 
+          {/* Guide list */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {GUIDES.map(g => (
-              <button key={g.id} onClick={() => onNavigate('guide')} style={{
+            {filtered.map(g => (
+              <button key={g.id} onClick={() => onGuideSelect(g)} style={{
                 display: 'flex', alignItems: 'center', gap: 14,
                 padding: '14px 16px', background: 'rgba(255,255,255,0.6)',
                 borderRadius: 22, border: '1px solid var(--hairline)',

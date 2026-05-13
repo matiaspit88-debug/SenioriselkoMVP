@@ -2,6 +2,7 @@ import { Suspense, useState, useCallback } from 'react'
 import { Canvas } from '@react-three/fiber'
 import type { Screen, Message } from './types'
 import type { ClaudeMessage } from './lib/claude'
+import type { Guide } from './lib/guides'
 import HeroScene from './components/3d/HeroScene'
 import PinScreen from './components/screens/PinScreen'
 import HomeScreen from './components/screens/HomeScreen'
@@ -83,6 +84,7 @@ export default function App() {
   const [screen, setScreen] = useState<Screen>('pin')
   const [drawer, setDrawer] = useState(false)
   const [fontSize, setFontSize] = useState(18)
+  const [selectedGuide, setSelectedGuide] = useState<Guide | null>(null)
 
   const [miloSession, setMiloSession] = useState<ModeSession>({
     msgs: MILO_INIT, history: [], started: false,
@@ -94,6 +96,11 @@ export default function App() {
   const navigate = useCallback((s: Screen) => setScreen(s), [])
   const openDrawer  = useCallback(() => setDrawer(true), [])
   const closeDrawer = useCallback(() => setDrawer(false), [])
+
+  const openGuide = useCallback((guide: Guide) => {
+    setSelectedGuide(guide)
+    setScreen('guide')
+  }, [])
 
   if (screen === 'pin')  return <PinScreen onSuccess={() => navigate('hero')} />
   if (screen === 'hero') return <HeroView  onStart={() => navigate('home')} />
@@ -112,8 +119,8 @@ export default function App() {
           setApuriSession={setApuriSession}
         />
       )
-      case 'book':  return <HelpScreen onNavigate={navigate} onMenu={openDrawer} />
-      case 'guide': return <GuideScreen onBack={() => navigate('book')} />
+      case 'book':  return <HelpScreen onNavigate={navigate} onMenu={openDrawer} onGuideSelect={openGuide} />
+      case 'guide': return <GuideScreen guide={selectedGuide} onBack={() => navigate('book')} />
       case 'sos':   return <SOSScreen  onNavigate={navigate} />
       default:      return <HomeScreen onNavigate={navigate} onMenu={openDrawer} />
     }
