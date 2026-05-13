@@ -1,39 +1,20 @@
 import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
+import type { Guide } from '../../lib/guides'
+import { GUIDES } from '../../lib/guides'
 import GuideStepScene from '../3d/GuideStepScene'
 
-const STEPS = [
-  {
-    title: 'Avaa kameraohjelma',
-    body: 'Etsi puhelimesi etusivulta kameran kuvake. Se näyttää pieneltä kameralta.',
-  },
-  {
-    title: 'Napauta kameran kuvaketta',
-    body: 'Paina kamerakuvaketta kerran. Ohjelma avautuu muutamassa sekunnissa.',
-  },
-  {
-    title: 'Valitse selfie-tila',
-    body: 'Etsi pyöreä nuoli-kuvake. Sen avulla kamera kääntyy katsomaan sinuun päin.',
-  },
-  {
-    title: 'Katso kameraan',
-    body: 'Katso suoraan puhelimen etukameraan ja hymyile. Olet valmis!',
-  },
-  {
-    title: 'Ota kuva',
-    body: 'Paina isoa pyöreää nappia ruudun alareunassa. Kuva on otettu!',
-  },
-]
-
 interface GuideScreenProps {
+  guide?: Guide | null
   onBack?: () => void
 }
 
-export default function GuideScreen({ onBack }: GuideScreenProps) {
+export default function GuideScreen({ guide, onBack }: GuideScreenProps) {
+  const activeGuide = guide ?? GUIDES[0]
   const [step, setStep] = useState(0)
-  const s = STEPS[step]
+  const s = activeGuide.steps[step]
   const isFirst = step === 0
-  const isLast  = step === STEPS.length - 1
+  const isLast  = step === activeGuide.steps.length - 1
 
   const prev = () => (isFirst ? onBack?.() : setStep(n => n - 1))
   const next = () => (isLast  ? onBack?.() : setStep(n => n + 1))
@@ -55,29 +36,26 @@ export default function GuideScreen({ onBack }: GuideScreenProps) {
         <span className="text-xs font-medium tracking-widest uppercase text-[#8E867D]">
           Ohjeet
         </span>
-        <button
-          className="px-4 py-2 rounded-full bg-white/70 backdrop-blur text-sm font-medium text-[#5A544D] border border-black/5"
-        >
-          Kuuntele
-        </button>
+        <div className="w-11 h-11" />
       </div>
 
       {/* ── Step counter + title ── */}
       <div className="px-6 shrink-0">
-        <p className="text-xs font-medium tracking-widest uppercase text-[#8E867D] mb-2">
-          Vaihe {step + 1} / {STEPS.length}
+        <p className="text-xs font-medium tracking-widest uppercase text-[#8E867D] mb-1">
+          Vaihe {step + 1} / {activeGuide.steps.length}
         </p>
         <h1
           key={step}
-          className="font-serif italic text-[#1A1714] text-4xl leading-tight animate-fade"
+          className="font-serif italic text-[#1A1714] leading-tight animate-fade"
+          style={{ fontSize: 32 }}
         >
           {s.title}
         </h1>
       </div>
 
       {/* ── 3D illustration card ── */}
-      <div className="mx-6 mt-4 shrink-0 rounded-[28px] overflow-hidden border border-black/[0.06]"
-           style={{ height: 230, background: 'linear-gradient(160deg,#FBF9F5,#F0E6DC)' }}>
+      <div className="mx-6 mt-3 shrink-0 rounded-[28px] overflow-hidden border border-black/[0.06]"
+           style={{ height: 200, background: 'linear-gradient(160deg,#FBF9F5,#F0E6DC)' }}>
         <Canvas
           key={step}
           camera={{ position: [0, 0, 3.2], fov: 40 }}
@@ -93,43 +71,60 @@ export default function GuideScreen({ onBack }: GuideScreenProps) {
       {/* ── Body text ── */}
       <p
         key={step + 'b'}
-        className="px-6 mt-5 text-[#5A544D] text-lg leading-relaxed animate-fade shrink-0"
+        className="px-6 mt-4 text-[#5A544D] leading-relaxed animate-fade shrink-0"
+        style={{ fontSize: 18 }}
       >
         {s.body}
       </p>
 
       {/* ── Progress dots ── */}
-      <div className="flex justify-center gap-2 mt-5 shrink-0">
-        {STEPS.map((_, i) => (
+      <div className="flex justify-center gap-2 mt-4 shrink-0">
+        {activeGuide.steps.map((_, i) => (
           <div
             key={i}
-            className="h-2.5 rounded-full transition-all duration-300"
+            className="h-2 rounded-full transition-all duration-300"
             style={{
-              width: i === step ? 28 : 10,
+              width: i === step ? 24 : 8,
               background: i <= step ? '#1A1714' : '#C9C2B7',
             }}
           />
         ))}
       </div>
 
-      {/* ── Nav buttons ── */}
-      <div className="mt-auto px-6 pb-10 pt-4 flex gap-3 shrink-0">
+      {/* ── Nav buttons — fixed above safe area ── */}
+      <div
+        className="mt-auto px-6 pt-4 flex gap-3 shrink-0"
+        style={{ paddingBottom: 'max(36px, env(safe-area-inset-bottom, 36px))' }}
+      >
         <button
           onClick={prev}
-          className="h-16 px-7 rounded-[32px] border border-black/[0.08] bg-white/80 backdrop-blur text-[#5A544D] font-medium text-lg flex items-center gap-2"
+          style={{
+            height: 64, paddingLeft: 24, paddingRight: 24, borderRadius: 32,
+            border: '1px solid rgba(0,0,0,0.08)',
+            background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(10px)',
+            color: '#5A544D', fontWeight: 500, fontSize: 17,
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontFamily: 'inherit', cursor: 'pointer',
+          }}
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M10 12L5 8l5-4" />
           </svg>
-          Edellinen
+          {isFirst ? 'Takaisin' : 'Edellinen'}
         </button>
         <button
           onClick={next}
-          className="flex-1 h-16 rounded-[32px] bg-[#1A1714] text-white font-semibold text-lg flex items-center justify-center gap-2"
+          style={{
+            flex: 1, height: 64, borderRadius: 32, border: 'none',
+            background: '#1A1714', color: '#fff',
+            fontWeight: 600, fontSize: 17,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            fontFamily: 'inherit', cursor: 'pointer',
+          }}
         >
           {isLast ? 'Valmis ✓' : 'Seuraava'}
           {!isLast && (
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="rotate-180">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M6 12l5-4-5-4" />
             </svg>
           )}
