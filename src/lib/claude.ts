@@ -50,7 +50,7 @@ export async function askClaude(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'gemini-2.0-flash',
         max_tokens: 300,
         temperature: 0.7,
         messages: [
