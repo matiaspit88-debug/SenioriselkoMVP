@@ -1,12 +1,15 @@
-// SenioriSelko — Cloudflare Worker CORS proxy for Groq API
+// SenioriSelko — Cloudflare Worker CORS proxy for Google Gemini API
 // Deploy: wrangler deploy
-// Secret: wrangler secret put GROQ_API_KEY
+// Secret: wrangler secret put GEMINI_API_KEY
 
 const ALLOWED_ORIGINS = [
   'https://matiaspit88-debug.github.io',
   'http://localhost:5173',
   'http://localhost:4173',
 ]
+
+const GEMINI_ENDPOINT =
+  'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'
 
 export default {
   async fetch(request, env) {
@@ -34,10 +37,10 @@ export default {
       return new Response('Invalid JSON', { status: 400 })
     }
 
-    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const resp = await fetch(GEMINI_ENDPOINT, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${env.GROQ_API_KEY}`,
+        'Authorization': `Bearer ${env.GEMINI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
