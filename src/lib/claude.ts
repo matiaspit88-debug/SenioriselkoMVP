@@ -48,7 +48,7 @@ export async function askClaude(
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'openai/gpt-oss-20b',
+        model: 'meta-llama/llama-4-maverick-17b-128e-instruct',
         max_tokens: 300,
         messages: [
           { role: 'system', content: SYSTEMS[mode] },
