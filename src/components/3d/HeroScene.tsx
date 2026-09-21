@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { MeshDistortMaterial, Environment, Float } from '@react-three/drei'
+import { BackSide } from 'three'
 import type { Mesh } from 'three'
 
 export default function HeroScene() {
@@ -50,7 +51,22 @@ export default function HeroScene() {
       {/* Warm orange accent from bottom */}
       <pointLight position={[0, -5, 1]} intensity={0.5} color="#FFA050" />
 
-      <Environment preset="sunset" />
+      {/* Self-contained warm environment — no external HDR fetch, so it
+          never breaks on networks that block third-party CDNs. */}
+      <Environment resolution={64}>
+        <mesh scale={40}>
+          <sphereGeometry args={[1, 24, 24]} />
+          <meshBasicMaterial color="#5A2A12" side={BackSide} />
+        </mesh>
+        <mesh position={[6, 8, 5]} scale={[7, 7, 1]}>
+          <planeGeometry />
+          <meshBasicMaterial color="#FFDDAA" toneMapped={false} />
+        </mesh>
+        <mesh position={[-6, -5, -4]} scale={[6, 6, 1]}>
+          <planeGeometry />
+          <meshBasicMaterial color="#FF9A5C" toneMapped={false} />
+        </mesh>
+      </Environment>
 
       {/* Primary orb — deep amber, center-left */}
       <Float speed={1.2} rotationIntensity={0.15} floatIntensity={0.50}>
