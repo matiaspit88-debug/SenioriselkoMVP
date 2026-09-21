@@ -11,6 +11,7 @@ import HelpScreen from './components/screens/HelpScreen'
 import GuideScreen from './components/screens/GuideScreen'
 import SOSScreen from './components/screens/SOSScreen'
 import Drawer from './components/ui/Drawer'
+import ErrorBoundary from './components/ui/ErrorBoundary'
 
 export interface ModeSession {
   msgs: Message[]
@@ -41,14 +42,16 @@ function HeroView({ onStart }: { onStart: () => void }) {
       overflow: 'hidden', position: 'relative',
     }}>
       <div style={{ flex: 1, minHeight: 0 }}>
-        <Canvas
-          camera={{ position: [0, 0, 5], fov: 45 }}
-          gl={{ antialias: true, alpha: true }}
-        >
-          <Suspense fallback={null}>
-            <HeroScene />
-          </Suspense>
-        </Canvas>
+        <ErrorBoundary fallback={null}>
+          <Canvas
+            camera={{ position: [0, 0, 5], fov: 45 }}
+            gl={{ antialias: true, alpha: true }}
+          >
+            <Suspense fallback={null}>
+              <HeroScene />
+            </Suspense>
+          </Canvas>
+        </ErrorBoundary>
       </div>
 
       <div style={{
