@@ -4,7 +4,6 @@ import type { Screen, Message } from './types'
 import type { ClaudeMessage } from './lib/claude'
 import type { Guide } from './lib/guides'
 import HeroScene from './components/3d/HeroScene'
-import PinScreen from './components/screens/PinScreen'
 import HomeScreen from './components/screens/HomeScreen'
 import AIScreen from './components/screens/AIScreen'
 import ChatScreen from './components/screens/ChatScreen'
@@ -81,7 +80,7 @@ function HeroView({ onStart }: { onStart: () => void }) {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>('pin')
+  const [screen, setScreen] = useState<Screen>('hero')
   const [drawer, setDrawer] = useState(false)
   const [fontSize, setFontSize] = useState(18)
   const [selectedGuide, setSelectedGuide] = useState<Guide | null>(null)
@@ -102,8 +101,7 @@ export default function App() {
     setScreen('guide')
   }, [])
 
-  if (screen === 'pin')  return <PinScreen onSuccess={() => navigate('hero')} />
-  if (screen === 'hero') return <HeroView  onStart={() => navigate('home')} />
+  if (screen === 'hero') return <HeroView onStart={() => navigate('home')} />
 
   const renderScreen = () => {
     switch (screen) {
